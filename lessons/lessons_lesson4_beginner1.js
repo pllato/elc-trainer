@@ -16,18 +16,32 @@ addLesson({
     const pattern = structure.pattern;
     let wordIndex = 0;
 
+    // Функция для обработки сокращений
+    function normalizeWord(word) {
+      word = word.toLowerCase();
+      if (word === "i'm") return ["i", "am"];
+      if (word === "he's") return ["he", "is"];
+      if (word === "she's") return ["she", "is"];
+      return [word];
+    }
+
+    let normalizedWords = [];
+    for (let word of words) {
+      normalizedWords.push(...normalizeWord(word));
+    }
+
     // Проверяем, что начало текста соответствует шаблону
     for (let part of pattern) {
-      if (!words[wordIndex] || words[wordIndex] !== part) return false;
+      if (!normalizedWords[wordIndex] || normalizedWords[wordIndex] !== part) return false;
       wordIndex++;
     }
 
     // Для вопросов (hasName: false) текст должен точно совпадать с шаблоном
     if (!structure.hasName) {
-      return wordIndex === words.length; // Длина текста должна равняться длине шаблона
+      return wordIndex === normalizedWords.length; // Длина текста должна равняться длине шаблона
     }
 
     // Для ответов (hasName: true) после шаблона должно быть хотя бы одно слово
-    return wordIndex < words.length; // Проверяем, что есть хотя бы одно слово после шаблона
+    return wordIndex < normalizedWords.length; // Проверяем, что есть хотя бы одно слово после шаблона
   }
 });
