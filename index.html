@@ -272,10 +272,15 @@
     </div>
   </div>
 
-  <script src="index.js"></script>
   <script>
     // Инициализация lessonsData
     let lessonsData = [];
+
+    // Определение функции addLesson
+    function addLesson(lesson) {
+      console.log(`Adding lesson: ${lesson.name} for level ${lesson.level}`);
+      lessonsData.push(lesson);
+    }
 
     // Подбадривающие сообщения
     const encouragementMessages = [
