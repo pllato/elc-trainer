@@ -633,7 +633,7 @@
           }
         );
 
-        if (!deleteResponse.ok) throw new Error(`GitHub API error: ${fileResponse.statusText}`);
+        if (!deleteResponse.ok) throw new Error(`GitHub API error: ${deleteResponse.statusText}`);
 
         adminFeedback.textContent = 'Урок успешно удалён из GitHub! Перейдите на стартовый экран, чтобы обновить список.';
         githubTokenInput.value = '';
@@ -1019,9 +1019,9 @@
     function updateProgressBars() {
       if (!currentLessonData) return;
       
-      // Подсчёт общего прогресса
+      // Подсчёт общего прогресса (учитываем только до requiredCorrect для каждой структуры)
       const totalRequired = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      const totalCompleted = Object.values(progress).reduce((sum, count) => sum + count, 0);
+      const totalCompleted = Object.values(progress).reduce((sum, count) => sum + Math.min(count, currentLessonData.requiredCorrect), 0);
       const totalPercentage = totalRequired > 0 ? (totalCompleted / totalRequired) * 100 : 0;
 
       // Обновляем текст и прогресс-бар общего прогресса
