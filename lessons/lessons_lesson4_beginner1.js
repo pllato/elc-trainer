@@ -10,7 +10,7 @@ addLesson({
     { structure: "Where is she from?", pattern: ["where", "is", "she", "from"], id: "where-is-she-from", hasName: false },
     { structure: "She is from _______.", pattern: ["she", "is", "from"], id: "she-is-from", hasName: true }
   ],
-  requiredCorrect: 2, // 2 correct examples per structure
+  requiredCorrect: 5, // 5 correct examples per structure
   validateStructure: function(text, structure) {
     const words = text.split(' ').filter(word => word.length > 0);
     const pattern = structure.pattern;
