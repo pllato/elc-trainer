@@ -80,6 +80,16 @@ addLesson({
         return false; // Должно быть хотя бы одно слово после "this is"
       }
       const name = normalizedWords.slice(wordIndex).join(' ');
+      // Проверяем, не соответствует ли фраза другим структурам
+      const firstWordAfterThisIs = normalizedWords[wordIndex];
+      if (firstWordAfterThisIs.endsWith("'s")) {
+        console.log(`"${firstWordAfterThisIs}" ends with "'s", should match 'This is ____'s ____'");
+        return false; // Это соответствует "This is ____'s ____."
+      }
+      if (normalizedWords.length - wordIndex === 2 && ["his", "her", "its"].includes(firstWordAfterThisIs)) {
+        console.log(`"${firstWordAfterThisIs}" is a pronoun, should match 'This is ____ ____'");
+        return false; // Это соответствует "This is ____ ____."
+      }
       console.log(`Recognized name/word: "${name}"`);
       // Проверяем, не повторяется ли слово
       if (window.usedNames && window.usedNames.includes(name)) {
@@ -107,9 +117,9 @@ addLesson({
         console.log(`Expected "his", "her", or "its", got "${pronoun}"`);
         return false;
       }
-      // Проверяем предмет (ожидаем "bag", "dog", "car", или "toy")
-      if (!["bag", "dog", "car", "toy"].includes(thing)) {
-        console.log(`Expected "bag", "dog", "car", or "toy", got "${thing}"`);
+      // Проверяем предмет (ожидаем "bag", "dog", "car", "toy", "leg", "like")
+      if (!["bag", "dog", "car", "toy", "leg", "like"].includes(thing)) {
+        console.log(`Expected "bag", "dog", "car", "toy", "leg", or "like", got "${thing}"`);
         return false;
       }
       return true;
@@ -131,10 +141,10 @@ addLesson({
         console.log(`Expected word ending with "'s", got "${possessiveForm}"`);
         return false;
       }
-      // Проверяем предмет (ожидаем "bag", "dog", "car", или "toy")
+      // Проверяем предмет (ожидаем "bag", "dog", "car", "toy", "leg", "like")
       const thing = normalizedWords[wordIndex + 1];
-      if (!["bag", "dog", "car", "toy"].includes(thing)) {
-        console.log(`Expected "bag", "dog", "car", or "toy", got "${thing}"`);
+      if (!["bag", "dog", "car", "toy", "leg", "like"].includes(thing)) {
+        console.log(`Expected "bag", "dog", "car", "toy", "leg", or "like", got "${thing}"`);
         return false;
       }
       return true;
