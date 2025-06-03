@@ -236,6 +236,12 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
+      <div id="total-progress" class="mb-2">
+        <p class="text-sm">Общий прогресс: <span id="total-progress-text">0/0</span></p>
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+          <div id="total-progress-bar" class="bg-[#373D8D] h-2.5 rounded-full" style="width: 0%"></div>
+        </div>
+      </div>
       <div id="progress-bars"></div>
     </div>
     <div class="mb-6">
@@ -351,6 +357,8 @@
     const passwordModal = document.getElementById('password-modal');
     const passwordInput = document.getElementById('password-input');
     const passwordError = document.getElementById('password-error');
+    const totalProgressText = document.getElementById('total-progress-text');
+    const totalProgressBar = document.getElementById('total-progress-bar');
 
     // Показать модальное окно пароля при клике на "Админка"
     adminBtn.addEventListener('click', (e) => {
@@ -625,7 +633,7 @@
           }
         );
 
-        if (!deleteResponse.ok) throw new Error(`GitHub API error: ${deleteResponse.statusText}`);
+        if (!deleteResponse.ok) throw new Error(`GitHub API error: ${fileResponse.statusText}`);
 
         adminFeedback.textContent = 'Урок успешно удалён из GitHub! Перейдите на стартовый экран, чтобы обновить список.';
         githubTokenInput.value = '';
@@ -1010,6 +1018,17 @@
 
     function updateProgressBars() {
       if (!currentLessonData) return;
+      
+      // Подсчёт общего прогресса
+      const totalRequired = currentLessonData.requiredCorrect * currentLessonData.structures.length;
+      const totalCompleted = Object.values(progress).reduce((sum, count) => sum + count, 0);
+      const totalPercentage = totalRequired > 0 ? (totalCompleted / totalRequired) * 100 : 0;
+
+      // Обновляем текст и прогресс-бар общего прогресса
+      totalProgressText.textContent = `${totalCompleted}/${totalRequired}`;
+      totalProgressBar.style.width = `${totalPercentage}%`;
+
+      // Обновляем прогресс для каждой структуры
       progressBars.innerHTML = '';
       currentLessonData.structures.forEach(struct => {
         const totalCorrect = progress[struct.id];
