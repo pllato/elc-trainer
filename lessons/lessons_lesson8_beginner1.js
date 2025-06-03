@@ -22,6 +22,8 @@ addLesson({
 
     // Переменная для хранения темы открытого вопроса
     if (!window.lastAskedTopic) window.lastAskedTopic = null;
+    // Переменная для хранения истории заданных тем (для проверки дубликатов)
+    if (!window.askedTopics) window.askedTopics = [];
 
     // Функция для обработки сокращений
     function normalizeWord(word) {
@@ -46,8 +48,13 @@ addLesson({
       if (structure.id === "what-is-your-open") {
         // Для открытого вопроса "What is your ____?" должно быть хотя бы одно слово после "your"
         if (wordIndex >= normalizedWords.length) return false;
-        // Сохраняем тему вопроса (все слова после "your")
-        window.lastAskedTopic = normalizedWords.slice(wordIndex).join(' ');
+        // Извлекаем тему вопроса (все слова после "your")
+        const currentTopic = normalizedWords.slice(wordIndex).join(' ');
+        // Проверяем, не является ли тема дубликатом
+        if (window.askedTopics.includes(currentTopic)) return false;
+        // Если не дубликат, добавляем тему в историю и сохраняем как последнюю
+        window.askedTopics.push(currentTopic);
+        window.lastAskedTopic = currentTopic;
         return true;
       } else {
         // Для остальных вопросов текст должен точно совпадать с шаблоном
