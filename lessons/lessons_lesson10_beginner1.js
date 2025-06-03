@@ -3,9 +3,9 @@ addLesson({
   lesson: "lesson10",
   name: "Урок 10",
   structures: [
-    { structure: "This is ______.", pattern: ["this", "is"], translations: ["Это ______.", "Вот ______."], id: "this-is-name", hasName: true },
     { structure: "This is ____ ____.", pattern: ["this", "is"], translations: ["Это ____ ______.", "Вот ____ ______."], id: "this-is-pronoun-thing", hasName: false },
-    { structure: "This is ____'s ____.", pattern: ["this", "is"], translations: ["Это ____ ______.", "Вот ____ ______."], id: "this-is-possessive-thing", hasName: false }
+    { structure: "This is ____'s ____.", pattern: ["this", "is"], translations: ["Это ____ ______.", "Вот ____ ______."], id: "this-is-possessive-thing", hasName: false },
+    { structure: "This is ______.", pattern: ["this", "is"], translations: ["Это ______.", "Вот ______."], id: "this-is-name", hasName: true }
   ],
   requiredCorrect: 10, // 10 correct examples per structure
   validateStructure: function(text, structure) {
@@ -31,6 +31,7 @@ addLesson({
       "tom": "male",
       "alex": "male",
       "peter": "male",
+      "max": "male",
       // Неодушевлённые
       "cat": "neuter",
       "dog": "neuter",
@@ -48,6 +49,8 @@ addLesson({
       normalizedWords.push(normalizeWord(word));
     }
 
+    console.log(`Validating text: "${text}" for structure: "${structure.structure}"`);
+
     // Проверяем, что начало текста соответствует шаблону
     for (let part of pattern) {
       if (!normalizedWords[wordIndex] || normalizedWords[wordIndex] !== part) {
@@ -57,28 +60,7 @@ addLesson({
       wordIndex++;
     }
 
-    // Для первой структуры: "This is ______." (имя)
-    if (structure.id === "this-is-name") {
-      if (wordIndex >= normalizedWords.length) {
-        console.log("No name provided after 'this is'");
-        return false; // Должно быть хотя бы одно слово после "this is"
-      }
-      const name = normalizedWords.slice(wordIndex).join(' ');
-      console.log(`Recognized name: "${name}"`);
-      // Проверяем, не повторяется ли имя
-      if (window.usedNames && window.usedNames.includes(name)) {
-        console.log(`Name "${name}" is a duplicate`);
-        return false;
-      }
-      // Сохраняем имя и определяем его род
-      window.lastName = name;
-      window.lastNameGender = nameGenders[name] || "unknown";
-      console.log(`Set lastName to "${name}", gender to "${window.lastNameGender}"`);
-      window.usedNames.push(name);
-      return true;
-    }
-
-    // Для второй структуры: "This is ____ ____." (притяжательное местоимение + предмет)
+    // Для первой структуры: "This is ____ ____." (притяжательное местоимение + предмет)
     if (structure.id === "this-is-pronoun-thing") {
       if (wordIndex + 2 > normalizedWords.length) {
         console.log("Not enough words for 'This is ____ ____'");
@@ -90,9 +72,9 @@ addLesson({
       }
       const pronoun = normalizedWords[wordIndex];
       const thing = normalizedWords[wordIndex + 1];
-      // Проверяем предмет (ожидаем "bag")
-      if (thing !== "bag") {
-        console.log(`Expected "bag", got "${thing}"`);
+      // Проверяем предмет (ожидаем "bag", "dog", или "car")
+      if (!["bag", "dog", "car"].includes(thing)) {
+        console.log(`Expected "bag", "dog", or "car", got "${thing}"`);
         return false;
       }
       // Проверяем местоимение в зависимости от рода последнего имени
@@ -119,7 +101,7 @@ addLesson({
       return true;
     }
 
-    // Для третьей структуры: "This is ____'s ____." (притяжательная форма имени + предмет)
+    // Для второй структуры: "This is ____'s ____." (притяжательная форма имени + предмет)
     if (structure.id === "this-is-possessive-thing") {
       if (!window.lastName) {
         console.log("No previous name set for possessive form");
@@ -140,12 +122,33 @@ addLesson({
         console.log(`Expected "${expectedPossessive}", got "${possessiveForm}"`);
         return false;
       }
-      // Проверяем предмет (ожидаем "bag")
+      // Проверяем предмет (ожидаем "bag", "dog", или "car")
       const thing = normalizedWords[wordIndex + 1];
-      if (thing !== "bag") {
-        console.log(`Expected "bag", got "${thing}"`);
+      if (!["bag", "dog", "car"].includes(thing)) {
+        console.log(`Expected "bag", "dog", or "car", got "${thing}"`);
         return false;
       }
+      return true;
+    }
+
+    // Для третьей структуры: "This is ______." (имя)
+    if (structure.id === "this-is-name") {
+      if (wordIndex >= normalizedWords.length) {
+        console.log("No name provided after 'this is'");
+        return false; // Должно быть хотя бы одно слово после "this is"
+      }
+      const name = normalizedWords.slice(wordIndex).join(' ');
+      console.log(`Recognized name: "${name}"`);
+      // Проверяем, не повторяется ли имя
+      if (window.usedNames && window.usedNames.includes(name)) {
+        console.log(`Name "${name}" is a duplicate`);
+        return false;
+      }
+      // Сохраняем имя и определяем его род
+      window.lastName = name;
+      window.lastNameGender = nameGenders[name] || "unknown";
+      console.log(`Set lastName to "${name}", gender to "${window.lastNameGender}"`);
+      window.usedNames.push(name);
       return true;
     }
 
