@@ -1020,6 +1020,17 @@
           <p class="text-sm">${struct.structure}</p>
         `;
 
+        // Отображаем переводы (если есть массив translations, используем его, иначе берём translation)
+        if (struct.translations) {
+          barsHTML += `
+            <p class="text-xs text-gray-600 mb-1">${struct.translations.join(' / ')}</p>
+          `;
+        } else if (struct.translation) {
+          barsHTML += `
+            <p class="text-xs text-gray-600 mb-1">${struct.translation}</p>
+          `;
+        }
+
         const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
         const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
         barsHTML += `
