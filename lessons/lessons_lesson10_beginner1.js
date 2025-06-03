@@ -7,15 +7,18 @@ addLesson({
     { structure: "This is ____ ____.", pattern: ["this", "is"], translations: ["Это ____ ______.", "Вот ____ ______."], id: "this-is-pronoun-thing", hasName: false },
     { structure: "This is ____'s ____.", pattern: ["this", "is"], translations: ["Это ____ ______.", "Вот ____ ______."], id: "this-is-possessive-thing", hasName: false }
   ],
-  requiredCorrect: 6, // 6 correct examples per structure
+  requiredCorrect: 10, // 10 correct examples per structure
   validateStructure: function(text, structure) {
     const words = text.split(' ').filter(word => word.length > 0);
     const pattern = structure.pattern;
     let wordIndex = 0;
 
-    // Переменная для хранения последнего имени и его рода
-    if (!window.lastName) window.lastName = null;
-    if (!window.lastNameGender) window.lastNameGender = null;
+    // Сбрасываем состояние при загрузке урока
+    if (!window.lastName) {
+      window.lastName = null;
+      window.lastNameGender = null;
+      window.usedNames = [];
+    }
 
     // Словарь имён с родами
     const nameGenders = {
@@ -53,13 +56,13 @@ addLesson({
     // Для первой структуры: "This is ______." (имя)
     if (structure.id === "this-is-name") {
       if (wordIndex >= normalizedWords.length) return false; // Должно быть хотя бы одно слово после "this is"
-      const name = normalizedWords.slice(wordIndex).join(' ');
+      if (wordIndex !== normalizedWords.length - 1) return false; // Должно быть ровно одно слово после "this is"
+      const name = normalizedWords[wordIndex];
       // Проверяем, не повторяется ли имя
       if (window.usedNames && window.usedNames.includes(name)) return false;
       // Сохраняем имя и определяем его род
       window.lastName = name;
-      window.lastNameGender = nameGenders[name] || "unknown"; // Если имя не в словаре, род неизвестен
-      if (!window.usedNames) window.usedNames = [];
+      window.lastNameGender = nameGenders[name] || "unknown";
       window.usedNames.push(name);
       return true;
     }
@@ -70,8 +73,8 @@ addLesson({
       if (wordIndex + 2 !== normalizedWords.length) return false; // Точный текст: "this is pronoun thing"
       const pronoun = normalizedWords[wordIndex];
       const thing = normalizedWords[wordIndex + 1];
-      // Проверяем предмет (для примера ожидаем "bag")
-      if (thing !== "bag") return false;
+      // Проверяем предмет (для примера ожидаем "bag", но исправляем на "back" для соответствия твоим примерам)
+      if (thing !== "back") return false;
       // Проверяем местоимение в зависимости от рода последнего имени
       if (!window.lastNameGender) return false; // Если имени не было, структура недействительна
       if (window.lastNameGender === "unknown") return ["his", "her", "its"].includes(pronoun); // Для неизвестного рода принимаем любое местоимение
@@ -85,14 +88,15 @@ addLesson({
     if (structure.id === "this-is-possessive-thing") {
       if (!window.lastName) return false; // Если имени не было, структура недействительна
       if (wordIndex + 2 > normalizedWords.length) return false; // Должно быть имя's + предмет
+      if (wordIndex + 2 !== normalizedWords.length) return false; // Точный текст: "this is name's thing"
       // Проверяем, что после "this is" идёт имя с 's
       const possessiveForm = normalizedWords[wordIndex];
       const expectedPossessive = window.lastName + "'s";
       if (possessiveForm !== expectedPossessive) return false;
-      // Проверяем предмет (для примера ожидаем "bag")
+      // Проверяем предмет (исправляем на "back")
       const thing = normalizedWords[wordIndex + 1];
-      if (thing !== "bag") return false;
-      return wordIndex + 2 === normalizedWords.length; // Точный текст: "this is name's thing"
+      if (thing !== "back") return false;
+      return true;
     }
 
     return false; // По умолчанию возвращаем false, если структура не распознана
