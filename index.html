@@ -217,6 +217,7 @@
     <button id="start-btn" class="w-full bg-[#373D8D] text-white p-2 rounded-md mb-2 hover:bg-[#2A3171]">Начать практику</button>
     <!-- Текстовая ссылка "Админка" -->
     <a href="#" id="admin-btn" class="admin-link">Админка</a>
+    <p id="start-feedback" class="text-md mb-4"></p>
   </div>
 
   <!-- Экран админки -->
@@ -372,6 +373,7 @@
     const startPracticeBtn = document.getElementById('start-practice-btn');
     const restartListeningBtn = document.getElementById('restart-listening-btn');
     const feedback = document.getElementById('feedback');
+    const startFeedback = document.getElementById('start-feedback');
     const adminFeedback = document.getElementById('admin-feedback');
     const statsDiv = document.getElementById('stats');
     const progressBars = document.getElementById('progress-bars');
@@ -506,7 +508,11 @@
         populateLessons();
       } catch (error) {
         console.error('Error loading lessons from GitHub:', error);
-        feedback.textContent = 'Ошибка при загрузке уроков с GitHub: ' + error.message;
+        if (startFeedback) {
+          startFeedback.textContent = 'Ошибка при загрузке уроков с GitHub: ' + error.message;
+        } else if (feedback) {
+          feedback.textContent = 'Ошибка при загрузке уроков с GitHub: ' + error.message;
+        }
       }
     }
 
@@ -784,6 +790,7 @@
         completionModal.style.display = 'none';
       }
       if (feedback) feedback.textContent = '';
+      if (startFeedback) startFeedback.textContent = '';
       if (adminFeedback) adminFeedback.textContent = '';
       if (statsDiv) statsDiv.innerHTML = '';
       if (logDiv) logDiv.innerHTML = '';
@@ -972,9 +979,14 @@
         updateLog();
         updateStats();
 
+        // Убедимся, что не пытаемся запустить recognition, если оно уже активно
         setTimeout(() => {
-          if (isListening && completionModal.style.display !== 'block') {
-            recognition.start();
+          if (isListening && !recognition.recognizing && completionModal.style.display !== 'block') {
+            try {
+              recognition.start();
+            } catch (error) {
+              console.error('Failed to restart recognition:', error);
+            }
           }
         }, 500);
       };
@@ -1010,21 +1022,79 @@
           return;
         }
 
+        // Убедимся, что не пытаемся запустить recognition, если оно уже активно
         if (isListening && completionModal.style.display !== 'block') {
           setTimeout(() => {
-            try {
-              recognition.start();
-            } catch (error) {
-              feedback.textContent = 'Ошибка при перезапуске распознавания: ' + error.message + '. Попробуйте снова.';
-              isListening = false;
-              if (startPracticeBtn) {
-                startPracticeBtn.textContent = 'Начать практику';
-                startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
-                startPracticeBtn.disabled = false;
+            if (!recognition.recognizing) {
+              try {
+                recognition.start();
+              } catch (error) {
+                feedback.textContent = 'Ошибка при перезапуске распознавания: ' + error.message + '. Попробуйте снова.';
+                isListening = false;
+                if (startPracticeBtn) {
+                  startPracticeBtn.textContent = 'Начать практику';
+                  startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                  startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
+                  startPracticeBtn.disabled = false;
+                }
+                if (restartListeningBtn) {
+                  restartListeningBtn.classList.remove('hidden');
+                }
               }
-              if (restartListeningBtn) {
-                restartListeningBtn.classList.remove('hidden');
+            }
+          }, 500);
+        }
+      };
+
+      // Добавляем свойство recognizing для отслеживания состояния
+      Object.defineProperty(recognition, 'recognizing', {
+        get: function() {
+          return this._recognizing || false;
+        },
+        set: function(value) {
+          this._recognizing = value;
+        }
+      });
+
+      recognition.onstart = () => {
+        recognition.recognizing = true;
+      };
+
+      recognition.onend = () => {
+        recognition.recognizing = false;
+        const currentTime = Date.now();
+        if (currentTime - lastSpeechTime > 10000) {
+          feedback.textContent = 'Давно не слышу речи. Перезапускаю...';
+          isListening = false;
+          if (startPracticeBtn) {
+            startPracticeBtn.textContent = 'Начать практику';
+            startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
+            startPracticeBtn.disabled = false;
+          }
+          if (restartListeningBtn) {
+            restartListeningBtn.classList.remove('hidden');
+          }
+          return;
+        }
+
+        if (isListening && completionModal.style.display !== 'block') {
+          setTimeout(() => {
+            if (!recognition.recognizing) {
+              try {
+                recognition.start();
+              } catch (error) {
+                feedback.textContent = 'Ошибка при перезапуске распознавания: ' + error.message + '. Попробуйте снова.';
+                isListening = false;
+                if (startPracticeBtn) {
+                  startPracticeBtn.textContent = 'Начать практику';
+                  startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                  startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
+                  startPracticeBtn.disabled = false;
+                }
+                if (restartListeningBtn) {
+                  restartListeningBtn.classList.remove('hidden');
+                }
               }
             }
           }, 500);
