@@ -121,13 +121,25 @@ addLesson({
       hasName: false 
     }
   ],
-  requiredCorrect: 10,
+  requiredCorrect: 10, // Общее количество правильных примеров на структуру (по 5 для каждой части)
+  parts: { // Разделение структур на части
+    "i-positive": 1,
+    "you-positive": 1,
+    "we-positive": 1,
+    "they-positive": 1,
+    "i-negative": 2,
+    "you-negative": 2,
+    "we-negative": 2,
+    "they-negative": 2,
+    "do-you-question": 2,
+    "do-we-question": 2,
+    "do-they-question": 2
+  },
   validateStructure: function(text, structure) {
     const words = text.split(' ').filter(word => word.length > 0);
     let wordIndex = 0;
 
-    // Инициализация глобальных переменных при первом вызове уже перенесена в index.html (goBackToStart)
-    // Здесь мы только проверяем их существование
+    // Проверяем существование глобальных переменных
     if (!window.usedNames) window.usedNames = [];
     if (!window.lastAskedVerb) window.lastAskedVerb = null;
     if (!window.lastAskedSubject) window.lastAskedSubject = null;
