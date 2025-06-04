@@ -49,9 +49,8 @@ addLesson({
     const pattern = structure.pattern;
     let wordIndex = 0;
 
-    if (!window.usedNames) {
-      window.usedNames = [];
-    }
+    // Сбрасываем window.usedNames при старте урока
+    window.usedNames = [];
 
     function normalizeWord(word) {
       word = word.toLowerCase();
