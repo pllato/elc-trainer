@@ -10,7 +10,8 @@ addLesson({
       examples: [
         "This is Madina. (Это Мадина.)",
         "This is John. (Это Джон.)",
-        "This is cat. (Это кошка.)"
+        "This is cat. (Это кошка.)",
+        "This is Egor. (Это Егор.)"
       ], 
       id: "this-is-name", 
       hasName: true 
@@ -25,7 +26,8 @@ addLesson({
         "This is her car. (Это её машина.)",
         "This is its toy. (Это его игрушка.)",
         "This is our book. (Это наша книга.)",
-        "This is their house. (Это их дом.)"
+        "This is their house. (Это их дом.)",
+        "This is his car. (Это его машина.)"
       ], 
       id: "this-is-pronoun-thing", 
       hasName: false 
@@ -37,7 +39,8 @@ addLesson({
       examples: [
         "This is Madina's bag. (Это сумка Мадины.)",
         "This is John's car. (Это машина Джона.)",
-        "This is cat's toy. (Это игрушка кошки.)"
+        "This is cat's toy. (Это игрушка кошки.)",
+        "This is Egor's car. (Это машина Егора.)"
       ], 
       id: "this-is-possessive-thing", 
       hasName: false 
