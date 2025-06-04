@@ -146,7 +146,7 @@
     <!-- Логотип и подтекст -->
     <div class="text-center mb-6">
       <h1 class="logo text-4xl font-bold">ELC</h1>
-      <p class="logo-subtext">English Lifestyle Quiz</p>
+      <p class="logo-subtext">English Lifestyle Communication</p>
       <!-- Добавляем текст "Тренажер грамматических структур" -->
       <p class="logo-description">Тренажер грамматических структур</p>
     </div>
@@ -164,7 +164,7 @@
         <option value="elementary">Elementary</option>
         <option value="preintermediate">Pre-Intermediate</option>
         <option value="intermediate">Intermediate</option>
-        <option value="upperintermediate">Upper-Modal</option>
+        <option value="upperintermediate">Upper-Intermediate</option>
       </select>
     </div>
     <!-- Выбор урока -->
@@ -207,13 +207,13 @@
         <!-- Lessons will be populated dynamically -->
       </select>
     </div>
-    <button id="delete-lesson-btn" class="w-full bg-[#D7D2638] text-white p-2 rounded-md mb-2 hover:bg-[#B72030]">Удалить урок</button>
+    <button id="delete-lesson-btn" class="w-full bg-[#D72638] text-white p-2 rounded-md mb-2 hover:bg-[#B72030]">Удалить урок</button>
     <!-- Обновление index.html -->
     <div class="mb-4">
       <label for="index-html-file" class="block text-sm font-medium text-gray-700">Обновить index.html</label>
       <input type="file" id="index-html-file" accept=".html" class="mt-1 p-2 w-full border rounded-md">
     </div>
-    <button id="upload-index-btn" class="w-full bg-[#28A745] text-white p-2 rounded-md mb-2 hover:bg-[#1e7e34]">Обновить index.html на GitHub</button>
+    <button id="upload-index-html-btn" class="w-full bg-[#28A745] text-white p-2 rounded-md mb-2 hover:bg-[#1e7e34]">Обновить index.html на GitHub</button>
     <!-- Обновление index.js -->
     <div class="mb-4">
       <label for="index-js-file" class="block text-sm font-medium text-gray-700">Обновить index.js</label>
@@ -233,7 +233,7 @@
     <p class="text-lg mb-2">Привет, <span id="user-name"></span>!</p>
     <p class="text-md mb-4">Уровень: <span id="user-level"></span>, <span id="user-lesson"></span></p>
     <button id="start-practice-btn" class="w-full bg-[#373D8D] text-white p-2 rounded-md mb-2 hover:bg-[#2A3171]">Начать практику</button>
-    <button id="restart-listening-btn" class="hidden w-full bg-[#D26348] text-white p-2 rounded-md mb-4 hover:bg-[#B72030]">Возобновить прослушивание</button>
+    <button id="restart-listening-btn" class="hidden w-full bg-[#D72638] text-white p-2 rounded-md mb-4 hover:bg-[#B72030]">Возобновить прослушивание</button>
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Примеры:</p>
@@ -244,7 +244,7 @@
       <div id="total-progress" class="mb-2">
         <p class="text-sm">Общий прогресс: <span id="total-progress-text">0/0</span></p>
         <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-          <div id="total-progress-bar" class="bg-[#173D8D] h-2.5 rounded-full" style="width: 0%"></div>
+          <div id="total-progress-bar" class="bg-[#373D8D] h-2.5 rounded-full" style="width: 0%"></div>
         </div>
       </div>
       <div id="progress-bars"></div>
@@ -255,7 +255,7 @@
       <div id="log" class="h-40 overflow-y-auto border p-2 text-sm"></div>
     </div>
     <!-- Модальное окно завершения урока -->
-    <div id="lesson-modal" class="modal">
+    <div id="completion-modal" class="modal">
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-2">Урок завершён!</h2>
         <p id="congratulations" class="text-md mb-4"></p>
@@ -281,7 +281,7 @@
   <script>
     // Подбадривающие сообщения
     const encouragementMessages = [
-      "Ты великолепен! 🌟 Отличная работа, ты справился с уроком на ура! Ты уже говоришь на английском как носитель! 💪",
+      "Ты большой молодец! 🌟 Отличная работа, ты справился с уроком на ура! Ты уже говоришь на английском как носитель! 💪",
       "Молодец, ты справился блестяще! 🎉 Урок пройден, ты на высоте! Ты уже владеешь английским как настоящий профи! ✨",
       "Ух, как здорово! 🌟 Ты прошёл урок с лёгкостью! Ты уже говоришь на английском как носитель, это потрясающе! 💪",
       "Ты настоящий чемпион! 🏆 Урок завершён, ты большой молодец! Ты уже разговариваешь как носитель английского! 🌟",
@@ -346,7 +346,7 @@
     const userNameEl = document.getElementById('user-name');
     const userLevelEl = document.getElementById('user-level');
     const userLessonEl = document.getElementById('user-lesson');
-    const completionModal = document.getElementById('lesson-modal');
+    const completionModal = document.getElementById('completion-modal');
     const congratulationsEl = document.getElementById('congratulations');
     const modalLog = document.getElementById('modal-log');
     const levelSelect = document.getElementById('level');
@@ -355,7 +355,7 @@
     const uploadLessonBtn = document.getElementById('upload-lesson-btn');
     const githubTokenInput = document.getElementById('github-token');
     const indexHtmlFileInput = document.getElementById('index-html-file');
-    const uploadIndexHtmlBtn = document.getElementById('upload-index-btn');
+    const uploadIndexHtmlBtn = document.getElementById('upload-index-html-btn');
     const indexJsFileInput = document.getElementById('index-js-file');
     const uploadIndexJsBtn = document.getElementById('upload-index-js-btn');
     const deleteLessonSelect = document.getElementById('delete-lesson');
@@ -473,8 +473,8 @@
         
         // Сортируем уроки по номеру урока
         lessonsData.sort((a, b) => {
-          const lessonNumberA = parseInt(a.lesson.replace(/[^0-9]/g, ''), 10);
-          const lessonNumberB = parseInt(b.lesson.replace(/[^0-9]/g, ''), 10);
+          const lessonNumberA = parseInt(a.lesson.replace('lesson', ''), 10);
+          const lessonNumberB = parseInt(b.lesson.replace('lesson', ''), 10);
           return lessonNumberA - lessonNumberB;
         });
 
@@ -728,19 +728,23 @@
         progress[struct.id] = 0;
       });
 
+      // Отображаем introExamples, если они есть
+      if (currentLessonData.introExamples && introExamplesDiv) {
+        introExamplesDiv.innerHTML = '';
+        currentLessonData.introExamples.forEach(example => {
+          const p = document.createElement('p');
+          p.textContent = example;
+          introExamplesDiv.appendChild(p);
+        });
+      } else if (introExamplesDiv) {
+        introExamplesDiv.innerHTML = '<p class="text-sm text-gray-600">Примеры отсутствуют.</p>';
+      }
+
       startScreen.classList.add('hidden');
       practiceScreen.classList.remove('hidden');
       userNameEl.textContent = userName;
       userLevelEl.textContent = document.getElementById('level').options[document.getElementById('level').selectedIndex].text;
       userLessonEl.textContent = document.getElementById('lesson').options[document.getElementById('lesson').selectedIndex].text;
-      
-      // Отображаем introExamples, если они есть
-      if (currentLessonData.introExamples && introExamplesDiv) {
-        introExamplesDiv.innerHTML = currentLessonData.introExamples.map(example => `<p>${example}</p>`).join('');
-      } else if (introExamplesDiv) {
-        introExamplesDiv.innerHTML = ''; // Очищаем, если примеров нет
-      }
-
       initializeProgressBars();
       updateStats();
     });
@@ -922,37 +926,36 @@
           const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
           if (isCorrect) {
             const isDuplicate = matchedStructure.hasName && spokenHistory.includes(spokenText);
-            logEntry.structure = matchedStructure.structure || "Answer to question";
+            logEntry.structure = matchedStructure.structure;
             logEntry.correct = true;
             logEntry.duplicate = isDuplicate;
 
             if (!isDuplicate || !matchedStructure.hasName) {
-              const structId = matchedStructure.id || "answer-to-question";
-              progress[structId] = (progress[structId] || 0) + 1;
+              progress[matchedStructure.id]++;
               if (matchedStructure.hasName) spokenHistory.push(spokenText);
 
-              if (progress[structId] > currentLessonData.requiredCorrect) {
-                feedback.textContent = `Отлично! 🎉🎈❤️ Ты превысил цель для "${logEntry.structure}"!`;
+              if (progress[matchedStructure.id] > currentLessonData.requiredCorrect) {
+                feedback.textContent = `Отлично! 🎉🎈❤️ Ты превысил цель для "${matchedStructure.structure}"!`;
                 logEntries.push({
                   time: new Date().toLocaleTimeString(),
-                  spoken: `Превышена цель для "${logEntry.structure}"`,
-                  structure: logEntry.structure,
+                  spoken: `Превышена цель для "${matchedStructure.structure}"`,
+                  structure: matchedStructure.structure,
                   correct: true,
                   exceeded: true
                 });
               } else {
-                feedback.textContent = `Правильно! Ты сказал: "${spokenText}" для "${logEntry.structure}"`;
+                feedback.textContent = `Правильно! Ты сказал: "${spokenText}" для "${matchedStructure.structure}"`;
               }
 
               updateProgressBars();
               checkCompletion();
             } else {
-              feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${logEntry.structure}`;
+              feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
             }
           } else {
-            logEntry.structure = matchedStructure.structure || "Answer to question";
+            logEntry.structure = matchedStructure.structure;
             logEntry.correct = false;
-            feedback.textContent = `Неправильно: "${spokenText}" для "${logEntry.structure}"`;
+            feedback.textContent = `Неправильно: "${spokenText}" для "${matchedStructure.structure}"`;
           }
         } else {
           logEntry.correct = false;
@@ -1048,43 +1051,32 @@
     function findMatchingStructure(text) {
       if (!currentLessonData) return null;
       const structures = currentLessonData.structures;
-
-      // Сначала проверяем более специфичные структуры (отрицательные и вопросы)
-      const specificStructures = structures.filter(struct => 
-        struct.id.includes("negative") || struct.id.includes("question")
-      );
-      const generalStructures = structures.filter(struct => 
-        !struct.id.includes("negative") && !struct.id.includes("question")
-      );
-
-      // Проверяем специфичные структуры
-      for (let struct of specificStructures) {
-        console.log(`Checking specific structure: "${struct.structure}" for text: "${text}"`);
+      for (let struct of structures) {
         if (currentLessonData.validateStructure(text, struct)) {
-          console.log(`Matched specific structure: "${struct.structure}"`);
+          console.log(`Checking specific structure: "${struct.structure}" for text: "${text}"`);
+          console.log('Matched specific structure:', struct.structure);
           return struct;
         }
       }
-
-      // Затем проверяем общие структуры
-      for (let struct of generalStructures) {
+      for (let struct of structures) {
         console.log(`Checking general structure: "${struct.structure}" for text: "${text}"`);
         if (currentLessonData.validateStructure(text, struct)) {
-          console.log(`Matched general structure: "${struct.structure}"`);
+          console.log('Matched general structure:', struct.structure);
           return struct;
         }
       }
-
-      // Если ничего не совпало, проверяем ответы на вопросы (без структуры)
+      // Проверяем, является ли текст ответом на вопрос (Yes/No)
+      console.log(`Checking answer for last verb: "${window.lastAskedVerb}" and subject: "${window.lastAskedSubject}"`);
       if (window.lastAskedVerb && window.lastAskedSubject) {
-        console.log(`Checking answer for last verb: "${window.lastAskedVerb}" and subject: "${window.lastAskedSubject}"`);
-        const dummyStructure = { hasName: false };
-        if (currentLessonData.validateStructure(text, dummyStructure)) {
-          console.log("Matched answer structure");
-          return dummyStructure;
+        const words = text.split(' ').filter(word => word.length > 0);
+        const normalizedWords = words.map(word => word.toLowerCase());
+        if (normalizedWords[0] === "yes" || normalizedWords[0] === "no") {
+          if (currentLessonData.validateStructure(text)) {
+            console.log('Matched answer structure');
+            return { structure: `Answer to "${window.lastAskedSubject} ${window.lastAskedVerb}"`, id: "answer" };
+          }
         }
       }
-
       console.log(`No matching structure found for text: "${text}"`);
       return null;
     }
@@ -1121,8 +1113,7 @@
       // Обновляем прогресс для каждой структуры
       progressBars.innerHTML = '';
       currentLessonData.structures.forEach(struct => {
-        console.log(`Rendering progress bar for structure: "${struct.structure}"`);
-        const totalCorrect = progress[struct.id] || 0;
+        const totalCorrect = progress[struct.id];
         const div = document.createElement('div');
         div.className = 'mb-2';
 
@@ -1138,6 +1129,13 @@
         } else if (struct.translation) {
           barsHTML += `
             <p class="text-xs text-gray-600 mb-1">${struct.translation}</p>
+          `;
+        }
+
+        // Отображаем примеры, если они есть
+        if (struct.examples && struct.examples.length > 0) {
+          barsHTML += `
+            <p class="text-xs text-gray-600 mb-1">Примеры: ${struct.examples.join(' / ')}</p>
           `;
         }
 
@@ -1165,6 +1163,7 @@
         `;
         div.innerHTML = barsHTML;
         progressBars.appendChild(div);
+        console.log(`Rendering progress bar for structure: "${struct.structure}"`);
       });
     }
 
@@ -1197,7 +1196,7 @@
 Результаты для ${userName}
 Уровень: ${userLevelEl.textContent}
 Урок: ${userLessonEl.textContent}
-Прогресс: ${Object.entries(progress).map(([id, count]) => `${currentLessonData.structures.find(s => s.id === id)?.structure || 'Answer to question'}: ${count} правильных`).join('\n')}
+Прогресс: ${Object.entries(progress).map(([id, count]) => `${currentLessonData.structures.find(s => s.id === id).structure}: ${count} правильных`).join('\n')}
 Статистика:
 - Нужно было сказать: ${requiredExamples} примеров
 - Сказано правильно: ${totalCorrect} примеров
