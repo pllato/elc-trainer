@@ -473,8 +473,8 @@
         
         // Сортируем уроки по номеру урока
         lessonsData.sort((a, b) => {
-          const lessonNumberA = parseInt(a.lesson.replace('lesson', ''), 10);
-          const lessonNumberB = parseInt(b.lesson.replace('lesson', ''), 10);
+          const lessonNumberA = parseInt(a.lesson.replace(/[^0-9]/g, ''), 10);
+          const lessonNumberB = parseInt(b.lesson.replace(/[^0-9]/g, ''), 10);
           return lessonNumberA - lessonNumberB;
         });
 
@@ -1047,11 +1047,44 @@
     function findMatchingStructure(text) {
       if (!currentLessonData) return null;
       const structures = currentLessonData.structures;
-      for (let struct of structures) {
+
+      // Сначала проверяем более специфичные структуры (отрицательные и вопросы)
+      const specificStructures = structures.filter(struct => 
+        struct.id.includes("negative") || struct.id.includes("question")
+      );
+      const generalStructures = structures.filter(struct => 
+        !struct.id.includes("negative") && !struct.id.includes("question")
+      );
+
+      // Проверяем специфичные структуры
+      for (let struct of specificStructures) {
+        console.log(`Checking specific structure: "${struct.structure}" for text: "${text}"`);
         if (currentLessonData.validateStructure(text, struct)) {
+          console.log(`Matched specific structure: "${struct.structure}"`);
           return struct;
         }
       }
+
+      // Затем проверяем общие структуры
+      for (let struct of generalStructures) {
+        console.log(`Checking general structure: "${struct.structure}" for text: "${text}"`);
+        if (currentLessonData.validateStructure(text, struct)) {
+          console.log(`Matched general structure: "${struct.structure}"`);
+          return struct;
+        }
+      }
+
+      // Если ничего не совпало, проверяем ответы на вопросы (без структуры)
+      if (window.lastAskedVerb && window.lastAskedSubject) {
+        console.log(`Checking answer for last verb: "${window.lastAskedVerb}" and subject: "${window.lastAskedSubject}"`);
+        const dummyStructure = { hasName: false };
+        if (currentLessonData.validateStructure(text, dummyStructure)) {
+          console.log("Matched answer structure");
+          return dummyStructure;
+        }
+      }
+
+      console.log(`No matching structure found for text: "${text}"`);
       return null;
     }
 
@@ -1087,6 +1120,7 @@
       // Обновляем прогресс для каждой структуры
       progressBars.innerHTML = '';
       currentLessonData.structures.forEach(struct => {
+        console.log(`Rendering progress bar for structure: "${struct.structure}"`);
         const totalCorrect = progress[struct.id];
         const div = document.createElement('div');
         div.className = 'mb-2';
@@ -1186,45 +1220,3 @@ ${logEntries.map(entry => {
   }
 }).join('\n')}
 `;
-
-      const TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
-      const TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID';
-      const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-
-      try {
-        await fetch(telegramUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: resultSummary
-          })
-        });
-      } catch (error) {
-        console.error('Ошибка отправки в Telegram:', error.message);
-      }
-
-      const BITRIX_WEBHOOK_URL = 'https://elcalmaty.bitrix24.kz/rest/1/t30j7bkqi9p4sy0b/';
-      const BITRIX_CHAT_ID = '145630';
-      const bitrixUrl = `${BITRIX_WEBHOOK_URL}im.message.add`;
-
-      try {
-        const response = await fetch(bitrixUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            CHAT_ID: BITRIX_CHAT_ID,
-            MESSAGE: resultSummary
-          })
-        });
-        const data = await response.json();
-        if (!data.result) {
-          console.error('Ошибка отправки в Bitrix24:', JSON.stringify(data.error));
-        }
-      } catch (error) {
-        console.error('Ошибка отправки в Bitrix24:', error.message);
-      }
-    }
-  </script>
-</body>
-</html>
