@@ -1,7 +1,7 @@
 addLesson({
   level: "beginner1",
   lesson: "lesson13",
-  name: "Урок 13",
+  name: "Урок 13 (Часть 1)",
   structures: [
     { 
       structure: "I _____", 
