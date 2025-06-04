@@ -10,46 +10,7 @@ addLesson({
     "Yes, I live in London. (Да, я живу в Лондоне.)"
   ],
   structures: [
-    { 
-      structure: "I _____", 
-      pattern: ["i"], 
-      translations: ["Я ______."], 
-      examples: [
-        "I live in Almaty. (Я живу в Алматы.)"
-      ], 
-      id: "i-positive", 
-      hasName: true 
-    },
-    { 
-      structure: "You _____.", 
-      pattern: ["you"], 
-      translations: ["Ты ______."], 
-      examples: [
-        "You play football. (Ты играешь в футбол.)"
-      ], 
-      id: "you-positive", 
-      hasName: true 
-    },
-    { 
-      structure: "We _____.", 
-      pattern: ["we"], 
-      translations: ["Мы ______."], 
-      examples: [
-        "We speak English. (Мы говорим по-английски.)"
-      ], 
-      id: "we-positive", 
-      hasName: true 
-    },
-    { 
-      structure: "They _____.", 
-      pattern: ["they"], 
-      translations: ["Они ______."], 
-      examples: [
-        "They live in Astana. (Они живут в Астане.)"
-      ], 
-      id: "they-positive", 
-      hasName: true 
-    },
+    // Сначала отрицательные структуры (более специфичные)
     { 
       structure: "I do not _____.", 
       pattern: ["i", "do", "not"], 
@@ -90,6 +51,48 @@ addLesson({
       id: "they-negative", 
       hasName: true 
     },
+    // Затем утвердительные структуры
+    { 
+      structure: "I _____", 
+      pattern: ["i"], 
+      translations: ["Я ______."], 
+      examples: [
+        "I live in Almaty. (Я живу в Алматы.)"
+      ], 
+      id: "i-positive", 
+      hasName: true 
+    },
+    { 
+      structure: "You _____.", 
+      pattern: ["you"], 
+      translations: ["Ты ______."], 
+      examples: [
+        "You play football. (Ты играешь в футбол.)"
+      ], 
+      id: "you-positive", 
+      hasName: true 
+    },
+    { 
+      structure: "We _____.", 
+      pattern: ["we"], 
+      translations: ["Мы ______."], 
+      examples: [
+        "We speak English. (Мы говорим по-английски.)"
+      ], 
+      id: "we-positive", 
+      hasName: true 
+    },
+    { 
+      structure: "They _____.", 
+      pattern: ["they"], 
+      translations: ["Они ______."], 
+      examples: [
+        "They live in Astana. (Они живут в Астане.)"
+      ], 
+      id: "they-positive", 
+      hasName: true 
+    },
+    // Вопросительные структуры
     { 
       structure: "Do you ____?", 
       pattern: ["do", "you"], 
@@ -150,8 +153,8 @@ addLesson({
       wordIndex++;
     }
 
-    // Для утвердительной формы (I, You, We, They + глагол)
-    if (["i-positive", "you-positive", "we-positive", "they-positive"].includes(structure.id)) {
+    // Для отрицательной формы (I do not, You do not, We do not, They do not + глагол)
+    if (["i-negative", "you-negative", "we-negative", "they-negative"].includes(structure.id)) {
       if (wordIndex >= normalizedWords.length) {
         return false; // Должен быть глагол после шаблона
       }
@@ -173,8 +176,16 @@ addLesson({
       return true;
     }
 
-    // Для отрицательной формы (I do not, You do not, We do not, They do not + глагол)
-    if (["i-negative", "you-negative", "we-negative", "they-negative"].includes(structure.id)) {
+    // Для утвердительной формы (I, You, We, They + глагол)
+    if (["i-positive", "you-positive", "we-positive", "they-positive"].includes(structure.id)) {
+      // Исключаем фразы, начинающиеся с "do not" или "don't"
+      if (normalizedWords.length >= 3 && normalizedWords[1] === "do" && normalizedWords[2] === "not") {
+        return false; // Это отрицательная форма, не принимаем
+      }
+      if (normalizedWords.length >= 2 && normalizedWords[1] === "don't") {
+        return false; // Это отрицательная форма, не принимаем
+      }
+
       if (wordIndex >= normalizedWords.length) {
         return false; // Должен быть глагол после шаблона
       }
