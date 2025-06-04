@@ -320,6 +320,7 @@
     let endTime = null;
     let lessonCompleted = false;
     let currentLessonData = null;
+    let currentPart = 1; // Добавляем переменную для отслеживания текущей части урока
 
     // Конфигурация GitHub
     const GITHUB_OWNER = 'pllato';
@@ -728,6 +729,8 @@
         progress[struct.id] = 0;
       });
 
+      currentPart = 1; // Начинаем с первой части
+
       // Отображаем introExamples, если они есть
       if (currentLessonData.introExamples && introExamplesDiv) {
         introExamplesDiv.innerHTML = '';
@@ -747,6 +750,7 @@
       userLessonEl.textContent = document.getElementById('lesson').options[document.getElementById('lesson').selectedIndex].text;
       initializeProgressBars();
       updateStats();
+      feedback.textContent = currentLessonData.parts ? 'Сначала говори утвердительные предложения (Часть 1)' : 'Говори любой пример из структур ниже.';
     });
 
     function goBackToStart() {
@@ -760,6 +764,7 @@
       startTime = null;
       endTime = null;
       currentLessonData = null;
+      currentPart = 1; // Сбрасываем текущую часть
       window.usedNames = []; // Сбрасываем window.usedNames
       window.lastAskedVerb = null; // Сбрасываем lastAskedVerb
       window.lastAskedSubject = null; // Сбрасываем lastAskedSubject
@@ -834,7 +839,7 @@
         if (restartListeningBtn) {
           restartListeningBtn.classList.add('hidden');
         }
-        feedback.textContent = 'Говори любой пример из структур ниже.';
+        feedback.textContent = currentLessonData.parts ? (currentPart === 1 ? 'Сначала говори утвердительные предложения (Часть 1)' : 'Теперь говори отрицательные или вопросительные предложения (Часть 2)') : 'Говори любой пример из структур ниже.';
         lastSpeechTime = Date.now();
       } catch (error) {
         feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Проверьте доступ к микрофону и попробуйте снова.';
@@ -955,6 +960,9 @@
                 feedback.textContent = `Правильно! Ты сказал: "${spokenText}" для "${matchedStructure.structure}"`;
               }
 
+              // Проверяем, нужно ли перейти ко второй части
+              checkPartProgress();
+
               updateProgressBars();
               checkCompletion();
             } else {
@@ -967,7 +975,7 @@
           }
         } else {
           logEntry.correct = false;
-          feedback.textContent = `Не совпадает: "${spokenText}". Попробуй одну из структур ниже.`;
+          feedback.textContent = `Не совпадает: "${spokenText}". ${currentLessonData.parts ? (currentPart === 1 ? 'Сначала говори утвердительные предложения (Часть 1)' : 'Теперь говори отрицательные или вопросительные предложения (Часть 2)') : 'Попробуй одну из структур ниже.'}`;
         }
 
         logEntries.push(logEntry);
@@ -1059,34 +1067,57 @@
     function findMatchingStructure(text) {
       if (!currentLessonData) return null;
       const structures = currentLessonData.structures;
-      for (let struct of structures) {
+
+      // Фильтруем структуры в зависимости от текущей части
+      const activeStructures = structures.filter(struct => {
+        if (!currentLessonData.parts) return true; // Если нет разделения на части, проверяем все структуры
+        return currentLessonData.parts[struct.id] === currentPart;
+      });
+
+      for (let struct of activeStructures) {
         if (currentLessonData.validateStructure(text, struct)) {
           console.log(`Checking specific structure: "${struct.structure}" for text: "${text}"`);
           console.log('Matched specific structure:', struct.structure);
           return struct;
         }
       }
-      for (let struct of structures) {
+      for (let struct of activeStructures) {
         console.log(`Checking general structure: "${struct.structure}" for text: "${text}"`);
         if (currentLessonData.validateStructure(text, struct)) {
           console.log('Matched general structure:', struct.structure);
           return struct;
         }
       }
-      // Проверяем, является ли текст ответом на вопрос (Yes/No)
-      console.log(`Checking answer for last verb: "${window.lastAskedVerb}" and subject: "${window.lastAskedSubject}"`);
-      if (window.lastAskedVerb && window.lastAskedSubject) {
-        const words = text.split(' ').filter(word => word.length > 0);
-        const normalizedWords = words.map(word => word.toLowerCase());
-        if (normalizedWords[0] === "yes" || normalizedWords[0] === "no") {
-          if (currentLessonData.validateStructure(text)) {
-            console.log('Matched answer structure');
-            return { structure: `Answer to "${window.lastAskedSubject} ${window.lastAskedVerb}"`, id: "answer" };
+      // Проверяем, является ли текст ответом на вопрос (Yes/No), только если мы во второй части
+      if (currentPart === 2 || !currentLessonData.parts) {
+        console.log(`Checking answer for last verb: "${window.lastAskedVerb}" and subject: "${window.lastAskedSubject}"`);
+        if (window.lastAskedVerb && window.lastAskedSubject) {
+          const words = text.split(' ').filter(word => word.length > 0);
+          const normalizedWords = words.map(word => word.toLowerCase());
+          if (normalizedWords[0] === "yes" || normalizedWords[0] === "no") {
+            if (currentLessonData.validateStructure(text)) {
+              console.log('Matched answer structure');
+              return { structure: `Answer to "${window.lastAskedSubject} ${window.lastAskedVerb}"`, id: "answer" };
+            }
           }
         }
       }
       console.log(`No matching structure found for text: "${text}"`);
       return null;
+    }
+
+    function checkPartProgress() {
+      if (!currentLessonData || !currentLessonData.parts || currentPart !== 1) return;
+
+      // Проверяем прогресс для структур первой части
+      const part1Structures = currentLessonData.structures.filter(struct => currentLessonData.parts[struct.id] === 1);
+      const part1Completed = part1Structures.every(struct => progress[struct.id] >= currentLessonData.requiredCorrect / 2);
+
+      if (part1Completed) {
+        currentPart = 2;
+        feedback.textContent = 'Отлично! Ты завершил Часть 1 (утвердительные предложения). Теперь переходи к Часть 2: говори отрицательные или вопросительные предложения.';
+        updateProgressBars();
+      }
     }
 
     function updateLog() {
@@ -1120,59 +1151,130 @@
 
       // Обновляем прогресс для каждой структуры
       progressBars.innerHTML = '';
-      currentLessonData.structures.forEach(struct => {
-        const totalCorrect = progress[struct.id];
-        const div = document.createElement('div');
-        div.className = 'mb-2';
+      
+      // Если урок разделён на части, группируем структуры по частям
+      if (currentLessonData.parts) {
+        const parts = [...new Set(Object.values(currentLessonData.parts))].sort();
+        parts.forEach(part => {
+          const partStructures = currentLessonData.structures.filter(struct => currentLessonData.parts[struct.id] === part);
+          const partDiv = document.createElement('div');
+          partDiv.className = 'mb-4';
 
-        let barsHTML = `
-          <p class="text-sm">${struct.structure}</p>
-        `;
+          const partHeader = document.createElement('p');
+          partHeader.className = 'text-md font-semibold mb-2';
+          partHeader.textContent = `Часть ${part}: ${part === 1 ? 'Утвердительные предложения' : 'Отрицательные и вопросительные предложения'}`;
+          partDiv.appendChild(partHeader);
 
-        // Отображаем переводы (если есть массив translations, используем его, иначе берём translation)
-        if (struct.translations) {
-          barsHTML += `
-            <p class="text-xs text-gray-600 mb-1">${struct.translations.join(' / ')}</p>
+          partStructures.forEach(struct => {
+            const totalCorrect = progress[struct.id];
+            const structDiv = document.createElement('div');
+            structDiv.className = 'mb-2';
+
+            let barsHTML = `
+              <p class="text-sm">${struct.structure}</p>
+            `;
+
+            // Отображаем переводы
+            if (struct.translations) {
+              barsHTML += `
+                <p class="text-xs text-gray-600 mb-1">${struct.translations.join(' / ')}</p>
+              `;
+            } else if (struct.translation) {
+              barsHTML += `
+                <p class="text-xs text-gray-600 mb-1">${struct.translation}</p>
+              `;
+            }
+
+            // Отображаем примеры, если они есть
+            if (struct.examples && struct.examples.length > 0) {
+              barsHTML += `
+                <p class="text-xs text-gray-600 mb-1">Примеры: ${struct.examples.join(' / ')}</p>
+              `;
+            }
+
+            const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
+            const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
+            barsHTML += `
+              <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
+              </div>
+            `;
+
+            if (totalCorrect > currentLessonData.requiredCorrect) {
+              const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
+              const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
+              const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
+              barsHTML += `
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
+                </div>
+              `;
+            }
+
+            barsHTML += `
+              <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
+            `;
+            structDiv.innerHTML = barsHTML;
+            partDiv.appendChild(structDiv);
+            console.log(`Rendering progress bar for structure: "${struct.structure}" in Part ${part}`);
+          });
+
+          progressBars.appendChild(partDiv);
+        });
+      } else {
+        // Если нет разделения на части, отображаем как раньше
+        currentLessonData.structures.forEach(struct => {
+          const totalCorrect = progress[struct.id];
+          const div = document.createElement('div');
+          div.className = 'mb-2';
+
+          let barsHTML = `
+            <p class="text-sm">${struct.structure}</p>
           `;
-        } else if (struct.translation) {
-          barsHTML += `
-            <p class="text-xs text-gray-600 mb-1">${struct.translation}</p>
-          `;
-        }
 
-        // Отображаем примеры, если они есть
-        if (struct.examples && struct.examples.length > 0) {
-          barsHTML += `
-            <p class="text-xs text-gray-600 mb-1">Примеры: ${struct.examples.join(' / ')}</p>
-          `;
-        }
+          if (struct.translations) {
+            barsHTML += `
+              <p class="text-xs text-gray-600 mb-1">${struct.translations.join(' / ')}</p>
+            `;
+          } else if (struct.translation) {
+            barsHTML += `
+              <p class="text-xs text-gray-600 mb-1">${struct.translation}</p>
+            `;
+          }
 
-        const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
-        const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
-        barsHTML += `
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
-          </div>
-        `;
+          if (struct.examples && struct.examples.length > 0) {
+            barsHTML += `
+              <p class="text-xs text-gray-600 mb-1">Примеры: ${struct.examples.join(' / ')}</p>
+            `;
+          }
 
-        if (totalCorrect > currentLessonData.requiredCorrect) {
-          const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
-          const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
-          const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
+          const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
+          const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
           barsHTML += `
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+              <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
             </div>
           `;
-        }
 
-        barsHTML += `
-          <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
-        `;
-        div.innerHTML = barsHTML;
-        progressBars.appendChild(div);
-        console.log(`Rendering progress bar for structure: "${struct.structure}"`);
-      });
+          if (totalCorrect > currentLessonData.requiredCorrect) {
+            const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
+            const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
+            const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
+            barsHTML += `
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
+              </div>
+            `;
+          }
+
+          barsHTML += `
+            <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
+          `;
+          div.innerHTML = barsHTML;
+          progressBars.appendChild(div);
+          console.log(`Rendering progress bar for structure: "${struct.structure}"`);
+        });
+      }
     }
 
     function checkCompletion() {
