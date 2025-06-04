@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -504,6 +465,14 @@
             console.log(`Skipping non-js file: ${file.name}`);
           }
         }
+        
+        // Сортируем уроки по номеру урока
+        lessonsData.sort((a, b) => {
+          const lessonNumberA = parseInt(a.lesson.replace('lesson', ''), 10);
+          const lessonNumberB = parseInt(b.lesson.replace('lesson', ''), 10);
+          return lessonNumberA - lessonNumberB;
+        });
+
         console.log('Lessons loaded from GitHub:', lessonsData);
         populateLessons();
       } catch (error) {
@@ -1006,61 +975,6 @@
       };
 
       recognition.onend = () => {
-        const currentTime = Date.now();
-        if (currentTime - lastSpeechTime > 10000) {
-          feedback.textContent = 'Давно не слышу речи. Перезапускаю...';
-          isListening = false;
-          if (startPracticeBtn) {
-            startPracticeBtn.textContent = 'Начать практику';
-            startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
-            startPracticeBtn.disabled = false;
-          }
-          if (restartListeningBtn) {
-            restartListeningBtn.classList.remove('hidden');
-          }
-          return;
-        }
-
-        // Убедимся, что не пытаемся запустить recognition, если оно уже активно
-        if (isListening && completionModal.style.display !== 'block') {
-          setTimeout(() => {
-            if (!recognition.recognizing) {
-              try {
-                recognition.start();
-              } catch (error) {
-                feedback.textContent = 'Ошибка при перезапуске распознавания: ' + error.message + '. Попробуйте снова.';
-                isListening = false;
-                if (startPracticeBtn) {
-                  startPracticeBtn.textContent = 'Начать практику';
-                  startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                  startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
-                  startPracticeBtn.disabled = false;
-                }
-                if (restartListeningBtn) {
-                  restartListeningBtn.classList.remove('hidden');
-                }
-              }
-            }
-          }, 500);
-        }
-      };
-
-      // Добавляем свойство recognizing для отслеживания состояния
-      Object.defineProperty(recognition, 'recognizing', {
-        get: function() {
-          return this._recognizing || false;
-        },
-        set: function(value) {
-          this._recognizing = value;
-        }
-      });
-
-      recognition.onstart = () => {
-        recognition.recognizing = true;
-      };
-
-      recognition.onend = () => {
         recognition.recognizing = false;
         const currentTime = Date.now();
         if (currentTime - lastSpeechTime > 10000) {
@@ -1099,6 +1013,20 @@
             }
           }, 500);
         }
+      };
+
+      // Добавляем свойство recognizing для отслеживания состояния
+      Object.defineProperty(recognition, 'recognizing', {
+        get: function() {
+          return this._recognizing || false;
+        },
+        set: function(value) {
+          this._recognizing = value;
+        }
+      });
+
+      recognition.onstart = () => {
+        recognition.recognizing = true;
       };
     }
 
