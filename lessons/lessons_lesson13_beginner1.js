@@ -126,7 +126,8 @@ addLesson({
     const words = text.split(' ').filter(word => word.length > 0);
     let wordIndex = 0;
 
-    // Инициализация глобальных переменных при первом вызове
+    // Инициализация глобальных переменных при первом вызове уже перенесена в index.html (goBackToStart)
+    // Здесь мы только проверяем их существование
     if (!window.usedNames) window.usedNames = [];
     if (!window.lastAskedVerb) window.lastAskedVerb = null;
     if (!window.lastAskedSubject) window.lastAskedSubject = null;
@@ -142,7 +143,7 @@ addLesson({
       normalizedWords.push(...normalizeWord(word));
     }
 
-    console.log(`Validating text: "${text}" for structure: "${structure ? structure.structure : 'undefined'}"`);
+    console.log(`Validating text: "${text}" for structure: "${structure ? structure.structure : 'answer'}"`);
 
     // Проверяем, является ли текст ответом на вопрос (Yes/No)
     if (!structure && window.lastAskedVerb && window.lastAskedSubject) {
@@ -201,7 +202,7 @@ addLesson({
       // Дополнение необязательно
       const complement = wordIndex < normalizedWords.length ? normalizedWords.slice(wordIndex).join(' ') : '';
       const subject = structure.id.split('-')[0]; // "i", "you", "we", "they"
-      const fullAction = `${subject} ${verb}${complement ? ` ${complement}` : ''}`;
+      const fullAction = `${subject} not ${verb}${complement ? ` ${complement}` : ''}`; // Добавляем "not" в fullAction
       
       console.log(`Recognized negative action: "${fullAction}"`);
       
