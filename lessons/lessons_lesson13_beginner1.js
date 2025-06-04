@@ -124,10 +124,9 @@ addLesson({
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
     const words = text.split(' ').filter(word => word.length > 0);
-    const pattern = structure.pattern;
     let wordIndex = 0;
 
-    // Сбрасываем window.usedNames и window.lastAskedVerb при старте урока
+    // Инициализация глобальных переменных при первом вызове
     if (!window.usedNames) window.usedNames = [];
     if (!window.lastAskedVerb) window.lastAskedVerb = null;
     if (!window.lastAskedSubject) window.lastAskedSubject = null;
@@ -143,7 +142,44 @@ addLesson({
       normalizedWords.push(...normalizeWord(word));
     }
 
-    console.log(`Validating text: "${text}" for structure: "${structure.structure}"`);
+    console.log(`Validating text: "${text}" for structure: "${structure ? structure.structure : 'undefined'}"`);
+
+    // Проверяем, является ли текст ответом на вопрос (Yes/No)
+    if (!structure && window.lastAskedVerb && window.lastAskedSubject) {
+      if (normalizedWords[0] === "yes") {
+        if (normalizedWords.length < 3) {
+          console.log("Answer too short for 'Yes' response");
+          return false; // Должно быть хотя бы "Yes, I like ..."
+        }
+        const expectedPronoun = window.lastAskedSubject === "you" ? "i" : window.lastAskedSubject;
+        if (normalizedWords[1] !== expectedPronoun || normalizedWords[2] !== window.lastAskedVerb) {
+          console.log(`Expected "${expectedPronoun} ${window.lastAskedVerb}", got "${normalizedWords[1]} ${normalizedWords[2]}"`);
+          return false;
+        }
+        console.log(`Recognized 'Yes' answer with verb: "${window.lastAskedVerb}"`);
+        return true;
+      } else if (normalizedWords[0] === "no") {
+        if (normalizedWords.length < 4) {
+          console.log("Answer too short for 'No' response");
+          return false; // Должно быть хотя бы "No, we don't play ..."
+        }
+        const expectedPronoun = window.lastAskedSubject === "you" ? "i" : window.lastAskedSubject;
+        if (normalizedWords[1] !== expectedPronoun || normalizedWords[2] !== "do" || normalizedWords[3] !== "not") {
+          console.log(`Expected "${expectedPronoun} do not", got "${normalizedWords[1]} ${normalizedWords[2]} ${normalizedWords[3]}"`);
+          return false;
+        }
+        if (normalizedWords[4] !== window.lastAskedVerb) {
+          console.log(`Expected verb "${window.lastAskedVerb}", got "${normalizedWords[4]}"`);
+          return false;
+        }
+        console.log(`Recognized 'No' answer with verb: "${window.lastAskedVerb}"`);
+        return true;
+      }
+      console.log("No matching answer structure found");
+      return false;
+    }
+
+    const pattern = structure.pattern;
 
     // Проверяем, что начало текста соответствует шаблону
     for (let part of pattern) {
@@ -164,13 +200,14 @@ addLesson({
       wordIndex++;
       // Дополнение необязательно
       const complement = wordIndex < normalizedWords.length ? normalizedWords.slice(wordIndex).join(' ') : '';
-      const fullAction = verb + (complement ? ` ${complement}` : '');
+      const subject = structure.id.split('-')[0]; // "i", "you", "we", "they"
+      const fullAction = `${subject} ${verb}${complement ? ` ${complement}` : ''}`;
       
       console.log(`Recognized negative action: "${fullAction}"`);
       
       // Проверяем уникальность действия
       if (structure.hasName) {
-        if (window.usedNames && window.usedNames.includes(fullAction)) {
+        if (window.usedNames.includes(fullAction)) {
           console.log(`Action "${fullAction}" is a duplicate`);
           return false; // Действие уже использовалось
         }
@@ -199,13 +236,14 @@ addLesson({
       wordIndex++;
       // Дополнение необязательно
       const complement = wordIndex < normalizedWords.length ? normalizedWords.slice(wordIndex).join(' ') : '';
-      const fullAction = verb + (complement ? ` ${complement}` : '');
+      const subject = structure.id.split('-')[0]; // "i", "you", "we", "they"
+      const fullAction = `${subject} ${verb}${complement ? ` ${complement}` : ''}`;
       
       console.log(`Recognized positive action: "${fullAction}"`);
       
       // Проверяем уникальность действия
       if (structure.hasName) {
-        if (window.usedNames && window.usedNames.includes(fullAction)) {
+        if (window.usedNames.includes(fullAction)) {
           console.log(`Action "${fullAction}" is a duplicate`);
           return false; // Действие уже использовалось
         }
@@ -228,44 +266,6 @@ addLesson({
       // Дополнение необязательно
       console.log(`Recognized question with verb: "${verb}" and subject: "${subject}"`);
       return true;
-    }
-
-    // Для ответов (например, "Yes, I like to go to the cinema" или "No, we don't play football")
-    if (!structure.hasName && window.lastAskedVerb && window.lastAskedSubject) {
-      if (normalizedWords[0] === "yes") {
-        if (normalizedWords.length < 3) {
-          console.log("Answer too short for 'Yes' response");
-          return false; // Должно быть хотя бы "Yes, I like ..."
-        }
-        // Проверяем, что местоимение ответа соответствует вопросу
-        const expectedPronoun = window.lastAskedSubject === "you" ? "i" : window.lastAskedSubject;
-        if (normalizedWords[1] !== expectedPronoun) {
-          console.log(`Expected pronoun "${expectedPronoun}", got "${normalizedWords[1]}"`);
-          return false;
-        }
-        if (normalizedWords[2] !== window.lastAskedVerb) {
-          console.log(`Expected verb "${window.lastAskedVerb}", got "${normalizedWords[2]}"`);
-          return false;
-        }
-        console.log(`Recognized 'Yes' answer with verb: "${window.lastAskedVerb}"`);
-        return true;
-      } else if (normalizedWords[0] === "no") {
-        if (normalizedWords.length < 4) {
-          console.log("Answer too short for 'No' response");
-          return false; // Должно быть хотя бы "No, we don't play ..."
-        }
-        const expectedPronoun = window.lastAskedSubject === "you" ? "i" : window.lastAskedSubject;
-        if (normalizedWords[1] !== expectedPronoun || normalizedWords[2] !== "do" || normalizedWords[3] !== "not") {
-          console.log(`Expected "${expectedPronoun} do not", got "${normalizedWords[1]} ${normalizedWords[2]} ${normalizedWords[3]}"`);
-          return false;
-        }
-        if (normalizedWords[4] !== window.lastAskedVerb) {
-          console.log(`Expected verb "${window.lastAskedVerb}", got "${normalizedWords[4]}"`);
-          return false;
-        }
-        console.log(`Recognized 'No' answer with verb: "${window.lastAskedVerb}"`);
-        return true;
-      }
     }
 
     console.log("No matching structure found");
