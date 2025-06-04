@@ -2,6 +2,13 @@ addLesson({
   level: "beginner1",
   lesson: "lesson13",
   name: "Урок 13 (Часть 1)",
+  introExamples: [
+    "I live in Astana. (Я живу в Астане.)",
+    "You don't play basketball. (Ты не играешь в баскетбол.)",
+    "They speak Russian. (Они говорят по-русски.)",
+    "Do we live in London? (Мы живём в Лондоне?)",
+    "Yes, I live in London. (Да, я живу в Лондоне.)"
+  ],
   structures: [
     { 
       structure: "I _____", 
