@@ -1,7 +1,6 @@
-const lessonsData = [];
+let lessonsData = [];
 
-// Function to add lesson data (called by each lesson file)
 function addLesson(lesson) {
+  console.log(`Adding lesson: ${lesson.name} for level ${lesson.level}`);
   lessonsData.push(lesson);
-  console.log('Lesson added:', lesson.name, 'Total lessons:', lessonsData.length);
 }
