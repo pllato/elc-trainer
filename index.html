@@ -760,6 +760,9 @@
       startTime = null;
       endTime = null;
       currentLessonData = null;
+      window.usedNames = []; // Сбрасываем window.usedNames
+      window.lastAskedVerb = null; // Сбрасываем lastAskedVerb
+      window.lastAskedSubject = null; // Сбрасываем lastAskedSubject
       if (recognition) recognition.stop();
 
       // Проверяем, что элементы существуют, прежде чем менять их классы
@@ -923,7 +926,12 @@
         lastSpeechTime = Date.now();
 
         if (matchedStructure) {
-          const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
+          let isCorrect;
+          if (matchedStructure.id === "answer") {
+            isCorrect = currentLessonData.validateStructure(spokenText);
+          } else {
+            isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
+          }
           if (isCorrect) {
             const isDuplicate = matchedStructure.hasName && spokenHistory.includes(spokenText);
             logEntry.structure = matchedStructure.structure;
