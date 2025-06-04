@@ -20,9 +20,12 @@ addLesson({
       pattern: ["this", "is"], 
       translations: ["Это ____ ______.", "Вот ____ ______."], 
       examples: [
-        "This is his bag. (Это его сумка.)",
-        "This is her dog. (Это её собака.)",
-        "This is its toy. (Это его игрушка.)"
+        "This is my bag. (Это моя сумка.)",
+        "This is his dog. (Это его собака.)",
+        "This is her car. (Это её машина.)",
+        "This is its toy. (Это его игрушка.)",
+        "This is our book. (Это наша книга.)",
+        "This is their house. (Это их дом.)"
       ], 
       id: "this-is-pronoun-thing", 
       hasName: false 
@@ -86,7 +89,7 @@ addLesson({
         console.log(`"${firstWordAfterThisIs}" ends with "'s", should match 'This is ____'s ____'");
         return false; // Это соответствует "This is ____'s ____."
       }
-      if (normalizedWords.length - wordIndex === 2 && ["his", "her", "its"].includes(firstWordAfterThisIs)) {
+      if (normalizedWords.length - wordIndex === 2 && ["my", "our", "his", "her", "its", "their"].includes(firstWordAfterThisIs)) {
         console.log(`"${firstWordAfterThisIs}" is a pronoun, should match 'This is ____ ____'");
         return false; // Это соответствует "This is ____ ____."
       }
@@ -113,15 +116,11 @@ addLesson({
       const pronoun = normalizedWords[wordIndex];
       const thing = normalizedWords[wordIndex + 1];
       // Проверяем местоимение
-      if (!["his", "her", "its"].includes(pronoun)) {
-        console.log(`Expected "his", "her", or "its", got "${pronoun}"`);
+      if (!["my", "our", "his", "her", "its", "their"].includes(pronoun)) {
+        console.log(`Expected "my", "our", "his", "her", "its", or "their", got "${pronoun}"`);
         return false;
       }
-      // Проверяем предмет (ожидаем "bag", "dog", "car", "toy", "leg", "like")
-      if (!["bag", "dog", "car", "toy", "leg", "like"].includes(thing)) {
-        console.log(`Expected "bag", "dog", "car", "toy", "leg", or "like", got "${thing}"`);
-        return false;
-      }
+      // Предмет может быть любым словом (для простоты)
       return true;
     }
 
@@ -141,12 +140,7 @@ addLesson({
         console.log(`Expected word ending with "'s", got "${possessiveForm}"`);
         return false;
       }
-      // Проверяем предмет (ожидаем "bag", "dog", "car", "toy", "leg", "like")
-      const thing = normalizedWords[wordIndex + 1];
-      if (!["bag", "dog", "car", "toy", "leg", "like"].includes(thing)) {
-        console.log(`Expected "bag", "dog", "car", "toy", "leg", or "like", got "${thing}"`);
-        return false;
-      }
+      // Предмет может быть любым словом (для простоты)
       return true;
     }
 
