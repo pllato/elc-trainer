@@ -83,7 +83,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 25000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 30000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -144,11 +144,16 @@ function updateOverallProgress(lessonId) {
   const totalRequired = lesson.structures.length * lesson.requiredCorrect;
   let totalCorrect = 0;
 
+  // Only count contributions from structures that haven't reached requiredCorrect
   lesson.structures.forEach(structure => {
     const count = window.userProgress[structure.id] || 0;
     const cappedCount = Math.min(count, lesson.requiredCorrect);
-    totalCorrect += cappedCount;
-    console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}`);
+    if (count < lesson.requiredCorrect) {
+      totalCorrect += count; // Only add if not yet complete
+    } else {
+      totalCorrect += lesson.requiredCorrect; // Add only requiredCorrect if complete
+    }
+    console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}, Contributes: ${Math.min(count, lesson.requiredCorrect)} to total`);
   });
 
   // Ensure totalCorrect does not exceed totalRequired
@@ -197,7 +202,7 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 1000) {
+    if (text !== lastValidatedText || now - lastValidatedTime > 1500) {
       validateInput(text);
       lastValidatedText = text;
       lastValidatedTime = now;
