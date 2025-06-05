@@ -230,18 +230,20 @@ p {
   border-radius: 9999px;
   height: 10px;
   margin-bottom: 4px;
+  position: relative;
 }
 
 #progress-bars div div div { /* Заполненная часть прогресс-бара */
   height: 10px;
   border-radius: 9999px;
+  transition: width 0.3s ease;
 }
 
-#progress-bars div div div.bg-\[#373D8D\] {
+#progress-bars div div div[class*="bg-[#373D8D]"] {
   background-color: #373D8D;
 }
 
-#progress-bars div div div.bg-\[#28A745\] {
+#progress-bars div div div[class*="bg-[#28A745]"] {
   background-color: #28A745;
 }
 
