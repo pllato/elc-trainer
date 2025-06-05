@@ -1,4 +1,4 @@
-let lessonsData = []; // Массив для хранения данных об уроках
+let lessonsData = []; // Массив для хранения данных об уроков
 
 // Определяем функцию addLesson для добавления уроков в lessonsData
 function addLesson(lesson) {
@@ -868,7 +868,7 @@ function checkPartProgress() {
 
   // Проверяем прогресс для структур первой части
   const part1Structures = currentLessonData.structures.filter(struct => currentLessonData.parts[struct.id] === 1);
-  const requiredPerStructure = currentLessonData.requiredCorrect / 2; // 5 правильных ответов на структуру
+  const requiredPerStructure = currentLessonData.requiredCorrect; // 10 правильных ответов на структуру
   const part1Completed = part1Structures.every(struct => {
     const count = progress[struct.id];
     const meetsRequirement = count >= requiredPerStructure;
