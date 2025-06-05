@@ -79,45 +79,21 @@ addLesson({
       return false;
     }
 
-    // Список глаголов в настоящем времени для Upper-Intermediate
-    const presentVerbs = [
-      'work', 'play', 'run', 'drink', 'eat', 'study', 'live', 'watch', 'read', 'write',
-      'go', 'come', 'see', 'hear', 'speak', 'listen', 'walk', 'sleep', 'sing', 'dance',
-      'like', 'love', 'hate', 'want', 'need', 'have', 'do', 'make', 'take', 'give',
-      'swim', 'fly', 'try', 'ride', 'cook', 'jump', 'think', 'learn', 'talk', 'call',
-      'drive', 'paint', 'draw', 'help', 'meet', 'visit', 'buy', 'sell', 'use', 'know',
-      'smile', 'laugh', 'cry', 'shout', 'whisper', 'build', 'break', 'fix', 'clean',
-      'wash', 'cut', 'open', 'close', 'start', 'stop', 'wait', 'follow', 'lead', 'teach',
-      'analyze', 'apply', 'argue', 'arrange', 'attend', 'avoid', 'calculate', 'choose',
-      'collaborate', 'communicate', 'compare', 'compete', 'complain', 'complete', 'conduct',
-      'consider', 'contribute', 'create', 'decide', 'defend', 'deliver', 'describe', 'design',
-      'develop', 'discuss', 'encourage', 'evaluate', 'explain', 'explore', 'express', 'focus',
-      'identify', 'improve', 'include', 'influence', 'inform', 'inspire', 'investigate',
-      'manage', 'motivate', 'negotiate', 'organize', 'participate', 'perform', 'persuade',
-      'plan', 'prepare', 'present', 'prevent', 'promote', 'provide', 'recognize', 'recommend',
-      'reflect', 'represent', 'research', 'resolve', 'respond', 'review', 'share', 'solve',
-      'suggest', 'support', 'train', 'travel', 'understand', 'volunteer',
-      'prefer', 'transfer', 'receive', 'dry', 'admire', 'apologize', 'approve', 'assume',
-      'attract', 'belong', 'challenge', 'commit', 'confirm', 'consult', 'convince', 'cope',
-      'correct', 'criticize', 'decrease', 'dedicate', 'demonstrate', 'depend', 'deserve',
-      'detect', 'disagree', 'discover', 'distribute', 'divide', 'donate', 'emphasize', 'enable',
-      'ensure', 'estimate', 'expand', 'extend', 'fail', 'forgive', 'fulfill', 'gain', 'gather',
-      'generate', 'guarantee', 'hire', 'ignore', 'implement', 'impress', 'increase', 'insist',
-      'install', 'integrate', 'intend', 'introduce', 'invent', 'invest', 'invite', 'involve',
-      'judge', 'justify', 'limit', 'maintain', 'measure', 'mention', 'monitor', 'observe',
-      'obtain', 'offer', 'operate', 'oppose', 'order', 'overcome', 'predict', 'preserve',
-      'pretend', 'proceed', 'produce', 'protect', 'publish', 'pursue', 'raise', 'reduce',
-      'refer', 'reject', 'relate', 'relax', 'release', 'rely', 'remind', 'remove', 'repair',
-      'replace', 'request', 'require', 'resist', 'retain', 'retire', 'reveal', 'satisfy',
-      'save', 'scan', 'search', 'select', 'separate', 'serve', 'sign', 'specialize', 'specify',
-      'struggle', 'succeed', 'supply', 'survive', 'suspect', 'test', 'transform', 'translate',
-      'trust', 'update', 'utilize', 'value', 'vary', 'verify', 'warn', 'welcome'
-    ];
-
-    // Проверяем, является ли первое слово после местоимения глаголом
+    // Проверяем первое слово после местоимения
     const verb = words[wordIndex];
-    if (!presentVerbs.includes(verb)) {
-      console.log('Invalid verb:', verb);
+    // Исключаем неподходящие формы
+    if (verb.endsWith('ed') || verb.endsWith('ing') || verb.endsWith('s') || verb.endsWith('es')) {
+      console.log('Invalid verb form:', verb);
+      return false;
+    }
+
+    // Список исключённых глаголов и модальных глаголов
+    const excludedWords = [
+      'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
+      'am', 'is', 'are', 'was', 'were', 'been', 'being'
+    ];
+    if (excludedWords.includes(verb)) {
+      console.log('Excluded verb:', verb);
       return false;
     }
 
