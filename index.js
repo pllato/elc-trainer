@@ -144,8 +144,8 @@ function updateProgress(structureId, isCorrect, lessonId) {
   }
 }
 
-// Update overall progress
-function updateOverallProgress(lessonId) {
+// Update overall progress with retry mechanism
+function updateOverallProgress(lessonId, attempt = 1, maxAttempts = 5) {
   if (!lessonId) {
     // Reset progress bar when lessonId is null (e.g., during reset)
     const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
@@ -183,14 +183,20 @@ function updateOverallProgress(lessonId) {
   console.log(`Total progress: ${window.totalProgress}/${totalRequired}`);
 
   const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
-  if (overallProgressBar) {
-    const percentage = (window.totalProgress / totalRequired) * 100;
-    overallProgressBar.style.width = `${percentage}%`;
-    console.log(`Overall progress: ${window.totalProgress}/${totalRequired}, Percentage: ${percentage}%`);
-    console.log(`Overall progress bar style: width=${overallProgressBar.style.width}`);
-  } else {
-    console.log('Overall progress bar not found');
+  if (!overallProgressBar) {
+    if (attempt < maxAttempts) {
+      console.warn(`Overall progress bar not found, retrying in 1s (attempt ${attempt}/${maxAttempts})`);
+      setTimeout(() => updateOverallProgress(lessonId, attempt + 1, maxAttempts), 1000);
+    } else {
+      console.error('Overall progress bar not found after max attempts');
+    }
+    return;
   }
+
+  const percentage = (window.totalProgress / totalRequired) * 100;
+  overallProgressBar.style.width = `${percentage}%`;
+  console.log(`Overall progress: ${window.totalProgress}/${totalRequired}, Percentage: ${percentage}%`);
+  console.log(`Overall progress bar style: width=${overallProgressBar.style.width}`);
 
   const progressText = document.querySelector('#overall-progress-bar .text-sm');
   if (progressText) {
@@ -223,7 +229,7 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 3000) {
+    if (text !== lastValidatedText || now - lastValidatedTime > 5000) {
       validateInput(text);
       lastValidatedText = text;
       lastValidatedTime = now;
