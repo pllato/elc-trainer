@@ -79,12 +79,24 @@ addLesson({
       return false;
     }
 
-    // Список глаголов в настоящем времени
+    // Список глаголов в настоящем времени для Upper-Intermediate
     const presentVerbs = [
       'work', 'play', 'run', 'drink', 'eat', 'study', 'live', 'watch', 'read', 'write',
       'go', 'come', 'see', 'hear', 'speak', 'listen', 'walk', 'sleep', 'sing', 'dance',
       'like', 'love', 'hate', 'want', 'need', 'have', 'do', 'make', 'take', 'give',
-      'swim', 'fly', 'try', 'ride', 'cook', 'jump', 'think', 'learn', 'talk', 'call'
+      'swim', 'fly', 'try', 'ride', 'cook', 'jump', 'think', 'learn', 'talk', 'call',
+      'drive', 'paint', 'draw', 'help', 'meet', 'visit', 'buy', 'sell', 'use', 'know',
+      'smile', 'laugh', 'cry', 'shout', 'whisper', 'build', 'break', 'fix', 'clean',
+      'wash', 'cut', 'open', 'close', 'start', 'stop', 'wait', 'follow', 'lead', 'teach',
+      'analyze', 'apply', 'argue', 'arrange', 'attend', 'avoid', 'calculate', 'choose',
+      'collaborate', 'communicate', 'compare', 'compete', 'complain', 'complete', 'conduct',
+      'consider', 'contribute', 'create', 'decide', 'defend', 'deliver', 'describe', 'design',
+      'develop', 'discuss', 'encourage', 'evaluate', 'explain', 'explore', 'express', 'focus',
+      'identify', 'improve', 'include', 'influence', 'inform', 'inspire', 'investigate',
+      'manage', 'motivate', 'negotiate', 'organize', 'participate', 'perform', 'persuade',
+      'plan', 'prepare', 'present', 'prevent', 'promote', 'provide', 'recognize', 'recommend',
+      'reflect', 'represent', 'research', 'resolve', 'respond', 'review', 'share', 'solve',
+      'suggest', 'support', 'train', 'travel', 'understand', 'volunteer'
     ];
 
     // Проверяем, является ли первое слово после местоимения глаголом
@@ -95,7 +107,7 @@ addLesson({
     }
 
     // Проверяем контекст: отклоняем неподходящие дополнения
-    const invalidWords = ['tomorrow', 'yesterday', 'will', 'would', 'am', 'is', 'are'];
+    const invalidWords = ['tomorrow', 'yesterday', 'will', 'would', 'am', 'is', 'are', 'was', 'were'];
     const remainingWords = words.slice(wordIndex + 1);
     for (const word of remainingWords) {
       if (invalidWords.includes(word)) {
