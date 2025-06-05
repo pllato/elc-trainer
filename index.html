@@ -596,7 +596,9 @@
       userNameEl.textContent = userName;
       userLevelEl.textContent = document.getElementById('level').options[document.getElementById('level').selectedIndex].text;
       userLessonEl.textContent = document.getElementById('lesson').options[document.getElementById('lesson').selectedIndex].text;
-      updateProgressBars(userLesson); // Инициализируем прогресс-бары после установки всех данных
+      if (userLesson) {
+        updateProgressBars(userLesson); // Инициализируем прогресс-бары после установки всех данных
+      }
       updateStats();
     });
 
@@ -611,6 +613,7 @@
       startTime = null;
       endTime = null;
       currentLessonData = null;
+      userLesson = ''; // Сбрасываем userLesson
       if (recognition) recognition.stop();
 
       // Проверяем, что элементы существуют, прежде чем менять их классы
@@ -629,7 +632,7 @@
       if (statsDiv) statsDiv.innerHTML = '';
       if (logDiv) logDiv.innerHTML = '';
       if (modalLog) modalLog.innerHTML = '';
-      updateProgressBars(userLesson); // Вызываем из index.js
+      resetLessonState();
 
       // Переключаем экраны
       if (practiceScreen) practiceScreen.classList.add('hidden');
