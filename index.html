@@ -4,161 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ELC Grammar Practice</title>
-  <!-- Подключение Tailwind CSS для стилизации -->
-  <script src="https://cdn.tailwindcss.com"></script>
   <!-- Подключение шрифтов Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
-  <style>
-    /* Основной стиль страницы */
-    body {
-      font-family: 'Trebuchet MS', 'Helvetica', 'Arial', sans-serif; /* Основной шрифт */
-      background-color: #F5F5F5; /* Светло-серый фон */
-    }
-    /* Стили для заголовков */
-    h1, h2, h3 {
-      font-family: 'Montserrat', sans-serif; /* Шрифт для заголовков */
-      text-transform: uppercase; /* Верхний регистр */
-    }
-    /* Стили для логотипа */
-    .logo {
-      font-family: 'Montserrat', sans-serif;
-      text-transform: uppercase;
-      color: #373D8D; /* Основной синий цвет */
-      cursor: pointer;
-    }
-    .logo span {
-      color: #D72638; /* Красный цвет для акцентов */
-    }
-    /* Подтекст логотипа */
-    .logo-subtext {
-      font-family: 'Trebuchet MS', sans-serif;
-      font-size: 0.8rem;
-      color: #373D8D;
-    }
-    /* Дополнительный текст под логотипом */
-    .logo-description {
-      font-family: 'Trebuchet MS', sans-serif;
-      font-size: 0.7rem;
-      color: #373D8D;
-      margin-top: 0.2rem;
-    }
-    /* Неиспользуемый паттерн фона */
-    .pattern-bg {
-      background-image: linear-gradient(45deg, #373D8D 25%, transparent 25%, transparent 75%, #373D8D 75%, #373D8D), 
-                        linear-gradient(45deg, #373D8D 25%, transparent 25%, transparent 75%, #373D8D 75%, #373D8D);
-      background-size: 20px 20px;
-      background-color: #FFFFFF;
-    }
-    /* Шрифт для кнопок */
-    button {
-      font-family: 'Trebuchet MS', sans-serif;
-    }
-    /* Стили для секции статистики */
-    .stats {
-      color: #373D8D; /* Синий цвет текста */
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      border-left: 4px solid #D72638; /* Красная полоса слева */
-      padding-left: 0.5rem;
-    }
-    /* Стили для модального окна */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный чёрный фон */
-      z-index: 1000;
-    }
-    /* Контент модального окна */
-    .modal-content {
-      background-color: #FFFFFF; /* Белый фон */
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px; /* Максимальная ширина 400px */
-      border-radius: 8px; /* Скруглённые углы */
-      text-align: center;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .modal-content h2 {
-      color: #373D8D; /* Синий цвет заголовка */
-    }
-    .modal-content p {
-      /* Цвет текста по умолчанию (чёрный), жёлтый цвет убран */
-    }
-    .modal-content button {
-      background-color: #373D8D; /* Синий фон кнопки */
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .modal-content button:hover {
-      background-color: #2A3171; /* Тёмно-синий при наведении */
-    }
-    .modal-log {
-      margin-top: 1rem;
-      text-align: left;
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      padding: 10px;
-      font-size: 0.8rem;
-      color: inherit; /* Цвет текста по умолчанию */
-    }
-    /* Стили для текстовой ссылки "Админка" */
-    .admin-link {
-      display: block;
-      text-align: center;
-      color: #373D8D; /* Синий цвет текста */
-      font-size: 0.9rem; /* Меньший размер шрифта */
-      margin-top: 0.5rem;
-      text-decoration: underline; /* Подчёркивание как у ссылки */
-    }
-    .admin-link:hover {
-      color: #2A3171; /* Тёмно-синий при наведении */
-    }
-    /* Стили для модального окна ввода пароля */
-    .password-modal-input {
-      width: 100%;
-      padding: 8px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    .password-error {
-      color: #D72638; /* Красный цвет для ошибки */
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
-    }
-  </style>
+  <!-- Подключение styles.css -->
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="flex items-center justify-center min-h-screen">
+<body>
   <!-- Стартовый экран -->
-  <div id="start-screen" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+  <div id="start-screen">
     <!-- Логотип и подтекст -->
     <div class="text-center mb-6">
-      <h1 class="logo text-4xl font-bold">ELC</h1>
+      <h1 class="logo">ELC</h1>
       <p class="logo-subtext">English Lifestyle Communication</p>
-      <!-- Добавляем текст "Тренажер грамматических структур" -->
       <p class="logo-description">Тренажер грамматических структур</p>
     </div>
     <!-- Поле для имени -->
     <div class="mb-4">
       <label for="name" class="block text-sm font-medium text-gray-700">Ваше имя</label>
-      <input type="text" id="name" class="mt-1 p-2 w-full border rounded-md" placeholder="Введите ваше имя" required>
+      <input type="text" id="name" placeholder="Введите ваше имя" required>
     </div>
     <!-- Выбор уровня -->
     <div class="mb-4">
       <label for="level" class="block text-sm font-medium text-gray-700">Выберите уровень</label>
-      <select id="level" class="mt-1 p-2 w-full border rounded-md">
+      <select id="level">
         <option value="beginner1">Beginner Part One</option>
         <option value="beginner2">Beginner Part Two</option>
         <option value="elementary">Elementary</option>
@@ -170,18 +38,18 @@
     <!-- Выбор урока -->
     <div class="mb-6">
       <label for="lesson" class="block text-sm font-medium text-gray-700">Выберите урок</label>
-      <select id="lesson" class="mt-1 p-2 w-full border rounded-md">
+      <select id="lesson">
         <!-- Lessons will be populated dynamically -->
       </select>
     </div>
     <!-- Кнопка "Начать практику" -->
-    <button id="start-btn" class="w-full bg-[#373D8D] text-white p-2 rounded-md mb-2 hover:bg-[#2A3171]">Начать практику</button>
+    <button id="start-btn">Начать практику</button>
     <!-- Текстовая ссылка "Админка" -->
     <a href="#" id="admin-btn" class="admin-link">Админка</a>
   </div>
 
   <!-- Экран админки -->
-  <div id="admin-screen" class="hidden bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+  <div id="admin-screen" class="hidden">
     <div class="flex justify-between items-center mb-4">
       <div class="logo text-2xl font-bold" onclick="goBackToStart()">ELC</div>
       <h1 class="text-2xl font-bold">Админка</h1>
@@ -190,40 +58,40 @@
     <!-- Поле для ввода GitHub токена -->
     <div class="mb-4">
       <label for="github-token" class="block text-sm font-medium text-gray-700">GitHub токен</label>
-      <input type="password" id="github-token" class="mt-1 p-2 w-full border rounded-md" placeholder="Введите GitHub токен">
+      <input type="password" id="github-token" placeholder="Введите GitHub токен">
     </div>
     <!-- Загрузка нового урока -->
     <div class="mb-4">
       <label for="lesson-file" class="block text-sm font-medium text-gray-700">Загрузить новый урок (.js файл)</label>
-      <input type="file" id="lesson-file" accept=".js" class="mt-1 p-2 w-full border rounded-md">
+      <input type="file" id="lesson-file" accept=".js">
     </div>
-    <button id="upload-lesson-btn" class="w-full bg-[#373D8D] text-white p-2 rounded-md mb-2 hover:bg-[#2A3171]">Загрузить урок на GitHub</button>
+    <button id="upload-lesson-btn">Загрузить урок на GitHub</button>
     <!-- Удаление урока -->
     <div class="mb-4">
       <label for="delete-lesson" class="block text-sm font-medium text-gray-700">Удалить урок</label>
-      <select id="delete-lesson" class="mt-1 p-2 w-full border rounded-md">
+      <select id="delete-lesson">
         <option value="">Выберите урок для удаления</option>
         <!-- Lessons will be populated dynamically -->
       </select>
     </div>
-    <button id="delete-lesson-btn" class="w-full bg-[#D72638] text-white p-2 rounded-md mb-2 hover:bg-[#B72030]">Удалить урок</button>
+    <button id="delete-lesson-btn">Удалить урок</button>
     <!-- Обновление index.html -->
     <div class="mb-4">
       <label for="index-html-file" class="block text-sm font-medium text-gray-700">Обновить index.html</label>
-      <input type="file" id="index-html-file" accept=".html" class="mt-1 p-2 w-full border rounded-md">
+      <input type="file" id="index-html-file" accept=".html">
     </div>
-    <button id="upload-index-html-btn" class="w-full bg-[#28A745] text-white p-2 rounded-md mb-2 hover:bg-[#1e7e34]">Обновить index.html на GitHub</button>
+    <button id="upload-index-html-btn">Обновить index.html на GitHub</button>
     <!-- Обновление index.js -->
     <div class="mb-4">
       <label for="index-js-file" class="block text-sm font-medium text-gray-700">Обновить index.js</label>
-      <input type="file" id="index-js-file" accept=".js" class="mt-1 p-2 w-full border rounded-md">
+      <input type="file" id="index-js-file" accept=".js">
     </div>
-    <button id="upload-index-js-btn" class="w-full bg-[#28A745] text-white p-2 rounded-md mb-2 hover:bg-[#1e7e34]">Обновить index.js на GitHub</button>
+    <button id="upload-index-js-btn">Обновить index.js на GitHub</button>
     <p id="admin-feedback" class="text-md mb-4"></p>
   </div>
 
   <!-- Экран практики -->
-  <div id="practice-screen" class="hidden bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+  <div id="practice-screen" class="hidden">
     <div class="flex justify-between items-center mb-4">
       <div class="logo text-2xl font-bold" onclick="goBackToStart()">ELC</div>
       <h1 class="text-2xl font-bold">Практика грамматики</h1>
@@ -231,8 +99,8 @@
     </div>
     <p class="text-lg mb-2">Привет, <span id="user-name"></span>!</p>
     <p class="text-md mb-4">Уровень: <span id="user-level"></span>, <span id="user-lesson"></span></p>
-    <button id="start-practice-btn" class="w-full bg-[#373D8D] text-white p-2 rounded-md mb-2 hover:bg-[#2A3171]">Начать практику</button>
-    <button id="restart-listening-btn" class="hidden w-full bg-[#D72638] text-white p-2 rounded-md mb-4 hover:bg-[#B72030]">Возобновить прослушивание</button>
+    <button id="start-practice-btn">Начать практику</button>
+    <button id="restart-listening-btn" class="hidden">Возобновить прослушивание</button>
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
@@ -250,8 +118,7 @@
         <p id="congratulations" class="text-md mb-4"></p>
         <p class="text-sm mb-2">Результаты высланы на проверку преподавателю.</p>
         <div class="modal-log" id="modal-log"></div>
-        <!-- Кнопка переименована в "Завершить" -->
-        <button onclick="startNewTraining()" class="mt-4">Завершить</button>
+        <button onclick="startNewTraining()">Завершить</button>
       </div>
     </div>
   </div>
@@ -262,7 +129,7 @@
       <h2 class="text-2xl font-bold mb-2">Введите пароль</h2>
       <input type="password" id="password-input" class="password-modal-input" placeholder="Пароль">
       <p id="password-error" class="password-error"></p>
-      <button onclick="checkPassword()" class="mt-4">Подтвердить</button>
+      <button onclick="checkPassword()">Подтвердить</button>
     </div>
   </div>
 
@@ -721,8 +588,6 @@
       // Проверяем, что элементы существуют, прежде чем менять их классы
       if (startPracticeBtn) {
         startPracticeBtn.textContent = 'Начать практику';
-        startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-        startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
         startPracticeBtn.disabled = false;
       }
       if (restartListeningBtn) {
@@ -778,8 +643,6 @@
         isListening = true;
         if (startPracticeBtn) {
           startPracticeBtn.textContent = 'Слушаю...';
-          startPracticeBtn.classList.remove('bg-[#373D8D]', 'hover:bg-[#2A3171]');
-          startPracticeBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
           startPracticeBtn.disabled = true;
         }
         if (restartListeningBtn) {
@@ -792,8 +655,6 @@
         isListening = false;
         if (startPracticeBtn) {
           startPracticeBtn.textContent = 'Начать практику';
-          startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-          startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
           startPracticeBtn.disabled = false;
         }
         if (restartListeningBtn) {
@@ -932,8 +793,6 @@
         isListening = false;
         if (startPracticeBtn) {
           startPracticeBtn.textContent = 'Начать практику';
-          startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-          startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
           startPracticeBtn.disabled = false;
         }
         if (restartListeningBtn) {
@@ -948,8 +807,6 @@
           isListening = false;
           if (startPracticeBtn) {
             startPracticeBtn.textContent = 'Начать практику';
-            startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
             startPracticeBtn.disabled = false;
           }
           if (restartListeningBtn) {
@@ -967,8 +824,6 @@
               isListening = false;
               if (startPracticeBtn) {
                 startPracticeBtn.textContent = 'Начать практику';
-                startPracticeBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                startPracticeBtn.classList.add('bg-[#373D8D]', 'hover:bg-[#2A3171]');
                 startPracticeBtn.disabled = false;
               }
               if (restartListeningBtn) {
@@ -1002,6 +857,7 @@
           const statusIcon = entry.correct ? '✅' : '❌';
           const duplicateIcon = entry.duplicate ? '🔁' : '';
           p.textContent = `[${entry.time}] Сказано: "${entry.spoken}"${entry.structure ? ` для "${entry.structure}"` : ''} - ${statusIcon} ${entry.correct ? 'Правильно' : 'Неправильно'}${duplicateIcon ? ` ${duplicateIcon} Повтор` : ''}`;
+          p.setAttribute('data-status', entry.correct ? 'correct' : 'incorrect');
         }
         logDiv.appendChild(p);
       });
