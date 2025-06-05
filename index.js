@@ -182,10 +182,11 @@ function updateProgressBars(lessonId) {
   }
 
   progressBars.innerHTML = '';
-  lesson.structures.forEach(struct => {
+  lesson.structures.forEach((struct, index) => {
     if (!struct.id) {
-      console.warn('Structure ID is undefined:', struct);
-      return;
+      console.warn(`Structure ID is undefined at index ${index}:`, struct);
+      // Присваиваем временный ID, если он отсутствует
+      struct.id = `struct-${index}`;
     }
     const totalCorrect = window.userProgress[struct.id] || 0;
     const div = document.createElement('div');
@@ -193,7 +194,7 @@ function updateProgressBars(lessonId) {
     div.setAttribute('data-structure', struct.id);
 
     let barsHTML = `
-      <p class="text-sm">${struct.structure}</p>
+      <p class="text-sm">${struct.structure || 'Unknown structure'}</p>
     `;
 
     const firstBarProgress = Math.min(totalCorrect, lesson.requiredCorrect);
