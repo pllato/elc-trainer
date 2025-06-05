@@ -136,6 +136,17 @@ addLesson({
     "do-they-question": 3
   },
   currentPart: 1,
+  onPracticeStart: function(feedback) {
+    let message = '';
+    if (this.currentPart === 1) {
+      message = 'Практикуем структуры из Части 1: I _____, We _____, You _____, They _____. Например: I live in London.';
+    } else if (this.currentPart === 2) {
+      message = 'Практикуем структуры из Части 2: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
+    } else if (this.currentPart === 3) {
+      message = 'Практикуем вопросы из Части 3: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
+    }
+    if (feedback) feedback.textContent = message;
+  },
   validateStructure: function(text, structure, feedback) {
     const words = text.split(' ').filter(word => word.length > 0);
     let wordIndex = 0;
@@ -221,11 +232,11 @@ addLesson({
     if (matchedOtherPartStructure) {
       let message = '';
       if (this.currentPart === 1) {
-        message = 'Сейчас мы работаем над примерами из первой части: I _____, We _____, You _____, They _____. Например: I live in London.';
+        message = 'Практикуем структуры из Части 1: I _____, We _____, You _____, They _____. Например: I live in London.';
       } else if (this.currentPart === 2) {
-        message = 'Сейчас мы работаем над примерами из второй части: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
+        message = 'Практикуем структуры из Части 2: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
       } else if (this.currentPart === 3) {
-        message = 'Сейчас мы работаем над вопросами из третьей части: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
+        message = 'Практикуем вопросы из Части 3: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
       }
       if (feedback) feedback.textContent = message;
       return { isValid: false, shouldLog: true };
@@ -235,11 +246,11 @@ addLesson({
     if (structure && this.parts[structure.id] !== this.currentPart) {
       let message = '';
       if (this.currentPart === 1) {
-        message = 'Сейчас мы работаем над примерами из первой части: I _____, We _____, You _____, They _____. Например: I live in London.';
+        message = 'Практикуем структуры из Части 1: I _____, We _____, You _____, They _____. Например: I live in London.';
       } else if (this.currentPart === 2) {
-        message = 'Сейчас мы работаем над примерами из второй части: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
+        message = 'Практикуем структуры из Части 2: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
       } else if (this.currentPart === 3) {
-        message = 'Сейчас мы работаем над вопросами из третьей части: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
+        message = 'Практикуем вопросы из Части 3: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
       }
       if (feedback) feedback.textContent = message;
       return { isValid: false, shouldLog: true };
@@ -274,9 +285,16 @@ addLesson({
         return { isValid: false, shouldLog: true };
       }
     } else if (this.currentPart === 3) {
-      // Часть 3: Проверяем вопросительную форму (уже проверено через pattern: ["do", "you/we/they"])
+      // Часть 3: Проверяем вопросительную форму
       const remainingWords = normalizedWords.slice(wordIndex);
       if (remainingWords.length < 1) {
+        if (feedback) feedback.textContent = 'После "Do you/we/they" должен быть хотя бы один глагол. Например: Do you live?';
+        return { isValid: false, shouldLog: true };
+      }
+      // Простая проверка: после "do you/we/they" должен быть глагол (не "not", не другой вспомогательный глагол)
+      const firstWord = remainingWords[0];
+      if (firstWord === 'not' || firstWord === 'do' || firstWord === 'does') {
+        if (feedback) feedback.textContent = 'После "Do you/we/they" должен быть основной глагол. Например: Do you live?';
         return { isValid: false, shouldLog: true };
       }
     }
@@ -289,7 +307,7 @@ addLesson({
       }
       if (usedNames.includes(remainingWords)) {
         console.log(`Duplicate found: "${remainingWords}"`);
-        return { isValid: false, shouldLog: false }; // Повторы уже обрабатываются выше
+        return { isValid: false, shouldLog: false };
       }
       usedNames.push(remainingWords);
       this.usedNames = usedNames;
@@ -320,11 +338,11 @@ addLesson({
     if (allStructuresCompleted) {
       if (this.currentPart === 1) {
         this.currentPart = 2;
-        if (feedback) feedback.textContent = 'Вы завершили первую часть! Теперь давайте работать с отрицаниями: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
+        if (feedback) feedback.textContent = 'Вы завершили первую часть! Теперь практикуем структуры из Части 2: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
         console.log(`Переходим к части ${this.currentPart}`);
       } else if (this.currentPart === 2) {
         this.currentPart = 3;
-        if (feedback) feedback.textContent = 'Вы завершили вторую часть! Теперь давайте задавать вопросы: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
+        if (feedback) feedback.textContent = 'Вы завершили вторую часть! Теперь практикуем вопросы из Части 3: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
         console.log(`Переходим к части ${this.currentPart}`);
       }
     }
