@@ -624,6 +624,9 @@
       if (!isListening) {
         startTime = new Date();
         startListening();
+        if (currentLessonData.onPracticeStart) {
+          currentLessonData.onPracticeStart(feedback);
+        }
       } else {
         feedback.textContent = 'Практика уже запущена. Если ничего не происходит, проверьте доступ к микрофону и перезапустите.';
       }
@@ -658,7 +661,6 @@
         if (restartListeningBtn) {
           restartListeningBtn.classList.add('hidden');
         }
-        feedback.textContent = 'Говори любой пример из структур ниже.';
         lastSpeechTime = Date.now();
       } catch (error) {
         feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Проверьте доступ к микрофону и попробуйте снова.';
@@ -913,42 +915,67 @@
       if (!currentLessonData) return;
       updateOverallProgressBar();
       progressBars.innerHTML = '';
-      currentLessonData.structures.forEach(struct => {
-        const totalCorrect = progress[struct.id];
-        const div = document.createElement('div');
-        div.className = 'mb-2';
 
-        let barsHTML = `
-          <p class="text-sm">${struct.structure}</p>
-        `;
+      // Если у урока нет свойства parts, показываем все структуры
+      if (!currentLessonData.parts || !currentLessonData.currentPart) {
+        currentLessonData.structures.forEach(struct => {
+          const totalCorrect = progress[struct.id] || 0;
+          const div = document.createElement('div');
+          div.className = 'mb-2';
 
-        const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
-        const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
-        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
-        barsHTML += `
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
-          </div>
-        `;
-
-        if (totalCorrect > currentLessonData.requiredCorrect) {
-          const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
-          const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
-          const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
-          console.log(`Excess Percentage: ${excessPercentage}%`);
-          barsHTML += `
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
+          let barsHTML = `
+            <p class="text-sm">${struct.structure}</p>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+              <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${(totalCorrect / currentLessonData.requiredCorrect) * 100}%"></div>
             </div>
+            <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
           `;
-        }
+          div.innerHTML = barsHTML;
+          progressBars.appendChild(div);
+        });
+        return;
+      }
 
-        barsHTML += `
-          <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
-        `;
-        div.innerHTML = barsHTML;
-        progressBars.appendChild(div);
+      // Группируем структуры по частям
+      const structuresByPart = { 1: [], 2: [], 3: [] };
+      currentLessonData.structures.forEach(struct => {
+        const part = currentLessonData.parts[struct.id] || 1;
+        structuresByPart[part].push(struct);
       });
+
+      // Показываем только структуры текущей части
+      const currentPart = currentLessonData.currentPart;
+      const currentStructures = structuresByPart[currentPart] || [];
+
+      if (currentStructures.length > 0) {
+        const partDiv = document.createElement('div');
+        partDiv.className = 'mb-4';
+
+        // Добавляем заголовок части
+        const partHeader = document.createElement('p');
+        partHeader.className = 'text-md font-semibold mb-2';
+        partHeader.textContent = `Часть ${currentPart}`;
+        partDiv.appendChild(partHeader);
+
+        // Добавляем прогресс-бары для текущей части
+        currentStructures.forEach(struct => {
+          const totalCorrect = progress[struct.id] || 0;
+          const structDiv = document.createElement('div');
+          structDiv.className = 'mb-2';
+
+          let barsHTML = `
+            <p class="text-sm">${struct.structure}</p>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+              <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${(totalCorrect / currentLessonData.requiredCorrect) * 100}%"></div>
+            </div>
+            <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
+          `;
+          structDiv.innerHTML = barsHTML;
+          partDiv.appendChild(structDiv);
+        });
+
+        progressBars.appendChild(partDiv);
+      }
     }
 
     function checkCompletion() {
