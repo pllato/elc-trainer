@@ -1,6 +1,7 @@
 const lessonsData = [];
 let isFetchingLessons = false;
 let lastValidatedText = null;
+let lastValidatedTime = 0;
 
 // Function to add lesson data
 function addLesson(lesson) {
@@ -8,7 +9,7 @@ function addLesson(lesson) {
     lessonsData.push(lesson);
     console.log('Lesson added:', lesson.name, 'Total lessons:', lessonsData.length);
   } else {
-    console.log('Duplicate lesson skipped:', lesson.name);
+    console.log('Duplicate lesson skipped:', lesson.lesson);
   }
 }
 
@@ -82,7 +83,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 1500); // Increased delay
+    setTimeout(() => populateLessonSelect(), 5000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -99,6 +100,7 @@ function resetLessonState() {
   window.usedVerbs = [];
   window.userProgress = {};
   lastValidatedText = null;
+  lastValidatedTime = 0;
   console.log('Lesson state reset');
 }
 
@@ -184,10 +186,12 @@ function startRecognition() {
     let text = event.results[0][0].transcript;
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
-    // Prevent duplicate validation
-    if (text !== lastValidatedText) {
+    const now = Date.now();
+    // Prevent duplicate validation within 500ms
+    if (text !== lastValidatedText || now - lastValidatedTime > 500) {
       validateInput(text);
       lastValidatedText = text;
+      lastValidatedTime = now;
     } else {
       console.log('Duplicate input skipped:', text);
     }
