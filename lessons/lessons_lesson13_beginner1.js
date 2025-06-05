@@ -139,8 +139,10 @@ addLesson({
     const words = text.split(' ').filter(word => word.length > 0);
     let wordIndex = 0;
 
-    // Проверяем существование глобальных переменных
-    if (!window.usedNames) window.usedNames = [];
+    // Локальный массив для хранения использованных фраз в этом уроке
+    this.usedNames = this.usedNames || [];
+
+    // Проверяем существование глобальных переменных для вопросов и ответов
     if (!window.lastAskedVerb) window.lastAskedVerb = null;
     if (!window.lastAskedSubject) window.lastAskedSubject = null;
 
@@ -156,7 +158,7 @@ addLesson({
     }
 
     console.log(`Validating text: "${text}" for structure: "${structure ? structure.structure : 'answer'}"`);
-    console.log('window.usedNames before validation:', window.usedNames);
+    console.log('this.usedNames before validation:', this.usedNames);
 
     // Проверяем, является ли текст ответом на вопрос (Yes/No)
     if (!structure && window.lastAskedVerb && window.lastAskedSubject) {
@@ -222,12 +224,12 @@ addLesson({
       
       // Проверяем уникальность действия
       if (structure.hasName) {
-        if (window.usedNames.includes(fullAction)) {
+        if (this.usedNames.includes(fullAction)) {
           console.log(`Action "${fullAction}" is a duplicate`);
           return false; // Действие уже использовалось
         }
-        window.usedNames.push(fullAction);
-        console.log(`Added "${fullAction}" to window.usedNames:`, window.usedNames);
+        this.usedNames.push(fullAction);
+        console.log(`Added "${fullAction}" to this.usedNames:`, this.usedNames);
       }
       return true;
     }
@@ -259,12 +261,12 @@ addLesson({
       
       // Проверяем уникальность действия
       if (structure.hasName) {
-        if (window.usedNames.includes(fullAction)) {
+        if (this.usedNames.includes(fullAction)) {
           console.log(`Action "${fullAction}" is a duplicate`);
           return false; // Действие уже использовалось
         }
-        window.usedNames.push(fullAction);
-        console.log(`Added "${fullAction}" to window.usedNames:`, window.usedNames);
+        this.usedNames.push(fullAction);
+        console.log(`Added "${fullAction}" to this.usedNames:`, this.usedNames);
       }
       return true;
     }
