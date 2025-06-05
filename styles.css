@@ -215,7 +215,38 @@ p {
   font-size: 14px;
 }
 
-/* Прогресс-бары */
+/* Общий прогресс-бар */
+#overall-progress-bar .mb-4 {
+  margin-bottom: 16px;
+}
+
+#overall-progress-bar .text-md.font-semibold {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#overall-progress-bar .w-full.bg-gray-200.rounded-full.h-3.mb-2 {
+  width: 100%;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  height: 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+#overall-progress-bar .bg-\[#373D8D\].h-3.rounded-full {
+  background-color: #373D8D;
+  height: 12px;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+#overall-progress-bar .text-sm.text-gray-600 {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+/* Прогресс-бары для структур */
 #progress-bars .mb-2 {
   margin-bottom: 8px;
 }
@@ -224,7 +255,7 @@ p {
   font-size: 14px;
 }
 
-#progress-bars div div { /* Контейнер прогресс-бара */
+#progress-bars div div {
   width: 100%;
   background-color: #e5e7eb;
   border-radius: 9999px;
@@ -233,7 +264,7 @@ p {
   position: relative;
 }
 
-#progress-bars div div div { /* Заполненная часть прогресс-бара */
+#progress-bars div div div {
   height: 10px;
   border-radius: 9999px;
   transition: width 0.3s ease;
@@ -364,13 +395,13 @@ p {
 
 /* Модальное окно завершения */
 #completion-modal {
-  background-color: #444;
-  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #333;
 }
 
 #completion-modal .modal-content {
-  background-color: transparent;
-  box-shadow: none;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #completion-modal .modal-content h2 {
@@ -378,7 +409,7 @@ p {
 }
 
 #completion-modal .modal-content p {
-  color: white;
+  color: #333;
 }
 
 #completion-modal .modal-content p:nth-of-type(1),
@@ -388,7 +419,7 @@ p {
 }
 
 #completion-modal .modal-content p:nth-of-type(4) {
-  color: white;
+  color: #333;
 }
 
 #completion-modal .modal-log {
@@ -399,8 +430,8 @@ p {
   border: 1px solid #ccc;
   padding: 8px;
   font-size: 0.875rem;
-  color: white;
-  background-color: rgba(255, 255, 255, 0.1);
+  color: #333;
+  background-color: #f5f5f5;
 }
 
 #completion-modal .modal-content button {
