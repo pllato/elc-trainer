@@ -3,6 +3,9 @@ let isFetchingLessons = false;
 let lastValidatedText = null;
 let lastValidatedTime = 0;
 
+// Initialize global total progress
+window.totalProgress = 0;
+
 // Function to add lesson data
 function addLesson(lesson) {
   if (!lessonsData.some(existing => existing.lesson === lesson.lesson && existing.level === lesson.level)) {
@@ -15,6 +18,12 @@ function addLesson(lesson) {
 
 // Function to populate lesson select dropdown
 function populateLessonSelect(attempt = 1, maxAttempts = 20) {
+  const levelLessonScreen = document.getElementById('level-lesson-screen');
+  if (levelLessonScreen && levelLessonScreen.style.display === 'none') {
+    console.log('Level-lesson screen is hidden, skipping populateLessonSelect');
+    return;
+  }
+
   const lessonSelect = document.getElementById('lesson-select');
   if (!lessonSelect) {
     if (attempt < maxAttempts) {
@@ -83,7 +92,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 30000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 60000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -99,9 +108,11 @@ function resetLessonState() {
   window.lessonStarted = false;
   window.usedVerbs = [];
   window.userProgress = {};
+  window.totalProgress = 0; // Reset total progress
   lastValidatedText = null;
   lastValidatedTime = 0;
   console.log('Lesson state reset');
+  updateOverallProgress(null); // Reset overall progress bar
 }
 
 // Update progress for a specific structure
@@ -135,6 +146,21 @@ function updateProgress(structureId, isCorrect, lessonId) {
 
 // Update overall progress
 function updateOverallProgress(lessonId) {
+  if (!lessonId) {
+    // Reset progress bar when lessonId is null (e.g., during reset)
+    const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
+    if (overallProgressBar) {
+      overallProgressBar.style.width = '0%';
+      console.log('Overall progress bar reset: width=0%');
+    }
+    const progressText = document.querySelector('#overall-progress-bar .text-sm');
+    if (progressText) {
+      progressText.textContent = `Прогресс: 0/0`;
+      console.log('Progress text reset: Прогресс: 0/0');
+    }
+    return;
+  }
+
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   if (!lesson) {
     console.log(`Lesson ${lessonId} not found`);
@@ -144,28 +170,23 @@ function updateOverallProgress(lessonId) {
   const totalRequired = lesson.structures.length * lesson.requiredCorrect;
   let totalCorrect = 0;
 
-  // Only count contributions from structures that haven't reached requiredCorrect
+  // Calculate total progress based on capped contributions
   lesson.structures.forEach(structure => {
     const count = window.userProgress[structure.id] || 0;
     const cappedCount = Math.min(count, lesson.requiredCorrect);
-    if (count < lesson.requiredCorrect) {
-      totalCorrect += count; // Only add if not yet complete
-    } else {
-      totalCorrect += lesson.requiredCorrect; // Add only requiredCorrect if complete
-    }
-    console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}, Contributes: ${Math.min(count, lesson.requiredCorrect)} to total`);
+    totalCorrect += cappedCount;
+    console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}, Contributes: ${cappedCount} to total`);
   });
 
-  // Ensure totalCorrect does not exceed totalRequired
-  totalCorrect = Math.min(totalCorrect, totalRequired);
-  console.log(`Total progress capped at: ${totalCorrect}/${totalRequired}`);
+  // Update global total progress
+  window.totalProgress = Math.min(totalCorrect, totalRequired);
+  console.log(`Total progress: ${window.totalProgress}/${totalRequired}`);
 
   const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
   if (overallProgressBar) {
-    const percentage = (totalCorrect / totalRequired) * 100;
-    overallProgressBar.style.width = `${Math.min(percentage, 100)}%`;
-    console.log(`Overall progress: ${totalCorrect}/${totalRequired}, Percentage: ${percentage}%`);
-    // Debug: Log the actual style applied
+    const percentage = (window.totalProgress / totalRequired) * 100;
+    overallProgressBar.style.width = `${percentage}%`;
+    console.log(`Overall progress: ${window.totalProgress}/${totalRequired}, Percentage: ${percentage}%`);
     console.log(`Overall progress bar style: width=${overallProgressBar.style.width}`);
   } else {
     console.log('Overall progress bar not found');
@@ -173,7 +194,7 @@ function updateOverallProgress(lessonId) {
 
   const progressText = document.querySelector('#overall-progress-bar .text-sm');
   if (progressText) {
-    progressText.textContent = `Прогресс: ${totalCorrect}/${totalRequired}`;
+    progressText.textContent = `Прогресс: ${window.totalProgress}/${totalRequired}`;
     console.log(`Progress text updated: ${progressText.textContent}`);
   } else {
     console.log('Progress text element not found');
@@ -202,7 +223,7 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 1500) {
+    if (text !== lastValidatedText || now - lastValidatedTime > 3000) {
       validateInput(text);
       lastValidatedText = text;
       lastValidatedTime = now;
