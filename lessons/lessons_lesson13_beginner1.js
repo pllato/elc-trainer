@@ -144,7 +144,13 @@ addLesson({
     if (!window.lastAskedSubject) window.lastAskedSubject = null;
 
     // Доступ к usedNames через this (объект урока)
-    const usedNames = this.usedNames || [];
+    let usedNames = this.usedNames || [];
+    // Дополнительный сброс usedNames в начале валидации
+    if (usedNames.length > 0 && this.usedNames.length !== 0) {
+      this.usedNames.length = 0;
+      usedNames = this.usedNames;
+      console.log('usedNames reset at start of validation:', usedNames);
+    }
 
     function normalizeWord(word) {
       word = word.toLowerCase();
