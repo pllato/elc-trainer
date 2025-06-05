@@ -55,7 +55,7 @@ addLesson({
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
-    // Удаляем всё, кроме букв, пробелов и цифр, и приводим к нижнему регистру
+    // Очищаем текст от всего, кроме букв, цифр и пробелов
     const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
 
