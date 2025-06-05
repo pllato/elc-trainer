@@ -9,6 +9,10 @@ function addLesson(lesson) {
 // Function to populate lesson select dropdown
 function populateLessonSelect() {
   const lessonSelect = document.getElementById('lesson-select');
+  if (!lessonSelect) {
+    console.error('Lesson select element not found');
+    return;
+  }
   lessonSelect.innerHTML = '<option value="">Выберите урок</option>';
 
   // Sort lessons by level and lesson number
@@ -27,6 +31,44 @@ function populateLessonSelect() {
     option.textContent = lesson.name;
     lessonSelect.appendChild(option);
   });
+  console.log('Lesson select populated with', lessonsData.length, 'lessons');
+}
+
+// Fetch lessons from GitHub API
+async function fetchLessons() {
+  const url = 'https://api.github.com/repos/pllato/elc-trainer/contents/lessons';
+  console.log('Fetching lessons from:', url);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const files = await response.json();
+    console.log('Files fetched from GitHub:', files);
+
+    for (const file of files) {
+      if (file.name.endsWith('.js')) {
+        console.log('Processing file:', file.name);
+        try {
+          const script = document.createElement('script');
+          script.src = file.download_url;
+          document.head.appendChild(script);
+          // Wait for script to load
+          await new Promise(resolve => script.onload = resolve);
+        } catch (error) {
+          console.error('Error loading file:', file.name, error);
+        }
+      }
+    }
+    console.log('Lessons loaded from GitHub:', lessonsData);
+    populateLessonSelect();
+  } catch (error) {
+    console.error('Error fetching lessons:', error);
+  }
 }
 
 // Reset lesson state when starting a new lesson
@@ -162,5 +204,7 @@ function validateInput(text, lessonId = 'lesson13') {
   }
 }
 
-// Call populateLessonSelect when DOM is loaded
-document.addEventListener('DOMContentLoaded', populateLessonSelect);
+// Start fetching lessons when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  fetchLessons();
+});
