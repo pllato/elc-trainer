@@ -868,7 +868,13 @@ function checkPartProgress() {
 
   // Проверяем прогресс для структур первой части
   const part1Structures = currentLessonData.structures.filter(struct => currentLessonData.parts[struct.id] === 1);
-  const part1Completed = part1Structures.every(struct => progress[struct.id] >= currentLessonData.requiredCorrect / 2);
+  const requiredPerStructure = currentLessonData.requiredCorrect / 2; // 5 правильных ответов на структуру
+  const part1Completed = part1Structures.every(struct => {
+    const count = progress[struct.id];
+    const meetsRequirement = count >= requiredPerStructure;
+    console.log(`Structure "${struct.structure}" has ${count} correct answers, needs ${requiredPerStructure}: ${meetsRequirement}`);
+    return meetsRequirement;
+  });
 
   if (part1Completed) {
     currentPart = 2;
