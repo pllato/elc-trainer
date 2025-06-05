@@ -14,7 +14,9 @@ function populateLessonSelect() {
   // Sort lessons by level and lesson number
   lessonsData.sort((a, b) => {
     if (a.level === b.level) {
-      return parseInt(a.lesson.replace('lesson', '')) - parseInt(b.lesson.replace('lesson', ''));
+      const lessonA = parseInt(a.lesson.replace('lesson', '')) || 0;
+      const lessonB = parseInt(b.lesson.replace('lesson', '')) || 0;
+      return lessonA - lessonB;
     }
     return a.level.localeCompare(b.level);
   });
@@ -27,43 +29,71 @@ function populateLessonSelect() {
   });
 }
 
-// Placeholder for progress tracking
-function updateProgress(structureId, isCorrect) {
-  // Assume userProgress is an object tracking correct answers per structure
+// Reset lesson state when starting a new lesson
+function resetLessonState() {
+  window.lessonStarted = false;
+  window.usedVerbs = [];
+  window.userProgress = {};
+}
+
+// Update progress for a specific structure
+function updateProgress(structureId, isCorrect, lessonId) {
   if (!window.userProgress) window.userProgress = {};
   if (!window.userProgress[structureId]) window.userProgress[structureId] = 0;
 
-  if (isCorrect && window.userProgress[structureId] < 10) {
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  const requiredCorrect = lesson ? lesson.requiredCorrect : 10;
+
+  // Only increment if under requiredCorrect
+  if (isCorrect && window.userProgress[structureId] < requiredCorrect) {
     window.userProgress[structureId]++;
   }
 
   // Update individual progress bar
   const progressBar = document.querySelector(`#progress-bars [data-structure="${structureId}"] .progress`);
   if (progressBar) {
-    progressBar.style.width = `${(window.userProgress[structureId] / 10) * 100}%`;
+    const percentage = (window.userProgress[structureId] / requiredCorrect) * 100;
+    progressBar.style.width = `${Math.min(percentage, 100)}%`;
+    console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, First Bar Percentage: ${percentage}%`);
   }
 
   // Update overall progress
-  updateOverallProgress();
+  updateOverallProgress(lessonId);
 }
 
-function updateOverallProgress() {
-  const totalRequired = lessonsData.find(l => l.lesson === currentLesson).structures.length * 10;
+// Update overall progress for the lesson
+function updateOverallProgress(lessonId) {
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  if (!lesson) return;
+
+  const totalRequired = lesson.structures.length * lesson.requiredCorrect;
   let totalCorrect = 0;
 
-  Object.values(window.userProgress).forEach(count => {
-    totalCorrect += Math.min(count, 10); // Cap at 10 per structure
+  // Sum up correct answers, capping at requiredCorrect per structure
+  lesson.structures.forEach(structure => {
+    const count = window.userProgress[structure.id] || 0;
+    totalCorrect += Math.min(count, lesson.requiredCorrect);
   });
 
+  // Update overall progress bar
   const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
   if (overallProgressBar) {
-    overallProgressBar.style.width = `${(totalCorrect / totalRequired) * 100}%`;
+    const percentage = (totalCorrect / totalRequired) * 100;
+    overallProgressBar.style.width = `${Math.min(percentage, 100)}%`;
   }
 
   const progressText = document.querySelector('#overall-progress-bar .text-sm');
   if (progressText) {
     progressText.textContent = `Прогресс: ${totalCorrect}/${totalRequired}`;
   }
+
+  // Log excess if any structure exceeds requiredCorrect
+  lesson.structures.forEach(structure => {
+    const count = window.userProgress[structure.id] || 0;
+    if (count > lesson.requiredCorrect) {
+      console.log(`Structure: ${structure.structure}, Excess Percentage: ${((count - lesson.requiredCorrect) / lesson.requiredCorrect) * 100}%`);
+    }
+  });
 }
 
 // Call populateLessonSelect when DOM is loaded
