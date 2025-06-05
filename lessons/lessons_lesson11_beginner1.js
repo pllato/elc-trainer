@@ -80,8 +80,8 @@ addLesson({
     const pattern = structure.pattern;
     let wordIndex = 0;
 
-    // Сбрасываем window.usedNames при старте урока
-    window.usedNames = [];
+    // Локальный массив для хранения использованных фраз в этом уроке
+    this.usedNames = this.usedNames || [];
 
     function normalizeWord(word) {
       word = word.toLowerCase();
@@ -110,10 +110,10 @@ addLesson({
 
     // Проверяем уникальность предмета
     if (structure.hasName) {
-      if (window.usedNames && window.usedNames.includes(item)) {
+      if (this.usedNames.includes(item)) {
         return false; // Предмет уже использовался
       }
-      window.usedNames.push(item);
+      this.usedNames.push(item);
     }
 
     return true;
