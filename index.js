@@ -114,7 +114,7 @@ function selectLesson(lessonId) {
   }
 }
 
-// Basic SpeechRecognition handler
+// SpeechRecognition handler
 let recognition;
 function startRecognition() {
   if (recognition && recognition.state === 'listening') {
@@ -126,20 +126,25 @@ function startRecognition() {
   recognition.onresult = function(event) {
     const text = event.results[0][0].transcript.trim();
     console.log('Speech recognized:', text);
-    // Assume validateInput is a function that calls validateStructure
     validateInput(text);
   };
   recognition.onerror = function(event) {
     console.log('Speech recognition error:', event.error);
   };
+  recognition.onend = function() {
+    console.log('Speech recognition ended');
+    recognition = null;
+  };
   recognition.start();
 }
 
-// Placeholder for input validation
-function validateInput(text) {
-  const lessonId = 'lesson13'; // Replace with actual lesson selection logic
+// Validate input against lesson structures
+function validateInput(text, lessonId = 'lesson13') {
   const lesson = lessonsData.find(l => l.lesson === lessonId);
-  if (!lesson) return;
+  if (!lesson) {
+    console.log(`Lesson ${lessonId} not found`);
+    return;
+  }
 
   let isCorrect = false;
   let currentStructure;
