@@ -629,7 +629,7 @@
       if (statsDiv) statsDiv.innerHTML = '';
       if (logDiv) logDiv.innerHTML = '';
       if (modalLog) modalLog.innerHTML = '';
-      updateProgressBars();
+      updateProgressBars(userLesson); // Вызываем из index.js
 
       // Переключаем экраны
       if (practiceScreen) practiceScreen.classList.add('hidden');
@@ -692,7 +692,7 @@
     }
 
     function initializeProgressBars() {
-      updateProgressBars();
+      updateProgressBars(userLesson); // Вызываем из index.js
     }
 
     function formatDuration(start, end) {
@@ -790,7 +790,7 @@
                 feedback.textContent = `Правильно! Ты сказал: "${spokenText}" для "${matchedStructure.structure}"`;
               }
 
-              updateProgressBars();
+              updateProgressBars(userLesson); // Вызываем из index.js
               checkCompletion();
             } else {
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
@@ -890,47 +890,6 @@
         logDiv.appendChild(p);
       });
       logDiv.scrollTop = logDiv.scrollHeight;
-    }
-
-    function updateProgressBars() {
-      if (!currentLessonData) return;
-      progressBars.innerHTML = '';
-      currentLessonData.structures.forEach(struct => {
-        const totalCorrect = progress[struct.id];
-        const div = document.createElement('div');
-        div.className = 'mb-2';
-
-        let barsHTML = `
-          <p class="text-sm">${struct.structure}</p>
-        `;
-
-        const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
-        const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
-        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
-        barsHTML += `
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
-          </div>
-        `;
-
-        if (totalCorrect > currentLessonData.requiredCorrect) {
-          const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
-          const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
-          const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
-          console.log(`Excess Percentage: ${excessPercentage}%`);
-          barsHTML += `
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
-            </div>
-          `;
-        }
-
-        barsHTML += `
-          <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
-        `;
-        div.innerHTML = barsHTML;
-        progressBars.appendChild(div);
-      });
     }
 
     function checkCompletion() {
