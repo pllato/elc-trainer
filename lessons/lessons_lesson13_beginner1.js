@@ -121,8 +121,8 @@ addLesson({
       hasName: false 
     }
   ],
-  requiredCorrect: 10, // Общее количество правильных примеров на структуру
-  parts: { // Разделение структур на части
+  requiredCorrect: 10,
+  parts: {
     "i-positive": 1,
     "you-positive": 1,
     "we-positive": 1,
@@ -135,8 +135,8 @@ addLesson({
     "do-we-question": 3,
     "do-they-question": 3
   },
-  currentPart: 1, // Начальная часть урока
-  validateStructure: function(text, structure, feedback, logEntries) {
+  currentPart: 1,
+  validateStructure: function(text, structure, feedback) {
     const words = text.split(' ').filter(word => word.length > 0);
     let wordIndex = 0;
 
@@ -173,29 +173,29 @@ addLesson({
       if (normalizedWords[0] === "yes") {
         if (normalizedWords.length < 3) {
           console.log("Answer too short for 'Yes' response");
-          return false;
+          return { isValid: false, shouldLog: false };
         }
         const expectedAnswer = `${window.lastAskedSubject} ${window.lastAskedVerb}`;
         const answerText = normalizedWords.slice(1).join(' ');
         console.log(`Expected answer: "${expectedAnswer}", Given answer: "${answerText}"`);
         if (!answerText.includes(window.lastAskedVerb) || !answerText.includes(window.lastAskedSubject)) {
-          return false;
+          return { isValid: false, shouldLog: false };
         }
-        return true;
+        return { isValid: true, shouldLog: false };
       } else if (normalizedWords[0] === "no") {
         if (normalizedWords.length < 4) {
           console.log("Answer too short for 'No' response");
-          return false;
+          return { isValid: false, shouldLog: false };
         }
         const expectedAnswer = `${window.lastAskedSubject} ${window.lastAskedVerb}`;
         const answerText = normalizedWords.slice(1).join(' ');
         console.log(`Expected answer: "${expectedAnswer}", Given answer: "${answerText}"`);
         if (!answerText.includes(window.lastAskedVerb) || !answerText.includes(window.lastAskedSubject)) {
-          return false;
+          return { isValid: false, shouldLog: false };
         }
-        return true;
+        return { isValid: true, shouldLog: false };
       }
-      return false;
+      return { isValid: false, shouldLog: false };
     }
 
     // Проверяем, соответствует ли текст какой-либо структуре из другой части
@@ -227,15 +227,8 @@ addLesson({
       } else if (this.currentPart === 3) {
         message = 'Сейчас мы работаем над вопросами из третьей части: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
       }
-      feedback.textContent = message;
-      // Добавляем в протокол
-      logEntries.push({
-        time: new Date().toLocaleTimeString(),
-        spoken: text,
-        structure: matchedOtherPartStructure.structure,
-        correct: false
-      });
-      return false;
+      if (feedback) feedback.textContent = message;
+      return { isValid: false, shouldLog: true };
     }
 
     // Проверяем текущую часть урока
@@ -248,14 +241,8 @@ addLesson({
       } else if (this.currentPart === 3) {
         message = 'Сейчас мы работаем над вопросами из третьей части: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
       }
-      feedback.textContent = message;
-      // Добавляем в протокол
-      logEntries.push({
-        time: new Date().toLocaleTimeString(),
-        spoken: text,
-        correct: false
-      });
-      return false;
+      if (feedback) feedback.textContent = message;
+      return { isValid: false, shouldLog: true };
     }
 
     // Проверяем, соответствует ли текст шаблону структуры
@@ -263,13 +250,7 @@ addLesson({
     for (let part of pattern) {
       if (!normalizedWords[wordIndex] || normalizedWords[wordIndex] !== part) {
         console.log(`Mismatch at wordIndex ${wordIndex}: Expected "${part}", Got "${normalizedWords[wordIndex]}"`);
-        // Добавляем в протокол
-        logEntries.push({
-          time: new Date().toLocaleTimeString(),
-          spoken: text,
-          correct: false
-        });
-        return false;
+        return { isValid: false, shouldLog: true };
       }
       wordIndex++;
     }
@@ -279,45 +260,24 @@ addLesson({
       // Часть 1: Проверяем наличие глагола в настоящем времени
       const remainingWords = normalizedWords.slice(wordIndex);
       if (remainingWords.length < 1) {
-        logEntries.push({
-          time: new Date().toLocaleTimeString(),
-          spoken: text,
-          correct: false
-        });
-        return false; // Должен быть хотя бы глагол
+        return { isValid: false, shouldLog: true };
       }
       const verb = remainingWords[0];
-      // Простая проверка: глагол должен быть в настоящем времени (не заканчиваться на "ed", не "did")
       if (verb.endsWith('ed') || verb === 'did') {
-        feedback.textContent = 'Используйте глагол в настоящем времени. Например: I live in London.';
-        logEntries.push({
-          time: new Date().toLocaleTimeString(),
-          spoken: text,
-          correct: false
-        });
-        return false;
+        if (feedback) feedback.textContent = 'Используйте глагол в настоящем времени. Например: I live in London.';
+        return { isValid: false, shouldLog: true };
       }
     } else if (this.currentPart === 2) {
       // Часть 2: Проверяем наличие отрицания (уже проверено через pattern: ["i", "do", "not"])
       const remainingWords = normalizedWords.slice(wordIndex);
       if (remainingWords.length < 1) {
-        logEntries.push({
-          time: new Date().toLocaleTimeString(),
-          spoken: text,
-          correct: false
-        });
-        return false; // Должен быть хотя бы глагол после "do not"
+        return { isValid: false, shouldLog: true };
       }
     } else if (this.currentPart === 3) {
       // Часть 3: Проверяем вопросительную форму (уже проверено через pattern: ["do", "you/we/they"])
       const remainingWords = normalizedWords.slice(wordIndex);
       if (remainingWords.length < 1) {
-        logEntries.push({
-          time: new Date().toLocaleTimeString(),
-          spoken: text,
-          correct: false
-        });
-        return false; // Должен быть хотя бы глагол после "do you/we/they"
+        return { isValid: false, shouldLog: true };
       }
     }
 
@@ -325,58 +285,46 @@ addLesson({
     if (structure.hasName) {
       const remainingWords = normalizedWords.slice(wordIndex).join(' ');
       if (!remainingWords) {
-        logEntries.push({
-          time: new Date().toLocaleTimeString(),
-          spoken: text,
-          correct: false
-        });
-        return false; // Должно быть хотя бы одно слово после шаблона
+        return { isValid: false, shouldLog: true };
       }
       if (usedNames.includes(remainingWords)) {
         console.log(`Duplicate found: "${remainingWords}"`);
-        return false; // Уже использовали этот пример
+        return { isValid: false, shouldLog: false }; // Повторы уже обрабатываются выше
       }
       usedNames.push(remainingWords);
       this.usedNames = usedNames;
       console.log('usedNames after adding:', usedNames);
-      return true;
+      return { isValid: true, shouldLog: false };
     }
 
     // Для вопросов (hasName: false) проверяем, что текст заканчивается после шаблона
     if (!structure.hasName) {
       if (wordIndex >= normalizedWords.length) {
-        logEntries.push({
-          time: new Date().toLocaleTimeString(),
-          spoken: text,
-          correct: false
-        });
-        return false; // Должно быть хотя бы одно слово после шаблона
+        return { isValid: false, shouldLog: true };
       }
       if (structure.id.startsWith('do-')) {
-        // Сохраняем глагол и субъект для ответа
         const verbAndObject = normalizedWords.slice(wordIndex).join(' ');
-        window.lastAskedVerb = verbAndObject.split(' ')[0]; // Первый глагол после "do you/we/they"
-        window.lastAskedSubject = structure.pattern[1]; // "you", "we", "they"
+        window.lastAskedVerb = verbAndObject.split(' ')[0];
+        window.lastAskedSubject = structure.pattern[1];
         console.log(`Saved lastAskedVerb: "${window.lastAskedVerb}", lastAskedSubject: "${window.lastAskedSubject}"`);
       }
-      return true;
+      return { isValid: true, shouldLog: false };
     }
 
-    return false;
+    return { isValid: false, shouldLog: true };
   },
   onProgressUpdate: function(progress, feedback) {
-    // Проверяем прогресс текущей части
     const partStructures = Object.keys(this.parts).filter(id => this.parts[id] === this.currentPart);
     const allStructuresCompleted = partStructures.every(id => progress[id] >= this.requiredCorrect);
     
     if (allStructuresCompleted) {
       if (this.currentPart === 1) {
         this.currentPart = 2;
-        feedback.textContent = 'Вы завершили первую часть! Теперь давайте работать с отрицаниями: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
+        if (feedback) feedback.textContent = 'Вы завершили первую часть! Теперь давайте работать с отрицаниями: I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
         console.log(`Переходим к части ${this.currentPart}`);
       } else if (this.currentPart === 2) {
         this.currentPart = 3;
-        feedback.textContent = 'Вы завершили вторую часть! Теперь давайте задавать вопросы: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
+        if (feedback) feedback.textContent = 'Вы завершили вторую часть! Теперь давайте задавать вопросы: Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
         console.log(`Переходим к части ${this.currentPart}`);
       }
     }
