@@ -83,7 +83,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 7000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 10000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
