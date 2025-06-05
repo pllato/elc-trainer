@@ -3,7 +3,6 @@ let isFetchingLessons = false;
 
 // Function to add lesson data
 function addLesson(lesson) {
-  // Prevent duplicates by checking lesson ID
   if (!lessonsData.some(existing => existing.lesson === lesson.lesson && existing.level === lesson.level)) {
     lessonsData.push(lesson);
     console.log('Lesson added:', lesson.name, 'Total lessons:', lessonsData.length);
@@ -22,7 +21,9 @@ function populateLessonSelect(attempt = 1, maxAttempts = 15) {
       setTimeout(() => populateLessonSelect(attempt + 1, maxAttempts), 1000);
     } else {
       console.error('Lesson select element not found after max attempts');
-      alert('Ошибка: не удалось загрузить список уроков. Проверьте подключение или обновите страницу.');
+      if (lessonsData.length === 0) {
+        alert('Ошибка: не удалось загрузить список уроков. Проверьте подключение или обновите страницу.');
+      }
     }
     return;
   }
@@ -83,13 +84,11 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 500);
+    setTimeout(() => populateLessonSelect(), 1000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
       populateLessonSelect();
-    } else {
-      alert('Ошибка загрузки уроков. Проверьте подключение.');
     }
   } finally {
     isFetchingLessons = false;
@@ -190,12 +189,17 @@ function startRecognition() {
   };
   window.recognition.onerror = function(event) {
     console.log('Speech recognition error:', event.error);
+    window.recognition = null; // Reset on error
   };
   window.recognition.onend = function() {
     console.log('Speech recognition ended');
     window.recognition = null;
   };
-  window.recognition.start();
+  try {
+    window.recognition.start();
+  } catch (error) {
+    console.error('Speech recognition start error:', error);
+  }
 }
 
 // Validate input
