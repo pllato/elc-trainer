@@ -1,5 +1,6 @@
 const lessonsData = [];
 let isFetchingLessons = false;
+let lastValidatedText = null;
 
 // Function to add lesson data
 function addLesson(lesson) {
@@ -12,7 +13,7 @@ function addLesson(lesson) {
 }
 
 // Function to populate lesson select dropdown
-function populateLessonSelect(attempt = 1, maxAttempts = 15) {
+function populateLessonSelect(attempt = 1, maxAttempts = 20) {
   const lessonSelect = document.getElementById('lesson-select');
   if (!lessonSelect) {
     if (attempt < maxAttempts) {
@@ -21,9 +22,6 @@ function populateLessonSelect(attempt = 1, maxAttempts = 15) {
       setTimeout(() => populateLessonSelect(attempt + 1, maxAttempts), 1000);
     } else {
       console.error('Lesson select element not found after max attempts');
-      if (lessonsData.length === 0) {
-        alert('Ошибка: не удалось загрузить список уроков. Проверьте подключение или обновите страницу.');
-      }
     }
     return;
   }
@@ -84,7 +82,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 1000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 1500); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -100,6 +98,7 @@ function resetLessonState() {
   window.lessonStarted = false;
   window.usedVerbs = [];
   window.userProgress = {};
+  lastValidatedText = null;
   console.log('Lesson state reset');
 }
 
@@ -185,11 +184,17 @@ function startRecognition() {
     let text = event.results[0][0].transcript;
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
-    validateInput(text);
+    // Prevent duplicate validation
+    if (text !== lastValidatedText) {
+      validateInput(text);
+      lastValidatedText = text;
+    } else {
+      console.log('Duplicate input skipped:', text);
+    }
   };
   window.recognition.onerror = function(event) {
     console.log('Speech recognition error:', event.error);
-    window.recognition = null; // Reset on error
+    window.recognition = null;
   };
   window.recognition.onend = function() {
     console.log('Speech recognition ended');
