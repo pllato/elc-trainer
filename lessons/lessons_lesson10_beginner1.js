@@ -52,8 +52,8 @@ addLesson({
     const pattern = structure.pattern;
     let wordIndex = 0;
 
-    // Сбрасываем window.usedNames при старте урока
-    window.usedNames = [];
+    // Локальный массив для хранения использованных фраз в этом уроке
+    this.usedNames = this.usedNames || [];
 
     function normalizeWord(word) {
       word = word.toLowerCase();
@@ -84,10 +84,10 @@ addLesson({
       if (normalizedWords.length - wordIndex === 2 && ["my", "our", "his", "her", "its", "their"].includes(firstWordAfterThisIs)) {
         return false;
       }
-      if (window.usedNames && window.usedNames.includes(name)) {
+      if (this.usedNames.includes(name)) {
         return false;
       }
-      window.usedNames.push(name);
+      this.usedNames.push(name);
       return true;
     }
 
