@@ -224,7 +224,7 @@ p {
   font-size: 14px;
 }
 
-#progress-bars .w-full.bg-gray-200.rounded-full.h-2\\.5.mb-1 {
+#progress-bars div div { /* Контейнер прогресс-бара */
   width: 100%;
   background-color: #e5e7eb;
   border-radius: 9999px;
@@ -232,16 +232,17 @@ p {
   margin-bottom: 4px;
 }
 
-#progress-bars .bg-\\[#373D8D\\].h-2\\.5.rounded-full {
-  background-color: #373D8D;
+#progress-bars div div div { /* Заполненная часть прогресс-бара */
   height: 10px;
   border-radius: 9999px;
 }
 
-#progress-bars .bg-\\[#28A745\\].h-2\\.5.rounded-full {
+#progress-bars div div div.bg-\[#373D8D\] {
+  background-color: #373D8D;
+}
+
+#progress-bars div div div.bg-\[#28A745\] {
   background-color: #28A745;
-  height: 10px;
-  border-radius: 9999px;
 }
 
 #progress-bars .text-xs.text-gray-600 {
@@ -359,7 +360,7 @@ p {
   margin-top: 8px;
 }
 
-/* Секция завершения */
+/* Модальное окно завершения */
 #completion-modal {
   background-color: #444;
   color: white;
@@ -370,6 +371,14 @@ p {
   box-shadow: none;
 }
 
+#completion-modal .modal-content h2 {
+  color: #373D8D;
+}
+
+#completion-modal .modal-content p {
+  color: white;
+}
+
 #completion-modal .modal-content p:nth-of-type(1),
 #completion-modal .modal-content p:nth-of-type(2),
 #completion-modal .modal-content p:nth-of-type(3) {
@@ -378,4 +387,30 @@ p {
 
 #completion-modal .modal-content p:nth-of-type(4) {
   color: white;
+}
+
+#completion-modal .modal-log {
+  margin-top: 16px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 0.875rem;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#completion-modal .modal-content button {
+  background-color: #373D8D;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+#completion-modal .modal-content button:hover {
+  background-color: #2A3171;
 }
