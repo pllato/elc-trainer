@@ -114,5 +114,48 @@ function selectLesson(lessonId) {
   }
 }
 
+// Basic SpeechRecognition handler
+let recognition;
+function startRecognition() {
+  if (recognition && recognition.state === 'listening') {
+    console.log('Recognition already active');
+    return;
+  }
+  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'en-US';
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript.trim();
+    console.log('Speech recognized:', text);
+    // Assume validateInput is a function that calls validateStructure
+    validateInput(text);
+  };
+  recognition.onerror = function(event) {
+    console.log('Speech recognition error:', event.error);
+  };
+  recognition.start();
+}
+
+// Placeholder for input validation
+function validateInput(text) {
+  const lessonId = 'lesson13'; // Replace with actual lesson selection logic
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  if (!lesson) return;
+
+  let isCorrect = false;
+  let currentStructure;
+  for (const structure of lesson.structures) {
+    if (lesson.validateStructure(text, structure)) {
+      isCorrect = true;
+      currentStructure = structure;
+      break;
+    }
+  }
+
+  console.log(`Validation result for "${text}": ${isCorrect ? 'Correct' : 'Incorrect'}`);
+  if (isCorrect) {
+    updateProgress(currentStructure.id, true, lessonId);
+  }
+}
+
 // Call populateLessonSelect when DOM is loaded
 document.addEventListener('DOMContentLoaded', populateLessonSelect);
