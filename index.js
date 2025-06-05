@@ -2,6 +2,8 @@ let lessonsData = []; // Массив для хранения данных об 
 
 // Определяем функцию addLesson для добавления уроков в lessonsData
 function addLesson(lesson) {
+  // Добавляем свойство usedNames для каждого урока
+  lesson.usedNames = [];
   lessonsData.push(lesson);
   console.log(`Adding lesson: ${lesson.name} for level ${lesson.level}`);
 }
@@ -570,7 +572,7 @@ function startListening() {
     }
 
     // Сбрасываем локальные usedNames для текущего урока
-    if (currentLessonData && currentLessonData.validateStructure) {
+    if (currentLessonData) {
       currentLessonData.usedNames = []; // Сбрасываем локальный массив
       console.log('currentLessonData.usedNames reset at startListening:', currentLessonData.usedNames);
     }
@@ -678,6 +680,7 @@ if (recognition) {
     lastSpeechTime = Date.now();
 
     console.log('Current window.usedNames before validation:', window.usedNames);
+    console.log('Current lesson usedNames before validation:', currentLessonData ? currentLessonData.usedNames : 'No lesson data');
 
     if (matchedStructure) {
       let isCorrect;
@@ -865,7 +868,7 @@ function checkPartProgress() {
   if (part1Completed) {
     currentPart = 2;
     // Сбрасываем локальные usedNames при переходе ко второй части
-    if (currentLessonData.validateStructure) {
+    if (currentLessonData) {
       currentLessonData.usedNames = [];
       console.log('currentLessonData.usedNames reset at part transition:', currentLessonData.usedNames);
     }
