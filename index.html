@@ -624,9 +624,6 @@
       if (!isListening) {
         startTime = new Date();
         startListening();
-        if (currentLessonData.onPracticeStart) {
-          currentLessonData.onPracticeStart(feedback);
-        }
       } else {
         feedback.textContent = 'Практика уже запущена. Если ничего не происходит, проверьте доступ к микрофону и перезапустите.';
       }
@@ -661,6 +658,7 @@
         if (restartListeningBtn) {
           restartListeningBtn.classList.add('hidden');
         }
+        feedback.textContent = 'Говори любой пример из структур ниже.';
         lastSpeechTime = Date.now();
       } catch (error) {
         feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Проверьте доступ к микрофону и попробуйте снова.';
@@ -757,43 +755,16 @@
       modalLog.innerHTML = logHTML;
     }
 
-    function findMatchingStructure(text, feedback, logEntries) {
-      if (!currentLessonData) return null;
-      const structures = currentLessonData.structures;
-      for (let struct of structures) {
-        const validationResult = currentLessonData.validateStructure(text, struct, feedback, logEntries);
-        if (validationResult.isValid) {
-          return struct;
-        }
-        if (validationResult.shouldLog) {
-          logEntries.push({
-            time: new Date().toLocaleTimeString(),
-            spoken: text,
-            structure: struct.structure,
-            correct: false
-          });
-        }
-      }
-      // Если текст не соответствует ни одной структуре, всё равно добавляем в протокол
-      logEntries.push({
-        time: new Date().toLocaleTimeString(),
-        spoken: text,
-        correct: false
-      });
-      return null;
-    }
-
     if (recognition) {
       recognition.onresult = (event) => {
         const spokenText = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-        const matchedStructure = findMatchingStructure(spokenText, feedback, logEntries);
+        const matchedStructure = findMatchingStructure(spokenText);
         const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
 
         lastSpeechTime = Date.now();
 
         if (matchedStructure) {
-          const validationResult = currentLessonData.validateStructure(spokenText, matchedStructure, feedback, logEntries);
-          const isCorrect = validationResult.isValid;
+          const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
           if (isCorrect) {
             const isDuplicate = matchedStructure.hasName && spokenHistory.includes(spokenText);
             logEntry.structure = matchedStructure.structure;
@@ -818,9 +789,6 @@
               }
 
               updateProgressBars();
-              if (currentLessonData.onProgressUpdate) {
-                currentLessonData.onProgressUpdate(progress, feedback);
-              }
               checkCompletion();
             } else {
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
@@ -893,6 +861,17 @@
       };
     }
 
+    function findMatchingStructure(text) {
+      if (!currentLessonData) return null;
+      const structures = currentLessonData.structures;
+      for (let struct of structures) {
+        if (currentLessonData.validateStructure(text, struct)) {
+          return struct;
+        }
+      }
+      return null;
+    }
+
     function updateLog() {
       logDiv.innerHTML = '';
       logEntries.forEach(entry => {
@@ -915,67 +894,42 @@
       if (!currentLessonData) return;
       updateOverallProgressBar();
       progressBars.innerHTML = '';
-
-      // Если у урока нет свойства parts, показываем все структуры
-      if (!currentLessonData.parts || !currentLessonData.currentPart) {
-        currentLessonData.structures.forEach(struct => {
-          const totalCorrect = progress[struct.id] || 0;
-          const div = document.createElement('div');
-          div.className = 'mb-2';
-
-          let barsHTML = `
-            <p class="text-sm">${struct.structure}</p>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-              <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${(totalCorrect / currentLessonData.requiredCorrect) * 100}%"></div>
-            </div>
-            <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
-          `;
-          div.innerHTML = barsHTML;
-          progressBars.appendChild(div);
-        });
-        return;
-      }
-
-      // Группируем структуры по частям
-      const structuresByPart = { 1: [], 2: [], 3: [] };
       currentLessonData.structures.forEach(struct => {
-        const part = currentLessonData.parts[struct.id] || 1;
-        structuresByPart[part].push(struct);
-      });
+        const totalCorrect = progress[struct.id];
+        const div = document.createElement('div');
+        div.className = 'mb-2';
 
-      // Показываем только структуры текущей части
-      const currentPart = currentLessonData.currentPart;
-      const currentStructures = structuresByPart[currentPart] || [];
+        let barsHTML = `
+          <p class="text-sm">${struct.structure}</p>
+        `;
 
-      if (currentStructures.length > 0) {
-        const partDiv = document.createElement('div');
-        partDiv.className = 'mb-4';
+        const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
+        const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
+        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
+        barsHTML += `
+          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
+          </div>
+        `;
 
-        // Добавляем заголовок части
-        const partHeader = document.createElement('p');
-        partHeader.className = 'text-md font-semibold mb-2';
-        partHeader.textContent = `Часть ${currentPart}`;
-        partDiv.appendChild(partHeader);
-
-        // Добавляем прогресс-бары для текущей части
-        currentStructures.forEach(struct => {
-          const totalCorrect = progress[struct.id] || 0;
-          const structDiv = document.createElement('div');
-          structDiv.className = 'mb-2';
-
-          let barsHTML = `
-            <p class="text-sm">${struct.structure}</p>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-              <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${(totalCorrect / currentLessonData.requiredCorrect) * 100}%"></div>
+        if (totalCorrect > currentLessonData.requiredCorrect) {
+          const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
+          const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
+          const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
+          console.log(`Excess Percentage: ${excessPercentage}%`);
+          barsHTML += `
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
             </div>
-            <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
           `;
-          structDiv.innerHTML = barsHTML;
-          partDiv.appendChild(structDiv);
-        });
+        }
 
-        progressBars.appendChild(partDiv);
-      }
+        barsHTML += `
+          <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
+        `;
+        div.innerHTML = barsHTML;
+        progressBars.appendChild(div);
+      });
     }
 
     function checkCompletion() {
