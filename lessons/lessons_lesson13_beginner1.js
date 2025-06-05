@@ -83,7 +83,8 @@ addLesson({
     const presentVerbs = [
       'work', 'play', 'run', 'drink', 'eat', 'study', 'live', 'watch', 'read', 'write',
       'go', 'come', 'see', 'hear', 'speak', 'listen', 'walk', 'sleep', 'sing', 'dance',
-      'like', 'love', 'hate', 'want', 'need', 'have', 'do', 'make', 'take', 'give'
+      'like', 'love', 'hate', 'want', 'need', 'have', 'do', 'make', 'take', 'give',
+      'swim', 'fly', 'try', 'ride', 'cook', 'jump', 'think', 'learn', 'talk', 'call'
     ];
 
     // Проверяем, является ли первое слово после местоимения глаголом
@@ -91,6 +92,16 @@ addLesson({
     if (!presentVerbs.includes(verb)) {
       console.log('Invalid verb:', verb);
       return false;
+    }
+
+    // Проверяем контекст: отклоняем неподходящие дополнения
+    const invalidWords = ['tomorrow', 'yesterday', 'will', 'would', 'am', 'is', 'are'];
+    const remainingWords = words.slice(wordIndex + 1);
+    for (const word of remainingWords) {
+      if (invalidWords.includes(word)) {
+        console.log('Invalid context word:', word);
+        return false;
+      }
     }
 
     console.log('Validation passed for:', text);
