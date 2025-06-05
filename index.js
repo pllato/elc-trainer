@@ -100,7 +100,7 @@ const introExamplesDiv = document.getElementById('intro-examples');
 adminBtn.addEventListener('click', (e) => {
   e.preventDefault();
   if (passwordModal) {
-    passwordModal.style.display = 'block';
+    passwordModal.style.display = 'flex'; // Устанавливаем display: flex при открытии
     passwordInput.value = '';
     passwordError.textContent = '';
     passwordInput.focus();
@@ -683,7 +683,7 @@ if (recognition) {
     if (!spokenText) {
       console.log('Empty speech input detected, ignoring.');
       setTimeout(() => {
-        if (isListening && !recognition.recognizing && (completionModal ? completionModal.style.display !== 'block' : true)) {
+        if (isListening && !recognition.recognizing && (completionModal ? completionModal.style.display !== 'flex' : true)) {
           try {
             recognition.start();
           } catch (error) {
@@ -758,7 +758,7 @@ if (recognition) {
 
     // Убедимся, что не пытаемся запустить recognition, если оно уже активно
     setTimeout(() => {
-      if (isListening && !recognition.recognizing && (completionModal ? completionModal.style.display !== 'block' : true)) {
+      if (isListening && !recognition.recognizing && (completionModal ? completionModal.style.display !== 'flex' : true)) {
         try {
           recognition.start();
         } catch (error) {
@@ -800,7 +800,7 @@ if (recognition) {
       return;
     }
 
-    if (isListening && (completionModal ? completionModal.style.display !== 'block' : true)) {
+    if (isListening && (completionModal ? completionModal.style.display !== 'flex' : true)) {
       setTimeout(() => {
         if (!recognition.recognizing) {
           try {
@@ -960,7 +960,7 @@ function updateProgressBars() {
     parts.forEach(part => {
       const partStructures = currentLessonData.structures.filter(struct => currentLessonData.parts[struct.id] === part);
       const partDiv = document.createElement('div');
-      partDiv.className = 'mb-4';
+      partDiv.className = 'structure';
 
       const partHeader = document.createElement('p');
       partHeader.className = 'text-md font-semibold mb-2';
@@ -997,8 +997,8 @@ function updateProgressBars() {
         const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
         const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
         barsHTML += `
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${firstBarPercentage}%"></div>
           </div>
         `;
 
@@ -1007,8 +1007,8 @@ function updateProgressBars() {
           const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
           const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
           barsHTML += `
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${excessPercentage}%"></div>
             </div>
           `;
         }
@@ -1028,7 +1028,7 @@ function updateProgressBars() {
     currentLessonData.structures.forEach(struct => {
       const totalCorrect = progress[struct.id];
       const div = document.createElement('div');
-      div.className = 'mb-2';
+      div.className = 'structure';
 
       let barsHTML = `
         <p class="text-sm">${struct.structure}</p>
@@ -1053,8 +1053,8 @@ function updateProgressBars() {
       const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
       const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
       barsHTML += `
-        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-          <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${firstBarPercentage}%"></div>
         </div>
       `;
 
@@ -1063,8 +1063,8 @@ function updateProgressBars() {
         const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
         const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
         barsHTML += `
-          <div class="w-full bg-gray-200 rounded-full h-2.5">
-            <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${excessPercentage}%"></div>
           </div>
         `;
       }
@@ -1103,7 +1103,7 @@ function checkCompletion() {
     }
     updateModalLog();
     if (completionModal) {
-      completionModal.style.display = 'block';
+      completionModal.style.display = 'flex'; // Устанавливаем display: flex при открытии
     } else {
       console.warn('completionModal element not found, cannot display completion modal.');
       feedback.textContent = 'Урок завершён! 🎉 Но модальное окно недоступно. Нажмите "Начать заново", чтобы продолжить.';
