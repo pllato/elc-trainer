@@ -755,16 +755,43 @@
       modalLog.innerHTML = logHTML;
     }
 
+    function findMatchingStructure(text, feedback, logEntries) {
+      if (!currentLessonData) return null;
+      const structures = currentLessonData.structures;
+      for (let struct of structures) {
+        const validationResult = currentLessonData.validateStructure(text, struct, feedback, logEntries);
+        if (validationResult.isValid) {
+          return struct;
+        }
+        if (validationResult.shouldLog) {
+          logEntries.push({
+            time: new Date().toLocaleTimeString(),
+            spoken: text,
+            structure: struct.structure,
+            correct: false
+          });
+        }
+      }
+      // Если текст не соответствует ни одной структуре, всё равно добавляем в протокол
+      logEntries.push({
+        time: new Date().toLocaleTimeString(),
+        spoken: text,
+        correct: false
+      });
+      return null;
+    }
+
     if (recognition) {
       recognition.onresult = (event) => {
         const spokenText = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-        const matchedStructure = findMatchingStructure(spokenText);
+        const matchedStructure = findMatchingStructure(spokenText, feedback, logEntries);
         const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
 
         lastSpeechTime = Date.now();
 
         if (matchedStructure) {
-          const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
+          const validationResult = currentLessonData.validateStructure(spokenText, matchedStructure, feedback, logEntries);
+          const isCorrect = validationResult.isValid;
           if (isCorrect) {
             const isDuplicate = matchedStructure.hasName && spokenHistory.includes(spokenText);
             logEntry.structure = matchedStructure.structure;
@@ -789,6 +816,9 @@
               }
 
               updateProgressBars();
+              if (currentLessonData.onProgressUpdate) {
+                currentLessonData.onProgressUpdate(progress, feedback);
+              }
               checkCompletion();
             } else {
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
@@ -859,17 +889,6 @@
           }, 500);
         }
       };
-    }
-
-    function findMatchingStructure(text) {
-      if (!currentLessonData) return null;
-      const structures = currentLessonData.structures;
-      for (let struct of structures) {
-        if (currentLessonData.validateStructure(text, struct)) {
-          return struct;
-        }
-      }
-      return null;
     }
 
     function updateLog() {
