@@ -139,12 +139,12 @@ addLesson({
     const words = text.split(' ').filter(word => word.length > 0);
     let wordIndex = 0;
 
-    // Локальный массив для хранения использованных фраз в этом уроке
-    this.usedNames = this.usedNames || [];
-
     // Проверяем существование глобальных переменных для вопросов и ответов
     if (!window.lastAskedVerb) window.lastAskedVerb = null;
     if (!window.lastAskedSubject) window.lastAskedSubject = null;
+
+    // Доступ к usedNames через this (объект урока)
+    const usedNames = this.usedNames || [];
 
     function normalizeWord(word) {
       word = word.toLowerCase();
@@ -158,7 +158,7 @@ addLesson({
     }
 
     console.log(`Validating text: "${text}" for structure: "${structure ? structure.structure : 'answer'}"`);
-    console.log('this.usedNames before validation:', this.usedNames);
+    console.log('usedNames before validation:', usedNames);
 
     // Проверяем, является ли текст ответом на вопрос (Yes/No)
     if (!structure && window.lastAskedVerb && window.lastAskedSubject) {
@@ -224,12 +224,12 @@ addLesson({
       
       // Проверяем уникальность действия
       if (structure.hasName) {
-        if (this.usedNames.includes(fullAction)) {
+        if (usedNames.includes(fullAction)) {
           console.log(`Action "${fullAction}" is a duplicate`);
           return false; // Действие уже использовалось
         }
         this.usedNames.push(fullAction);
-        console.log(`Added "${fullAction}" to this.usedNames:`, this.usedNames);
+        console.log(`Added "${fullAction}" to usedNames:`, this.usedNames);
       }
       return true;
     }
@@ -261,12 +261,12 @@ addLesson({
       
       // Проверяем уникальность действия
       if (structure.hasName) {
-        if (this.usedNames.includes(fullAction)) {
+        if (usedNames.includes(fullAction)) {
           console.log(`Action "${fullAction}" is a duplicate`);
           return false; // Действие уже использовалось
         }
         this.usedNames.push(fullAction);
-        console.log(`Added "${fullAction}" to this.usedNames:`, this.usedNames);
+        console.log(`Added "${fullAction}" to usedNames:`, this.usedNames);
       }
       return true;
     }
