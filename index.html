@@ -1,136 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELC Trainer</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-blue': '#373D8D',
+                        'custom-blue-hover': '#2A3171',
+                        'custom-gray': '#666666',
+                        'custom-gray-hover': '#555555',
+                        'custom-bg': '#F5F5F5',
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
-<body class="bg-gray-100 font-sans">
-  <!-- Start Screen -->
-  <div id="start-screen" class="min-h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-      <h1 class="text-2xl font-bold mb-6 text-center text-[#373D8D]">ELC Trainer</h1>
-      <p id="start-feedback" class="text-red-500 mb-4 text-center"></p>
-      <form id="start-form">
-        <div class="mb-4">
-          <label for="name" class="block text-sm font-medium text-gray-700">Имя:</label>
-          <input type="text" id="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#373D8D] focus:border-[#373D8D]" placeholder="Введите ваше имя">
-        </div>
-        <div class="mb-4">
-          <label for="level" class="block text-sm font-medium text-gray-700">Уровень:</label>
-          <select id="level" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#373D8D] focus:border-[#373D8D]">
+<body class="bg-custom-bg min-h-screen flex items-center justify-center p-4">
+    <div id="start-screen" class="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center text-custom-blue mb-2">ELC</h1>
+        <h2 class="text-lg text-center text-gray-600 mb-2">English Lifestyle Communication</h2>
+        <h2 class="text-lg text-center text-gray-600 mb-6">Тренажер грамматических структур</h2>
+        <div id="start-feedback" class="text-red-500 text-center mb-4"></div>
+        
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Ваше имя</label>
+        <input type="text" id="name" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue" placeholder="Введите ваше имя">
+        
+        <label for="level" class="block text-sm font-medium text-gray-700 mb-2">Выберите уровень</label>
+        <select id="level" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue">
             <option value="beginner1">Beginner Part One</option>
-            <!-- Добавьте другие уровни, если нужно -->
-          </select>
-        </div>
-        <div class="mb-6">
-          <label for="lesson" class="block text-sm font-medium text-gray-700">Урок:</label>
-          <select id="lesson" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#373D8D] focus:border-[#373D8D]">
-            <option value="">Выберите урок</option>
-          </select>
-        </div>
-        <button id="start-btn" type="button" class="w-full bg-[#373D8D] text-white py-2 px-4 rounded-md hover:bg-[#2A3171] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#373D8D]">Начать</button>
-        <button id="admin-btn" type="button" class="mt-4 w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Админка</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Practice Screen -->
-  <div id="practice-screen" class="min-h-screen hidden">
-    <div class="max-w-4xl mx-auto p-6">
-      <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-[#373D8D]">Практика</h2>
-          <button onclick="goBackToStart()" class="text-gray-500 hover:text-gray-700">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-        <div class="mb-4">
-          <p><strong>Имя:</strong> <span id="user-name"></span></p>
-          <p><strong>Уровень:</strong> <span id="user-level"></span></p>
-          <p><strong>Урок:</strong> <span id="user-lesson"></span></p>
-        </div>
-        <div id="intro-examples" class="mb-4"></div>
-        <div class="mb-4">
-          <p class="font-semibold">Общий прогресс:</p>
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-            <div id="total-progress-bar" class="bg-[#373D8D] h-2.5 rounded-full" style="width: 0%"></div>
-          </div>
-          <p class="text-xs text-gray-600"><span id="total-progress-text">0/0</span></p>
-        </div>
-        <div id="progress-bars" class="mb-4"></div>
-        <div class="text-center">
-          <button id="start-practice-btn" class="bg-[#373D8D] text-white py-2 px-4 rounded-md hover:bg-[#2A3171] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#373D8D]">Начать практику</button>
-          <button id="restart-listening-btn" class="hidden bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 mt-2">Возобновить прослушивание</button>
-        </div>
-        <p id="feedback" class="mt-4 text-center text-gray-700"></p>
-      </div>
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div id="stats" class="mb-4"></div>
-        <div id="log" class="h-64 overflow-y-auto p-4 bg-gray-50 rounded-md"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Admin Screen -->
-  <div id="admin-screen" class="min-h-screen hidden flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-      <h1 class="text-2xl font-bold mb-6 text-center text-[#373D8D]">Админка</h1>
-      <p id="admin-feedback" class="text-red-500 mb-4 text-center"></p>
-      <div class="mb-4">
-        <label for="github-token" class="block text-sm font-medium text-gray-700">GitHub Токен:</label>
-        <input type="text" id="github-token" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#373D8D] focus:border-[#373D8D]" placeholder="Введите GitHub токен">
-      </div>
-      <div class="mb-4">
-        <label for="lesson-file" class="block text-sm font-medium text-gray-700">Загрузить урок (.js):</label>
-        <input type="file" id="lesson-file" accept=".js" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#373D8D] file:text-white hover:file:bg-[#2A3171]">
-        <button id="upload-lesson-btn" type="button" class="mt-2 w-full bg-[#373D8D] text-white py-2 px-4 rounded-md hover:bg-[#2A3171] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#373D8D]">Загрузить урок</button>
-      </div>
-      <div class="mb-4">
-        <label for="delete-lesson" class="block text-sm font-medium text-gray-700">Удалить урок:</label>
-        <select id="delete-lesson" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#373D8D] focus:border-[#373D8D]">
-          <option value="">Выберите урок для удаления</option>
+            <option value="beginner2">Beginner Part Two</option>
+            <option value="elementary">Elementary</option>
+            <option value="pre-intermediate">Pre-Intermediate</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="upper-intermediate">Upper-Intermediate</option>
         </select>
-        <button id="delete-lesson-btn" type="button" class="mt-2 w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Удалить урок</button>
-      </div>
-      <div class="mb-4">
-        <label for="index-html-file" class="block text-sm font-medium text-gray-700">Обновить index.html:</label>
-        <input type="file" id="index-html-file" accept=".html" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#373D8D] file:text-white hover:file:bg-[#2A3171]">
-        <button id="upload-index-html-btn" type="button" class="mt-2 w-full bg-[#373D8D] text-white py-2 px-4 rounded-md hover:bg-[#2A3171] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#373D8D]">Обновить index.html</button>
-      </div>
-      <div class="mb-4">
-        <label for="index-js-file" class="block text-sm font-medium text-gray-700">Обновить index.js:</label>
-        <input type="file" id="index-js-file" accept=".js" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#373D8D] file:text-white hover:file:bg-[#2A3171]">
-        <button id="upload-index-js-btn" type="button" class="mt-2 w-full bg-[#373D8D] text-white py-2 px-4 rounded-md hover:bg-[#2A3171] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#373D8D]">Обновить index.js</button>
-      </div>
-      <button onclick="goBackToStart()" class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Вернуться</button>
+        
+        <label for="lesson" class="block text-sm font-medium text-gray-700 mb-2">Выберите урок</label>
+        <select id="lesson" class="w-full p-2 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring-2 focus:ring-custom-blue">
+            <option value="">Выберите урок</option>
+        </select>
+        
+        <button id="start-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Начать практику</button>
+        <button id="admin-btn" class="text-custom-gray hover:underline focus:outline-none text-center block w-full">Админка</button>
     </div>
-  </div>
 
-  <!-- Password Modal -->
-  <div id="password-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-      <h2 class="text-lg font-bold mb-4 text-[#373D8D] text-center">Введите пароль</h2>
-      <p id="password-error" class="text-red-500 mb-4 text-center"></p>
-      <input type="password" id="password-input" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#373D8D] focus:border-[#373D8D] mb-4" placeholder="Пароль">
-      <button onclick="checkPassword()" class="w-full bg-[#373D8D] text-white py-2 px-4 rounded-md hover:bg-[#2A3171] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#373D8D]">Войти</button>
+    <div id="admin-screen" class="bg-custom-bg min-h-screen flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+            <h1 class="text-3xl font-bold text-center text-custom-blue mb-2">ELC</h1>
+            <h2 class="text-lg text-center text-gray-600 mb-6">Админка</h2>
+            <div id="admin-feedback" class="text-red-500 text-center mb-4"></div>
+            
+            <label for="github-token" class="block text-sm font-medium text-gray-700 mb-2">GitHub токен</label>
+            <input type="text" id="github-token" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue" placeholder="Введите GitHub токен">
+            
+            <label for="lesson-file" class="block text-sm font-medium text-gray-700 mb-2">Загрузить новый урок (.js файл)</label>
+            <input type="file" id="lesson-file" class="w-full mb-2">
+            <button id="upload-lesson-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Загрузить урок на GitHub</button>
+            
+            <label for="delete-lesson" class="block text-sm font-medium text-gray-700 mb-2">Удалить урок</label>
+            <select id="delete-lesson" class="w-full p-2 border border-gray-300 rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-custom-blue">
+                <option value="">Выберите урок для удаления</option>
+            </select>
+            <button id="delete-lesson-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Удалить урок</button>
+            
+            <label for="index-html-file" class="block text-sm font-medium text-gray-700 mb-2">Обновить index.html</label>
+            <input type="file" id="index-html-file" class="w-full mb-2">
+            <button id="upload-index-html-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Обновить index.html на GitHub</button>
+            
+            <label for="index-js-file" class="block text-sm font-medium text-gray-700 mb-2">Обновить index.js</label>
+            <input type="file" id="index-js-file" class="w-full mb-2">
+            <button id="upload-index-js-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Обновить index.js на GitHub</button>
+            
+            <button onclick="goBackToStart()" class="w-full bg-custom-gray text-white py-2 rounded-md hover:bg-custom-gray-hover focus:outline-none focus:ring-2 focus:ring-custom-gray">Вернуться</button>
+        </div>
     </div>
-  </div>
 
-  <!-- Completion Modal -->
-  <div id="completionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-      <h2 class="text-lg font-bold mb-4 text-[#373D8D] text-center">Поздравляем!</h2>
-      <p id="congratulations" class="mb-4 text-center"></p>
-      <div id="modal-log" class="h-64 overflow-y-auto p-4 bg-gray-50 rounded-md mb-4"></div>
-      <button onclick="startNewTraining()" class="w-full bg-[#373D8D] text-white py-2 px-4 rounded-md hover:bg-[#2A3171] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#373D8D]">Начать заново</button>
+    <div id="practice-screen" class="bg-custom-bg min-h-screen p-4 hidden">
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-custom-blue">ELC</h1>
+                        <h2 class="text-lg text-gray-600">Практика грамматики</h2>
+                    </div>
+                    <button onclick="goBackToStart()" class="text-gray-600 hover:text-gray-800 text-2xl">✕</button>
+                </div>
+                <div id="feedback" class="text-red-500 text-center mb-4"></div>
+                
+                <div class="mb-4">
+                    <p>Привет, <span id="user-name"></span>!</p>
+                    <p>Уровень: <span id="user-level"></span>, <span id="user-lesson"></span></p>
+                </div>
+                
+                <div id="intro-examples" class="mb-4"></div>
+                
+                <button id="start-practice-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-2">Начать практику</button>
+                <button id="restart-listening-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4 hidden">Возобновить прослушивание</button>
+                
+                <div id="progress-bars" class="mb-4"></div>
+                
+                <div class="font-semibold mb-2">Прогресс:</div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                    <div id="total-progress-bar" class="bg-custom-blue h-2.5 rounded-full" style="width: 0%;"></div>
+                </div>
+                <div class="text-sm text-gray-600 text-right mb-4"><span id="total-progress-text">0/0</span></div>
+                
+                <div id="stats" class="mb-4"></div>
+                
+                <div id="log" class="bg-gray-50 rounded-md p-4 h-64 overflow-y-auto"></div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script src="index.js"></script>
+    <div id="completionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-bold text-center text-custom-blue mb-4">Урок завершён!</h2>
+            <p id="congratulations" class="text-center text-gray-700 mb-4"></p>
+            <p class="text-center text-gray-700 mb-4">Результаты высланы на проверку преподавателю.</p>
+            <div id="modal-log" class="bg-gray-50 rounded-md p-4 h-64 overflow-y-auto mb-4"></div>
+            <button onclick="startNewTraining()" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue">Завершить</button>
+        </div>
+    </div>
+
+    <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-bold text-center text-custom-blue mb-4">Введите пароль</h2>
+            <div id="password-error" class="text-red-500 text-center mb-4"></div>
+            <input type="password" id="password-input" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue" placeholder="Введите пароль">
+            <button onclick="checkPassword()" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue">Подтвердить</button>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
 </body>
 </html>
