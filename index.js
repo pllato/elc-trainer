@@ -34,6 +34,7 @@ function resetLessonState() {
   window.lessonStarted = false;
   window.usedVerbs = [];
   window.userProgress = {};
+  console.log('Lesson state reset');
 }
 
 // Update progress for a specific structure
@@ -47,6 +48,9 @@ function updateProgress(structureId, isCorrect, lessonId) {
   // Only increment if under requiredCorrect
   if (isCorrect && window.userProgress[structureId] < requiredCorrect) {
     window.userProgress[structureId]++;
+    console.log(`Updated progress for ${structureId}: ${window.userProgress[structureId]}/${requiredCorrect}`);
+  } else if (isCorrect) {
+    console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
   }
 
   // Update individual progress bar
@@ -54,7 +58,9 @@ function updateProgress(structureId, isCorrect, lessonId) {
   if (progressBar) {
     const percentage = (window.userProgress[structureId] / requiredCorrect) * 100;
     progressBar.style.width = `${Math.min(percentage, 100)}%`;
-    console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, First Bar Percentage: ${percentage}%`);
+    console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, Percentage: ${percentage}%`);
+  } else {
+    console.log(`Progress bar not found for ${structureId}`);
   }
 
   // Update overall progress
@@ -64,7 +70,10 @@ function updateProgress(structureId, isCorrect, lessonId) {
 // Update overall progress for the lesson
 function updateOverallProgress(lessonId) {
   const lesson = lessonsData.find(l => l.lesson === lessonId);
-  if (!lesson) return;
+  if (!lesson) {
+    console.log(`Lesson ${lessonId} not found`);
+    return;
+  }
 
   const totalRequired = lesson.structures.length * lesson.requiredCorrect;
   let totalCorrect = 0;
@@ -73,6 +82,7 @@ function updateOverallProgress(lessonId) {
   lesson.structures.forEach(structure => {
     const count = window.userProgress[structure.id] || 0;
     totalCorrect += Math.min(count, lesson.requiredCorrect);
+    console.log(`Structure ${structure.id}: ${Math.min(count, lesson.requiredCorrect)}/${lesson.requiredCorrect}`);
   });
 
   // Update overall progress bar
@@ -80,20 +90,18 @@ function updateOverallProgress(lessonId) {
   if (overallProgressBar) {
     const percentage = (totalCorrect / totalRequired) * 100;
     overallProgressBar.style.width = `${Math.min(percentage, 100)}%`;
+    console.log(`Overall progress: ${totalCorrect}/${totalRequired}, Percentage: ${percentage}%`);
+  } else {
+    console.log('Overall progress bar not found');
   }
 
+  // Update progress text
   const progressText = document.querySelector('#overall-progress-bar .text-sm');
   if (progressText) {
     progressText.textContent = `Прогресс: ${totalCorrect}/${totalRequired}`;
+  } else {
+    console.log('Progress text element not found');
   }
-
-  // Log excess if any structure exceeds requiredCorrect
-  lesson.structures.forEach(structure => {
-    const count = window.userProgress[structure.id] || 0;
-    if (count > lesson.requiredCorrect) {
-      console.log(`Structure: ${structure.structure}, Excess Percentage: ${((count - lesson.requiredCorrect) / lesson.requiredCorrect) * 100}%`);
-    }
-  });
 }
 
 // Call populateLessonSelect when DOM is loaded
