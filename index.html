@@ -596,7 +596,7 @@
       userNameEl.textContent = userName;
       userLevelEl.textContent = document.getElementById('level').options[document.getElementById('level').selectedIndex].text;
       userLessonEl.textContent = document.getElementById('lesson').options[document.getElementById('lesson').selectedIndex].text;
-      initializeProgressBars();
+      updateProgressBars(userLesson); // Инициализируем прогресс-бары после установки всех данных
       updateStats();
     });
 
@@ -689,10 +689,6 @@
           restartListeningBtn.classList.remove('hidden');
         }
       }
-    }
-
-    function initializeProgressBars() {
-      updateProgressBars(userLesson); // Вызываем из index.js
     }
 
     function formatDuration(start, end) {
