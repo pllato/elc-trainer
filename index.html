@@ -878,6 +878,7 @@
 
         const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
         const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
+        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`); // Отладка
         barsHTML += `
           <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
             <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
@@ -888,6 +889,7 @@
           const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
           const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
           const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
+          console.log(`Excess Percentage: ${excessPercentage}%`); // Отладка
           barsHTML += `
             <div class="w-full bg-gray-200 rounded-full h-2.5">
               <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
