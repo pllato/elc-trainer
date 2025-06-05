@@ -75,7 +75,7 @@ const logDiv = document.getElementById('log');
 const userNameEl = document.getElementById('user-name');
 const userLevelEl = document.getElementById('user-level');
 const userLessonEl = document.getElementById('user-lesson');
-const completionModal = document.getElementById('completion-modal');
+const completionModal = document.getElementById('completionModal');
 const congratulationsEl = document.getElementById('congratulations');
 const modalLog = document.getElementById('modal-log');
 const levelSelect = document.getElementById('level');
@@ -685,9 +685,11 @@ if (recognition) {
     if (matchedStructure) {
       let isCorrect;
       if (matchedStructure.id === "answer") {
-        isCorrect = currentLessonData.validateStructure(spokenText);
+        // Вызываем validateStructure с правильным контекстом
+        isCorrect = currentLessonData.validateStructure.call(currentLessonData, spokenText);
       } else {
-        isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
+        // Вызываем validateStructure с правильным контекстом
+        isCorrect = currentLessonData.validateStructure.call(currentLessonData, spokenText, matchedStructure);
       }
       if (isCorrect) {
         const isDuplicate = matchedStructure.hasName && spokenHistory.includes(spokenText);
@@ -827,7 +829,8 @@ function findMatchingStructure(text) {
   });
 
   for (let struct of activeStructures) {
-    if (currentLessonData.validateStructure(text, struct)) {
+    // Вызываем validateStructure с правильным контекстом
+    if (currentLessonData.validateStructure.call(currentLessonData, text, struct)) {
       console.log(`Checking specific structure: "${struct.structure}" for text: "${text}"`);
       console.log('Matched specific structure:', struct.structure);
       return struct;
@@ -835,7 +838,8 @@ function findMatchingStructure(text) {
   }
   for (let struct of activeStructures) {
     console.log(`Checking general structure: "${struct.structure}" for text: "${text}"`);
-    if (currentLessonData.validateStructure(text, struct)) {
+    // Вызываем validateStructure с правильным контекстом
+    if (currentLessonData.validateStructure.call(currentLessonData, text, struct)) {
       console.log('Matched general structure:', struct.structure);
       return struct;
     }
@@ -847,7 +851,8 @@ function findMatchingStructure(text) {
       const words = text.split(' ').filter(word => word.length > 0);
       const normalizedWords = words.map(word => word.toLowerCase());
       if (normalizedWords[0] === "yes" || normalizedWords[0] === "no") {
-        if (currentLessonData.validateStructure(text)) {
+        // Вызываем validateStructure с правильным контекстом
+        if (currentLessonData.validateStructure.call(currentLessonData, text)) {
           console.log('Matched answer structure');
           return { structure: `Answer to "${window.lastAskedSubject} ${window.lastAskedVerb}"`, id: "answer" };
         }
