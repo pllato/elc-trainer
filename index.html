@@ -5,35 +5,206 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELC</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'custom-blue': '#373D8D',
-                        'custom-blue-hover': '#2A3171',
-                        'custom-gray': '#666666',
-                        'custom-gray-hover': '#555555',
-                        'custom-bg': '#F5F5F5',
-                    },
-                },
-            },
-        }
-    </script>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            background-color: #F5F5F5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 50px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #373D8D;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            font-size: 18px;
+            color: #666666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .label {
+            display: block;
+            font-size: 16px;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+        .input, .select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #CCCCCC;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFFFFF;
+            background-color: #373D8D;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #2A3171;
+        }
+        .button-secondary {
+            background-color: #666666;
+        }
+        .button-secondary:hover {
+            background-color: #555555;
+        }
+        .feedback {
+            text-align: center;
+            color: #FF0000;
+            margin-bottom: 20px;
+        }
+        .practice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .practice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #373D8D;
+        }
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666666;
+        }
+        .info {
+            margin-bottom: 20px;
+        }
+        .info p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #333333;
+        }
+        .progress-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #E0E0E0;
+            border-radius: 4px;
+            height: 10px;
+            margin-bottom: 5px;
+        }
+        .progress-fill {
+            background-color: #373D8D;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            font-size: 14px;
+            color: #666666;
+            text-align: right;
+        }
+        .structure {
+            margin-bottom: 20px;
+        }
+        .structure p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333333;
+        }
+        .log-container {
+            background-color: #F9F9F9;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .log-container p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333333;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #373D8D;
+            margin-bottom: 20px;
+        }
+        .modal-text {
+            font-size: 16px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        .modal-log {
+            background-color: #F9F9F9;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .modal-log p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333333;
+        }
+    </style>
 </head>
-<body class="bg-custom-bg min-h-screen flex items-center justify-center p-4">
-    <div id="start-screen" class="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
-        <h1 class="text-2xl font-bold text-center text-custom-blue mb-4">ELC</h1>
-        <h2 class="text-lg text-center text-gray-600 mb-4">English Lifestyle Communication</h2>
-        <h2 class="text-lg text-center text-gray-600 mb-6">Тренажер грамматических структур</h2>
-        <div id="start-feedback" class="text-red-500 text-center mb-4"></div>
+<body>
+    <div id="start-screen" class="container">
+        <div class="title">ELC</div>
+        <div class="subtitle">English Lifestyle Communication</div>
+        <div class="subtitle">Тренажер грамматических структур</div>
+        <div id="start-feedback" class="feedback"></div>
         
-        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Ваше имя</label>
-        <input type="text" id="name" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue" placeholder="Введите ваше имя">
+        <label for="name" class="label">Ваше имя</label>
+        <input type="text" id="name" class="input" placeholder="Введите ваше имя">
         
-        <label for="level" class="block text-sm font-medium text-gray-700 mb-2">Выберите уровень</label>
-        <select id="level" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue">
+        <label for="level" class="label">Выберите уровень</label>
+        <select id="level" class="select">
             <option value="beginner1">Beginner Part One</option>
             <option value="beginner2">Beginner Part Two</option>
             <option value="elementary">Elementary</option>
@@ -42,97 +213,91 @@
             <option value="upper-intermediate">Upper-Intermediate</option>
         </select>
         
-        <label for="lesson" class="block text-sm font-medium text-gray-700 mb-2">Выберите урок</label>
-        <select id="lesson" class="w-full p-2 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring-2 focus:ring-custom-blue">
+        <label for="lesson" class="label">Выберите урок</label>
+        <select id="lesson" class="select">
             <option value="">Выберите урок</option>
         </select>
         
-        <button id="start-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-2">Начать практику</button>
-        <button id="admin-btn" class="text-custom-gray hover:underline focus:outline-none text-center block w-full">Админка</button>
+        <button id="start-btn" class="button">Начать практику</button>
+        <button id="admin-btn" class="text-[#666666] hover:underline focus:outline-none text-center block w-full">Админка</button>
     </div>
 
-    <div id="admin-screen" class="bg-white rounded-lg shadow-md p-6 w-full max-w-md hidden">
-        <h1 class="text-2xl font-bold text-center text-custom-blue mb-4">ELC</h1>
-        <h2 class="text-lg text-center text-gray-600 mb-6">Админка</h2>
-        <div id="admin-feedback" class="text-red-500 text-center mb-4"></div>
+    <div id="admin-screen" class="container hidden">
+        <div class="title">ELC</div>
+        <div class="subtitle">Админка</div>
+        <div id="admin-feedback" class="feedback"></div>
         
-        <label for="github-token" class="block text-sm font-medium text-gray-700 mb-2">GitHub токен</label>
-        <input type="text" id="github-token" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue" placeholder="Введите GitHub токен">
+        <label for="github-token" class="label">GitHub токен</label>
+        <input type="text" id="github-token" class="input" placeholder="Введите GitHub токен">
         
-        <label for="lesson-file" class="block text-sm font-medium text-gray-700 mb-2">Загрузить новый урок (.js файл)</label>
-        <input type="file" id="lesson-file" class="w-full mb-2">
-        <button id="upload-lesson-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Загрузить урок на GitHub</button>
+        <label for="lesson-file" class="label">Загрузить новый урок (.js файл)</label>
+        <input type="file" id="lesson-file" class="input">
+        <button id="upload-lesson-btn" class="button">Загрузить урок на GitHub</button>
         
-        <label for="delete-lesson" class="block text-sm font-medium text-gray-700 mb-2">Удалить урок</label>
-        <select id="delete-lesson" class="w-full p-2 border border-gray-300 rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-custom-blue">
+        <label for="delete-lesson" class="label">Удалить урок</label>
+        <select id="delete-lesson" class="select">
             <option value="">Выберите урок для удаления</option>
         </select>
-        <button id="delete-lesson-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Удалить урок</button>
+        <button id="delete-lesson-btn" class="button">Удалить урок</button>
         
-        <label for="index-html-file" class="block text-sm font-medium text-gray-700 mb-2">Обновить index.html</label>
-        <input type="file" id="index-html-file" class="w-full mb-2">
-        <button id="upload-index-html-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Обновить index.html на GitHub</button>
+        <label for="index-html-file" class="label">Обновить index.html</label>
+        <input type="file" id="index-html-file" class="input">
+        <button id="upload-index-html-btn" class="button">Обновить index.html на GitHub</button>
         
-        <label for="index-js-file" class="block text-sm font-medium text-gray-700 mb-2">Обновить index.js</label>
-        <input type="file" id="index-js-file" class="w-full mb-2">
-        <button id="upload-index-js-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4">Обновить index.js на GitHub</button>
+        <label for="index-js-file" class="label">Обновить index.js</label>
+        <input type="file" id="index-js-file" class="input">
+        <button id="upload-index-js-btn" class="button">Обновить index.js на GitHub</button>
         
-        <button onclick="goBackToStart()" class="w-full bg-custom-gray text-white py-2 rounded-md hover:bg-custom-gray-hover focus:outline-none focus:ring-2 focus:ring-custom-gray">Вернуться</button>
+        <button onclick="goBackToStart()" class="button button-secondary">Вернуться</button>
     </div>
 
-    <div id="practice-screen" class="bg-custom-bg min-h-screen p-4 hidden">
-        <div class="max-w-3xl mx-auto">
-            <div class="bg-white rounded-lg shadow-md p-6 mb-4">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h1 class="text-2xl font-bold text-custom-blue">ELC</h1>
-                        <h2 class="text-lg text-gray-600">Практика грамматики</h2>
-                    </div>
-                    <button onclick="goBackToStart()" class="text-gray-600 hover:text-gray-800 text-2xl">✕</button>
-                </div>
-                <div id="feedback" class="text-red-500 text-center mb-4"></div>
-                
-                <div class="mb-4">
-                    <p>Привет, <span id="user-name"></span>!</p>
-                    <p>Уровень: <span id="user-level"></span>, <span id="user-lesson"></span></p>
-                </div>
-                
-                <div id="intro-examples" class="mb-4"></div>
-                
-                <button id="start-practice-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-2">Начать практику</button>
-                <button id="restart-listening-btn" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue mb-4 hidden">Возобновить прослушивание</button>
-                
-                <div id="progress-bars" class="mb-4"></div>
-                
-                <div class="font-semibold mb-2">Прогресс:</div>
-                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-                    <div id="total-progress-bar" class="bg-custom-blue h-2.5 rounded-full" style="width: 0%;"></div>
-                </div>
-                <div class="text-sm text-gray-600 text-right mb-4"><span id="total-progress-text">0/0</span></div>
-                
-                <div id="stats" class="mb-4"></div>
-                
-                <div id="log" class="bg-gray-50 rounded-md p-4 h-64 overflow-y-auto"></div>
-            </div>
+    <div id="practice-screen" class="practice-container hidden">
+        <div class="practice-header">
+            <div class="practice-title">ELC</div>
+            <div class="practice-title">Практика грамматики</div>
+            <button onclick="goBackToStart()" class="close-button">✕</button>
+        </div>
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="info">
+            <p>Привет, <span id="user-name"></span>!</p>
+            <p>Уровень: <span id="user-level"></span>, <span id="user-lesson"></span></p>
+        </div>
+        
+        <div class="info" id="intro-examples"></div>
+        
+        <button id="start-practice-btn" class="button">Начать практику</button>
+        <button id="restart-listening-btn" class="button hidden">Возобновить прослушивание</button>
+        
+        <div id="progress-bars"></div>
+        
+        <div class="progress-label">Прогресс:</div>
+        <div class="progress-bar">
+            <div id="total-progress-bar" class="progress-fill" style="width: 0%;"></div>
+        </div>
+        <div class="progress-text"><span id="total-progress-text">0/0</span></div>
+        
+        <div id="stats"></div>
+        
+        <div class="log-container" id="log"></div>
+    </div>
+
+    <div id="completionModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-title">Урок завершён!</div>
+            <div id="congratulations" class="modal-text"></div>
+            <div class="modal-text">Результаты высланы на проверку преподавателю.</div>
+            <div id="modal-log" class="modal-log"></div>
+            <button onclick="startNewTraining()" class="button">Завершить</button>
         </div>
     </div>
 
-    <div id="completionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 class="text-xl font-bold text-center text-custom-blue mb-4">Урок завершён!</h2>
-            <p id="congratulations" class="text-center text-gray-700 mb-4"></p>
-            <p class="text-center text-gray-700 mb-4">Результаты высланы на проверку преподавателю.</p>
-            <div id="modal-log" class="bg-gray-50 rounded-md p-4 h-64 overflow-y-auto mb-4"></div>
-            <button onclick="startNewTraining()" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue">Завершить</button>
-        </div>
-    </div>
-
-    <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 class="text-xl font-bold text-center text-custom-blue mb-4">Введите пароль</h2>
-            <div id="password-error" class="text-red-500 text-center mb-4"></div>
-            <input type="password" id="password-input" class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-custom-blue" placeholder="Введите пароль">
-            <button onclick="checkPassword()" class="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue">Подтвердить</button>
+    <div id="password-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-title">Введите пароль</div>
+            <div id="password-error" class="feedback"></div>
+            <input type="password" id="password-input" class="input" placeholder="Введите пароль">
+            <button onclick="checkPassword()" class="button">Подтвердить</button>
         </div>
     </div>
 
