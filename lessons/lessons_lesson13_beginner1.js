@@ -121,7 +121,7 @@ addLesson({
       hasName: false 
     }
   ],
-  requiredCorrect: 10, // Общее количество правильных примеров на структуру (по 5 для каждой части)
+  requiredCorrect: 10, // Общее количество правильных примеров на структуру
   parts: { // Разделение структур на части
     "i-positive": 1,
     "you-positive": 1,
@@ -213,6 +213,22 @@ addLesson({
       wordIndex++;
     }
 
+    // Список известных форм Past Simple и Past Participle для исключения
+    const pastForms = [
+      // Нерегулярные глаголы: Past Simple и Past Participle
+      "was", "were", "been", "did", "done", "had", "ate", "eaten", "drank", "drunk", "drove", "driven",
+      "saw", "seen", "went", "gone", "took", "taken", "gave", "given", "wrote", "written", "spoke", "spoken",
+      "stood", "said", "knew", "known", "thought", "bought", "brought", "fought", "caught", "taught",
+      "built", "sent", "spent", "left", "met", "got", "gotten", "made", "found", "felt", "heard", "held",
+      "kept", "slept", "sat", "ran", "run", "swam", "swum", "won", "became", "become",
+      // Регулярные глаголы с окончанием -ed
+      "worked", "played", "walked", "talked", "lived", "loved", "moved", "called", "asked", "answered",
+      "watched", "listened", "started", "finished", "helped", "needed", "wanted", "opened", "closed",
+      "stopped", "jumped", "laughed", "cried", "tried", "studied", "carried", "hurried", "married",
+      // Добавим формы с -d (например, "made" уже есть выше)
+      "lived", "loved", "moved", "hated", "smiled", "saved", "proved"
+    ];
+
     // Для отрицательной формы (I do not, You do not, We do not, They do not + глагол)
     if (["i-negative", "you-negative", "we-negative", "they-negative"].includes(structure.id)) {
       if (wordIndex >= normalizedWords.length) {
@@ -220,7 +236,7 @@ addLesson({
         return false; // Должен быть глагол после шаблона
       }
       const verb = normalizedWords[wordIndex];
-      // Проверяем, что слово после "do not" не является числом или вспомогательным глаголом
+      // Проверяем, что слово после "do not" не является числом, вспомогательным глаголом или формой прошедшего времени
       const auxiliaryVerbs = ["am", "is", "are", "was", "were", "be", "been", "being", "will", "shall", "would", "should", "can", "could", "may", "might", "must"];
       const isNumber = /^\d+$/.test(verb);
       if (isNumber) {
@@ -229,6 +245,10 @@ addLesson({
       }
       if (auxiliaryVerbs.includes(verb)) {
         console.log(`"${verb}" is an auxiliary verb, not a main verb`);
+        return false;
+      }
+      if (pastForms.includes(verb)) {
+        console.log(`"${verb}" is a past tense form, not a base form`);
         return false;
       }
       wordIndex++;
@@ -268,7 +288,7 @@ addLesson({
         return false; // Должен быть глагол после шаблона
       }
       const verb = normalizedWords[wordIndex];
-      // Проверяем, что слово после подлежащего не является числом или вспомогательным глаголом
+      // Проверяем, что слово после подлежащего не является числом, вспомогательным глаголом или формой прошедшего времени
       const auxiliaryVerbs = ["am", "is", "are", "was", "were", "be", "been", "being", "will", "shall", "would", "should", "can", "could", "may", "might", "must"];
       const isNumber = /^\d+$/.test(verb);
       if (isNumber) {
@@ -277,6 +297,10 @@ addLesson({
       }
       if (auxiliaryVerbs.includes(verb)) {
         console.log(`"${verb}" is an auxiliary verb, not a main verb`);
+        return false;
+      }
+      if (pastForms.includes(verb)) {
+        console.log(`"${verb}" is a past tense form, not a base form`);
         return false;
       }
       wordIndex++;
@@ -306,6 +330,11 @@ addLesson({
         return false; // Должен быть глагол после шаблона
       }
       const verb = normalizedWords[wordIndex];
+      // Проверяем, что слово после "do [subject]" не является формой прошедшего времени
+      if (pastForms.includes(verb)) {
+        console.log(`"${verb}" is a past tense form, not a base form`);
+        return false;
+      }
       const subject = normalizedWords[1]; // "you", "we", или "they"
       window.lastAskedVerb = verb; // Сохраняем глагол для проверки ответа
       window.lastAskedSubject = subject; // Сохраняем местоимение для ответа
