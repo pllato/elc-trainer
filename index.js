@@ -1,17 +1,24 @@
 const lessonsData = [];
+let isFetchingLessons = false;
 
 // Function to add lesson data
 function addLesson(lesson) {
-  lessonsData.push(lesson);
-  console.log('Lesson added:', lesson.name, 'Total lessons:', lessonsData.length);
+  // Prevent duplicates by checking lesson ID
+  if (!lessonsData.some(existing => existing.lesson === lesson.lesson && existing.level === lesson.level)) {
+    lessonsData.push(lesson);
+    console.log('Lesson added:', lesson.name, 'Total lessons:', lessonsData.length);
+  } else {
+    console.log('Duplicate lesson skipped:', lesson.name);
+  }
 }
 
 // Function to populate lesson select dropdown
-function populateLessonSelect(attempt = 1, maxAttempts = 10) {
+function populateLessonSelect(attempt = 1, maxAttempts = 15) {
   const lessonSelect = document.getElementById('lesson-select');
   if (!lessonSelect) {
     if (attempt < maxAttempts) {
       console.warn(`Lesson select element not found, retrying in 1s (attempt ${attempt}/${maxAttempts})`);
+      console.log('Current DOM state:', document.body ? document.body.innerHTML.substring(0, 200) : 'No body');
       setTimeout(() => populateLessonSelect(attempt + 1, maxAttempts), 1000);
     } else {
       console.error('Lesson select element not found after max attempts');
@@ -41,6 +48,11 @@ function populateLessonSelect(attempt = 1, maxAttempts = 10) {
 
 // Fetch lessons from GitHub API
 async function fetchLessons() {
+  if (isFetchingLessons) {
+    console.log('fetchLessons already running, skipping');
+    return;
+  }
+  isFetchingLessons = true;
   const url = 'https://api.github.com/repos/pllato/elc-trainer/contents/lessons';
   console.log('Starting to fetch lessons from:', url);
   try {
@@ -53,7 +65,7 @@ async function fetchLessons() {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const files = await response.json();
-    console.log('Files fetched from GitHub:', files);
+    console.log('Files fetched from GitHub:', files.length, 'files');
 
     for (const file of files.filter(f => f.name.endsWith('.js'))) {
       console.log('Processing file:', file.name);
@@ -63,23 +75,24 @@ async function fetchLessons() {
           throw new Error(`Failed to fetch ${file.name}`);
         }
         const content = await fileResponse.text();
-        eval(content); // Execute lesson code
-        console.log(`Loaded file: ${file.name}`);
+        eval(content);
+        console.log('Loaded file:', file.name);
       } catch (error) {
-        console.error(`Error loading file ${file.name}:`, error);
+        console.error('Error loading file:', file.name, error);
       }
     }
 
-    console.log('Lessons loaded from GitHub:', lessonsData);
-    // Delay to ensure lessons are processed
+    console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
     setTimeout(() => populateLessonSelect(), 500);
   } catch (error) {
-    console.error('Error fetching lessons:', error);
+    console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
       populateLessonSelect();
     } else {
-      alert('Ошибка загрузки уроков. Проверьте подключение или попробуйте позже.');
+      alert('Ошибка загрузки уроков. Проверьте подключение.');
     }
+  } finally {
+    isFetchingLessons = false;
   }
 }
 
@@ -213,4 +226,4 @@ function validateInput(text, lessonId = 'lesson13') {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, starting fetchLessons');
   fetchLessons();
-});
+}, { once: true });
