@@ -9,7 +9,7 @@ function addLesson(lesson) {
     lessonsData.push(lesson);
     console.log('Lesson added:', lesson.name, 'Total lessons:', lessonsData.length);
   } else {
-    console.log('Duplicate lesson skipped:', lesson.lesson);
+    console.log('Duplicate lesson skipped:', lesson.name);
   }
 }
 
@@ -83,7 +83,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 5000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 7000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -187,7 +187,6 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    // Prevent duplicate validation within 500ms
     if (text !== lastValidatedText || now - lastValidatedTime > 500) {
       validateInput(text);
       lastValidatedText = text;
