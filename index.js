@@ -104,5 +104,15 @@ function updateOverallProgress(lessonId) {
   }
 }
 
+// Handle lesson selection
+function selectLesson(lessonId) {
+  resetLessonState();
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  if (lesson) {
+    console.log(`Selected lesson: ${lesson.name}`);
+    // Assume UI updates here (e.g., show practice screen)
+  }
+}
+
 // Call populateLessonSelect when DOM is loaded
 document.addEventListener('DOMContentLoaded', populateLessonSelect);
