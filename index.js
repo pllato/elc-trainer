@@ -3,9 +3,6 @@ let isFetchingLessons = false;
 let lastValidatedText = null;
 let lastValidatedTime = 0;
 
-// Initialize global total progress
-window.totalProgress = 0;
-
 // Function to add lesson data
 function addLesson(lesson) {
   if (!lessonsData.some(existing => existing.lesson === lesson.lesson && existing.level === lesson.level)) {
@@ -92,7 +89,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 120000); // Increased delay to 120 seconds
+    setTimeout(() => populateLessonSelect(), 180000); // Increased delay to 180 seconds
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -108,11 +105,9 @@ function resetLessonState() {
   window.lessonStarted = false;
   window.usedVerbs = [];
   window.userProgress = {};
-  window.totalProgress = 0; // Reset total progress
   lastValidatedText = null;
   lastValidatedTime = 0;
   console.log('Lesson state reset');
-  updateOverallProgress(null); // Reset overall progress bar
 }
 
 // Update progress for a specific structure
@@ -137,73 +132,8 @@ function updateProgress(structureId, isCorrect, lessonId) {
     } else {
       console.log(`Progress bar not found for ${structureId}`);
     }
-    updateOverallProgress(lessonId);
   } else if (isCorrect) {
     console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
-    return; // Early return to prevent further processing
-  }
-}
-
-// Update overall progress with retry mechanism
-function updateOverallProgress(lessonId, attempt = 1, maxAttempts = 10) {
-  if (!lessonId) {
-    // Reset progress bar when lessonId is null (e.g., during reset)
-    const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
-    if (overallProgressBar) {
-      overallProgressBar.style.width = '0%';
-      console.log('Overall progress bar reset: width=0%');
-    }
-    const progressText = document.querySelector('#overall-progress-bar .text-sm');
-    if (progressText) {
-      progressText.textContent = `Прогресс: 0/0`;
-      console.log('Progress text reset: Прогресс: 0/0');
-    }
-    return;
-  }
-
-  const lesson = lessonsData.find(l => l.lesson === lessonId);
-  if (!lesson) {
-    console.log(`Lesson ${lessonId} not found`);
-    return;
-  }
-
-  const totalRequired = lesson.structures.length * lesson.requiredCorrect;
-  let totalCorrect = 0;
-
-  // Calculate total progress based on capped contributions
-  lesson.structures.forEach(structure => {
-    const count = window.userProgress[structure.id] || 0;
-    const cappedCount = Math.min(count, lesson.requiredCorrect);
-    totalCorrect += cappedCount;
-    console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}, Contributes: ${cappedCount} to total`);
-  });
-
-  // Update global total progress
-  window.totalProgress = Math.min(totalCorrect, totalRequired);
-  console.log(`Total progress: ${window.totalProgress}/${totalRequired}`);
-
-  const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
-  if (!overallProgressBar) {
-    if (attempt < maxAttempts) {
-      console.warn(`Overall progress bar not found, retrying in 1s (attempt ${attempt}/${maxAttempts})`);
-      setTimeout(() => updateOverallProgress(lessonId, attempt + 1, maxAttempts), 1000);
-    } else {
-      console.error('Overall progress bar not found after max attempts');
-    }
-    return;
-  }
-
-  const percentage = (window.totalProgress / totalRequired) * 100;
-  overallProgressBar.style.width = `${percentage}%`;
-  console.log(`Overall progress: ${window.totalProgress}/${totalRequired}, Percentage: ${percentage}%`);
-  console.log(`Overall progress bar style: width=${overallProgressBar.style.width}`);
-
-  const progressText = document.querySelector('#overall-progress-bar .text-sm');
-  if (progressText) {
-    progressText.textContent = `Прогресс: ${window.totalProgress}/${totalRequired}`;
-    console.log(`Progress text updated: ${progressText.textContent}`);
-  } else {
-    console.log('Progress text element not found');
   }
 }
 
@@ -229,7 +159,7 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 10000) {
+    if (text !== lastValidatedText || now - lastValidatedTime > 15000) {
       validateInput(text);
       lastValidatedText = text;
       lastValidatedTime = now;
