@@ -37,7 +37,7 @@ function populateLessonSelect() {
 // Fetch lessons from GitHub API
 async function fetchLessons() {
   const url = 'https://api.github.com/repos/pllato/elc-trainer/contents/lessons';
-  console.log('Fetching lessons from:', url);
+  console.log('Starting to fetch lessons from:', url);
   try {
     const response = await fetch(url, {
       headers: {
@@ -58,7 +58,10 @@ async function fetchLessons() {
           script.src = file.download_url;
           document.head.appendChild(script);
           // Wait for script to load
-          await new Promise(resolve => script.onload = resolve);
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = () => reject(new Error(`Failed to load ${file.name}`));
+          });
         } catch (error) {
           console.error('Error loading file:', file.name, error);
         }
@@ -68,6 +71,10 @@ async function fetchLessons() {
     populateLessonSelect();
   } catch (error) {
     console.error('Error fetching lessons:', error);
+    // Fallback: populate with any lessons already in lessonsData
+    if (lessonsData.length > 0) {
+      populateLessonSelect();
+    }
   }
 }
 
@@ -166,7 +173,9 @@ function startRecognition() {
   recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.lang = 'en-US';
   recognition.onresult = function(event) {
-    const text = event.results[0][0].transcript.trim();
+    let text = event.results[0][0].transcript;
+    // Clean up speech input
+    text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     validateInput(text);
   };
