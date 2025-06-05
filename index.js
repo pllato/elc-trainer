@@ -31,7 +31,7 @@ function populateLessonSelect(attempt = 1, maxAttempts = 20) {
   lessonsData.sort((a, b) => {
     if (a.level === b.level) {
       const lessonA = parseInt(a.lesson.replace('lesson', '')) || 0;
-      const lessonB = parseInt(b.lesson.replace('lesson', '')) || 0;
+      const lessonB = parseInt(a.lesson.replace('lesson', '')) || 0;
       return lessonA - lessonB;
     }
     return a.level.localeCompare(b.level);
@@ -83,7 +83,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 15000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 20000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -115,21 +115,20 @@ function updateProgress(structureId, isCorrect, lessonId) {
   if (isCorrect && window.userProgress[structureId] < requiredCorrect) {
     window.userProgress[structureId]++;
     console.log(`Updated progress for ${structureId}: ${window.userProgress[structureId]}/${requiredCorrect}`);
+    // Update individual progress bar
+    const progressBar = document.querySelector(`#progress-bars [data-structure="${structureId}"] .progress`);
+    if (progressBar) {
+      const percentage = (window.userProgress[structureId] / requiredCorrect) * 100;
+      progressBar.style.width = `${Math.min(percentage, 100)}%`;
+      console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, Percentage: ${percentage}%`);
+    } else {
+      console.log(`Progress bar not found for ${structureId}`);
+    }
+    updateOverallProgress(lessonId);
   } else if (isCorrect) {
     console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
     return; // Early return to prevent further processing
   }
-
-  const progressBar = document.querySelector(`#progress-bars [data-structure="${structureId}"] .progress`);
-  if (progressBar) {
-    const percentage = (window.userProgress[structureId] / requiredCorrect) * 100;
-    progressBar.style.width = `${Math.min(percentage, 100)}%`;
-    console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, Percentage: ${percentage}%`);
-  } else {
-    console.log(`Progress bar not found for ${structureId}`);
-  }
-
-  updateOverallProgress(lessonId);
 }
 
 // Update overall progress
@@ -193,7 +192,7 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 500) {
+    if (text !== lastValidatedText || now - lastValidatedTime > 750) {
       validateInput(text);
       lastValidatedText = text;
       lastValidatedTime = now;
