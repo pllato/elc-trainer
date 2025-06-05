@@ -137,6 +137,10 @@ function updateOverallProgress(lessonId) {
 
   // Calculate total progress based on capped contributions
   lesson.structures.forEach(structure => {
+    if (!structure.id) {
+      console.warn('Structure ID is undefined:', structure);
+      return;
+    }
     const count = window.userProgress[structure.id] || 0;
     const cappedCount = Math.min(count, lesson.requiredCorrect);
     totalCorrect += cappedCount;
@@ -160,6 +164,11 @@ function updateOverallProgress(lessonId) {
 
 // Update individual progress bars
 function updateProgressBars(lessonId) {
+  if (!lessonId) {
+    console.log('lessonId is undefined, cannot update progress bars');
+    return;
+  }
+
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   if (!lesson || !lesson.structures) {
     console.log(`Lesson ${lessonId} not found or has no structures`);
@@ -174,6 +183,10 @@ function updateProgressBars(lessonId) {
 
   progressBars.innerHTML = '';
   lesson.structures.forEach(struct => {
+    if (!struct.id) {
+      console.warn('Structure ID is undefined:', struct);
+      return;
+    }
     const totalCorrect = window.userProgress[struct.id] || 0;
     const div = document.createElement('div');
     div.className = 'mb-2';
