@@ -156,9 +156,11 @@ addLesson({
     }
 
     console.log(`Validating text: "${text}" for structure: "${structure ? structure.structure : 'answer'}"`);
+    console.log('window.usedNames before validation:', window.usedNames);
 
     // Проверяем, является ли текст ответом на вопрос (Yes/No)
     if (!structure && window.lastAskedVerb && window.lastAskedSubject) {
+      console.log('Checking Yes/No answer...');
       if (normalizedWords[0] === "yes") {
         if (normalizedWords.length < 3) {
           console.log("Answer too short for 'Yes' response");
@@ -225,6 +227,7 @@ addLesson({
           return false; // Действие уже использовалось
         }
         window.usedNames.push(fullAction);
+        console.log(`Added "${fullAction}" to window.usedNames:`, window.usedNames);
       }
       return true;
     }
@@ -261,6 +264,7 @@ addLesson({
           return false; // Действие уже использовалось
         }
         window.usedNames.push(fullAction);
+        console.log(`Added "${fullAction}" to window.usedNames:`, window.usedNames);
       }
       return true;
     }
