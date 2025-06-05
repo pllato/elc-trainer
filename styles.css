@@ -1,0 +1,177 @@
+/* styles.css */
+
+/* Общие стили для всей страницы */
+body {
+  background-color: #f5f5f5; /* Светло-серый фон */
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Контейнер для всех секций */
+div {
+  max-width: 600px;
+  width: 100%;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Заголовки */
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+h1:nth-of-type(1) {
+  color: #007bff; /* Синий цвет для "ELC" */
+}
+
+/* Текст */
+p {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+/* Поля ввода и выпадающие списки */
+input[type="text"],
+select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Кнопки */
+button {
+  background-color: #007bff; /* Синий цвет */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px 0;
+  width: 100%;
+  max-width: 300px;
+}
+
+button:hover {
+  background-color: #0056b3; /* Темнее при наведении */
+}
+
+/* Ссылки */
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Секция index */
+#index h1:nth-of-type(2) {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Секция practice */
+#practice h1 {
+  font-size: 20px;
+}
+
+/* Прогресс-бары */
+#practice div:nth-of-type(2) p {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+#practice div:nth-of-type(2) p::after {
+  content: '';
+  flex-grow: 1;
+  height: 10px;
+  background-color: #007bff;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+
+/* Для заполненных прогресс-баров (зелёный цвет) */
+#practice div:nth-of-type(2) p[data-filled="true"]::after {
+  background-color: #28a745; /* Зелёный */
+}
+
+/* Протокол */
+#practice div:nth-of-type(3) p {
+  font-size: 14px;
+  text-align: left;
+  margin: 5px 0;
+}
+
+#practice div:nth-of-type(3) p[data-status="correct"] {
+  color: #28a745; /* Зелёный для "Правильно" */
+}
+
+#practice div:nth-of-type(3) p[data-status="incorrect"] {
+  color: #dc3545; /* Красный для "Сказано" */
+}
+
+/* Секция complete */
+#complete {
+  background-color: #444; /* Тёмный фон */
+  color: white;
+}
+
+#complete div {
+  background-color: transparent; /* Прозрачный контейнер */
+  box-shadow: none;
+}
+
+#complete h1 {
+  font-size: 24px;
+}
+
+#complete p {
+  font-size: 14px;
+}
+
+#complete button {
+  background-color: #007bff;
+}
+
+#complete button:hover {
+  background-color: #0056b3;
+}
+
+/* Стили для статистики в секции complete */
+#complete div p {
+  text-align: left;
+}
+
+#complete div p:nth-of-type(1) {
+  color: #dc3545; /* Красный для "Нужно было сказать" */
+}
+
+#complete div p:nth-of-type(2) {
+  color: #dc3545; /* Красный для "Сказано правильно" */
+}
+
+#complete div p:nth-of-type(3) {
+  color: #dc3545; /* Красный для "Процент аккуратности" */
+}
+
+#complete div p:nth-of-type(4) {
+  color: white; /* Белый для "Время тренировки" */
+}
