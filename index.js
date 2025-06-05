@@ -117,6 +117,11 @@ function resetLessonState() {
   if (overallProgressText) {
     overallProgressText.textContent = '0/0';
   }
+  // Reset individual progress bars
+  const progressBars = document.getElementById('progress-bars');
+  if (progressBars) {
+    progressBars.innerHTML = '';
+  }
 }
 
 // Update overall progress bar
@@ -153,6 +158,51 @@ function updateOverallProgress(lessonId) {
   }
 }
 
+// Update individual progress bars
+function updateProgressBars(lessonId) {
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  if (!lesson) {
+    console.log(`Lesson ${lessonId} not found`);
+    return;
+  }
+
+  const progressBars = document.getElementById('progress-bars');
+  if (!progressBars) {
+    console.log('Progress bars container not found');
+    return;
+  }
+
+  progressBars.innerHTML = '';
+  lesson.structures.forEach(struct => {
+    const totalCorrect = window.userProgress[struct.id] || 0;
+    const div = document.createElement('div');
+    div.className = 'mb-2';
+    div.setAttribute('data-structure', struct.id);
+
+    let barsHTML = `
+      <p class="text-sm">${struct.structure}</p>
+    `;
+
+    const firstBarProgress = Math.min(totalCorrect, lesson.requiredCorrect);
+    const firstBarPercentage = (firstBarProgress / lesson.requiredCorrect) * 100;
+    console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
+    barsHTML += `
+      <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+        <div class="progress bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
+      </div>
+    `;
+
+    // Убираем отображение лишнего прогресса
+    barsHTML += `
+      <p class="text-xs text-gray-600">${totalCorrect}/${lesson.requiredCorrect}</p>
+    `;
+    div.innerHTML = barsHTML;
+    progressBars.appendChild(div);
+  });
+
+  updateOverallProgress(lessonId);
+}
+
 // Update progress for a specific structure
 function updateProgress(structureId, isCorrect, lessonId) {
   if (!window.userProgress) window.userProgress = {};
@@ -166,16 +216,7 @@ function updateProgress(structureId, isCorrect, lessonId) {
   if (isCorrect && window.userProgress[structureId] < requiredCorrect) {
     window.userProgress[structureId]++;
     console.log(`Updated progress for ${structureId}: ${window.userProgress[structureId]}/${requiredCorrect}`);
-    // Update individual progress bar
-    const progressBar = document.querySelector(`#progress-bars [data-structure="${structureId}"] .progress`);
-    if (progressBar) {
-      const percentage = (window.userProgress[structureId] / requiredCorrect) * 100;
-      progressBar.style.width = `${Math.min(percentage, 100)}%`;
-      console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, Percentage: ${percentage}%`);
-    } else {
-      console.log(`Progress bar not found for ${structureId}`);
-    }
-    updateOverallProgress(lessonId);
+    updateProgressBars(lessonId);
   } else if (isCorrect) {
     console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
   }
@@ -223,7 +264,7 @@ function startRecognition() {
       if (!window.recognition || window.recognition.state !== 'listening') {
         startRecognition();
       }
-    }, 2000);
+    }, 3000);
   };
   try {
     window.recognition.start();
