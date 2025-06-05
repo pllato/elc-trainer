@@ -31,7 +31,7 @@ function populateLessonSelect(attempt = 1, maxAttempts = 20) {
   lessonsData.sort((a, b) => {
     if (a.level === b.level) {
       const lessonA = parseInt(a.lesson.replace('lesson', '')) || 0;
-      const lessonB = parseInt(a.lesson.replace('lesson', '')) || 0;
+      const lessonB = parseInt(b.lesson.replace('lesson', '')) || 0;
       return lessonA - lessonB;
     }
     return a.level.localeCompare(b.level);
@@ -83,7 +83,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 20000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 25000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -111,6 +111,8 @@ function updateProgress(structureId, isCorrect, lessonId) {
 
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   const requiredCorrect = lesson ? lesson.requiredCorrect : 10;
+
+  console.log(`Before update: ${structureId}, Current progress: ${window.userProgress[structureId]}/${requiredCorrect}`);
 
   if (isCorrect && window.userProgress[structureId] < requiredCorrect) {
     window.userProgress[structureId]++;
@@ -158,6 +160,8 @@ function updateOverallProgress(lessonId) {
     const percentage = (totalCorrect / totalRequired) * 100;
     overallProgressBar.style.width = `${Math.min(percentage, 100)}%`;
     console.log(`Overall progress: ${totalCorrect}/${totalRequired}, Percentage: ${percentage}%`);
+    // Debug: Log the actual style applied
+    console.log(`Overall progress bar style: width=${overallProgressBar.style.width}`);
   } else {
     console.log('Overall progress bar not found');
   }
@@ -165,6 +169,7 @@ function updateOverallProgress(lessonId) {
   const progressText = document.querySelector('#overall-progress-bar .text-sm');
   if (progressText) {
     progressText.textContent = `Прогресс: ${totalCorrect}/${totalRequired}`;
+    console.log(`Progress text updated: ${progressText.textContent}`);
   } else {
     console.log('Progress text element not found');
   }
@@ -192,7 +197,7 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 750) {
+    if (text !== lastValidatedText || now - lastValidatedTime > 1000) {
       validateInput(text);
       lastValidatedText = text;
       lastValidatedTime = now;
