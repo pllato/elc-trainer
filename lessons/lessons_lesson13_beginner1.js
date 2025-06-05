@@ -54,11 +54,12 @@ addLesson({
   ],
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
-    console.log('Input text:', text);
-    console.log('Validating for structure:', structure.structure);
+    console.log('Raw input:', text);
+    // Удаляем всё, кроме букв, пробелов и цифр, и приводим к нижнему регистру
+    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
+    console.log('Cleaned text:', cleanedText);
 
-    // Нормализация входного текста
-    const words = text.trim().toLowerCase().split(/\s+/).filter(word => word.length > 0);
+    const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
     console.log('Split words:', words);
 
     const pattern = structure.pattern;
@@ -73,7 +74,7 @@ addLesson({
       wordIndex++;
     }
 
-    // Проверяем, есть ли слова после местоимения
+    // Проверяем наличие слов после местоимения
     if (wordIndex >= words.length) {
       console.log('No words after pronoun');
       return false;
