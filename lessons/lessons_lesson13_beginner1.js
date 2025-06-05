@@ -55,7 +55,6 @@ addLesson({
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
-    // Очищаем текст от всего, кроме букв, цифр и пробелов
     const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
 
@@ -77,6 +76,20 @@ addLesson({
     // Проверяем наличие слов после местоимения
     if (wordIndex >= words.length) {
       console.log('No words after pronoun');
+      return false;
+    }
+
+    // Список глаголов в настоящем времени
+    const presentVerbs = [
+      'work', 'play', 'run', 'drink', 'eat', 'study', 'live', 'watch', 'read', 'write',
+      'go', 'come', 'see', 'hear', 'speak', 'listen', 'walk', 'sleep', 'sing', 'dance',
+      'like', 'love', 'hate', 'want', 'need', 'have', 'do', 'make', 'take', 'give'
+    ];
+
+    // Проверяем, является ли первое слово после местоимения глаголом
+    const verb = words[wordIndex];
+    if (!presentVerbs.includes(verb)) {
+      console.log('Invalid verb:', verb);
       return false;
     }
 
