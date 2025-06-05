@@ -213,7 +213,7 @@ addLesson({
       wordIndex++;
     }
 
-    // Список известных форм Past Simple и Past Participle для исключения
+    // Список известных форм Past Simple и Past Participle для исключения, а также "lay" для исключения путаницы с "lie"
     const pastForms = [
       // Нерегулярные глаголы: Past Simple и Past Participle
       "was", "were", "been", "did", "done", "had", "ate", "eaten", "drank", "drunk", "drove", "driven",
@@ -221,11 +221,13 @@ addLesson({
       "stood", "said", "knew", "known", "thought", "bought", "brought", "fought", "caught", "taught",
       "built", "sent", "spent", "left", "met", "got", "gotten", "made", "found", "felt", "heard", "held",
       "kept", "slept", "sat", "ran", "run", "swam", "swum", "won", "became", "become",
+      // Добавляем "lay" (форма Past Simple от "lie" и базовая форма "lay" для исключения)
+      "lay", "laid", "lain",
       // Регулярные глаголы с окончанием -ed
       "worked", "played", "walked", "talked", "lived", "loved", "moved", "called", "asked", "answered",
       "watched", "listened", "started", "finished", "helped", "needed", "wanted", "opened", "closed",
       "stopped", "jumped", "laughed", "cried", "tried", "studied", "carried", "hurried", "married",
-      // Добавим формы с -d (например, "made" уже есть выше)
+      // Добавим формы с -d
       "lived", "loved", "moved", "hated", "smiled", "saved", "proved"
     ];
 
@@ -248,7 +250,7 @@ addLesson({
         return false;
       }
       if (pastForms.includes(verb)) {
-        console.log(`"${verb}" is a past tense form, not a base form`);
+        console.log(`"${verb}" is a past tense form or excluded verb, not a base form`);
         return false;
       }
       wordIndex++;
@@ -300,7 +302,7 @@ addLesson({
         return false;
       }
       if (pastForms.includes(verb)) {
-        console.log(`"${verb}" is a past tense form, not a base form`);
+        console.log(`"${verb}" is a past tense form or excluded verb, not a base form`);
         return false;
       }
       wordIndex++;
@@ -330,9 +332,9 @@ addLesson({
         return false; // Должен быть глагол после шаблона
       }
       const verb = normalizedWords[wordIndex];
-      // Проверяем, что слово после "do [subject]" не является формой прошедшего времени
+      // Проверяем, что слово после "do [subject]" не является формой прошедшего времени или исключённым глаголом
       if (pastForms.includes(verb)) {
-        console.log(`"${verb}" is a past tense form, not a base form`);
+        console.log(`"${verb}" is a past tense form or excluded verb, not a base form`);
         return false;
       }
       const subject = normalizedWords[1]; // "you", "we", или "they"
