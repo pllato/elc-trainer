@@ -219,12 +219,13 @@
             font-size: 14px;
             color: #333333;
         }
+        .hidden {
+            display: none !important;
+        }
 
         /* Адаптивность для мобильных устройств */
         @media (max-width: 640px) {
             .container, .practice-container {
-                max-width: 100%;
-                width: 90%;
                 padding: 15px;
                 margin-top: 20px;
             }
@@ -289,7 +290,7 @@
         <button id="admin-btn" class="text-custom-gray hover:underline focus:outline-none text-center block w-full">Админка</button>
     </div>
 
-    <div id="admin-screen" style="display: none;" class="container">
+    <div id="admin-screen" class="container hidden">
         <div class="title">ELC</div>
         <div class="subtitle">Админка</div>
         <div id="admin-feedback" class="feedback"></div>
@@ -318,7 +319,7 @@
         <button onclick="goBackToStart()" class="button button-secondary">Вернуться</button>
     </div>
 
-    <div id="practice-screen" style="display: none;" class="practice-container">
+    <div id="practice-screen" class="practice-container hidden">
         <div class="practice-header">
             <div class="practice-title">ELC</div>
             <div class="practice-title">Практика грамматики</div>
@@ -334,7 +335,7 @@
         <div class="info" id="intro-examples"></div>
         
         <button id="start-practice-btn" class="button">Начать практику</button>
-        <button id="restart-listening-btn" style="display: none;" class="button">Возобновить прослушивание</button>
+        <button id="restart-listening-btn" class="button hidden">Возобновить прослушивание</button>
         
         <div id="progress-bars"></div>
         
@@ -349,7 +350,7 @@
         <div class="log-container" id="log"></div>
     </div>
 
-    <div id="completionModal" style="display: none;" class="modal">
+    <div id="completionModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-title">Урок завершён!</div>
             <div id="congratulations" class="modal-text"></div>
@@ -359,7 +360,7 @@
         </div>
     </div>
 
-    <div id="password-modal" style="display: none;" class="modal">
+    <div id="password-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-title">Введите пароль</div>
             <div id="password-error" class="feedback"></div>
