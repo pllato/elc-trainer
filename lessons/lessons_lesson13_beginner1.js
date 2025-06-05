@@ -172,181 +172,68 @@ addLesson({
       if (normalizedWords[0] === "yes") {
         if (normalizedWords.length < 3) {
           console.log("Answer too short for 'Yes' response");
-          return false; // Должно быть хотя бы "Yes, I like ..."
-        }
-        const expectedPronoun = window.lastAskedSubject === "you" ? "i" : window.lastAskedSubject;
-        if (normalizedWords[1] !== expectedPronoun || normalizedWords[2] !== window.lastAskedVerb) {
-          console.log(`Expected "${expectedPronoun} ${window.lastAskedVerb}", got "${normalizedWords[1]} ${normalizedWords[2]}"`);
           return false;
         }
-        console.log(`Recognized 'Yes' answer with verb: "${window.lastAskedVerb}"`);
+        const expectedAnswer = `${window.lastAskedSubject} ${window.lastAskedVerb}`;
+        const answerText = normalizedWords.slice(1).join(' ');
+        console.log(`Expected answer: "${expectedAnswer}", Given answer: "${answerText}"`);
+        if (!answerText.includes(window.lastAskedVerb) || !answerText.includes(window.lastAskedSubject)) {
+          return false;
+        }
         return true;
       } else if (normalizedWords[0] === "no") {
         if (normalizedWords.length < 4) {
           console.log("Answer too short for 'No' response");
-          return false; // Должно быть хотя бы "No, we don't play ..."
-        }
-        const expectedPronoun = window.lastAskedSubject === "you" ? "i" : window.lastAskedSubject;
-        if (normalizedWords[1] !== expectedPronoun || normalizedWords[2] !== "do" || normalizedWords[3] !== "not") {
-          console.log(`Expected "${expectedPronoun} do not", got "${normalizedWords[1]} ${normalizedWords[2]} ${normalizedWords[3]}"`);
           return false;
         }
-        if (normalizedWords[4] !== window.lastAskedVerb) {
-          console.log(`Expected verb "${window.lastAskedVerb}", got "${normalizedWords[4]}"`);
+        const expectedAnswer = `${window.lastAskedSubject} ${window.lastAskedVerb}`;
+        const answerText = normalizedWords.slice(1).join(' ');
+        console.log(`Expected answer: "${expectedAnswer}", Given answer: "${answerText}"`);
+        if (!answerText.includes(window.lastAskedVerb) || !answerText.includes(window.lastAskedSubject)) {
           return false;
         }
-        console.log(`Recognized 'No' answer with verb: "${window.lastAskedVerb}"`);
         return true;
       }
-      console.log("No matching answer structure found");
       return false;
     }
 
+    // Проверяем, соответствует ли текст шаблону структуры
     const pattern = structure.pattern;
-
-    // Проверяем, что начало текста соответствует шаблону
     for (let part of pattern) {
       if (!normalizedWords[wordIndex] || normalizedWords[wordIndex] !== part) {
-        console.log(`Pattern mismatch at index ${wordIndex}: expected "${part}", got "${normalizedWords[wordIndex]}"`);
+        console.log(`Mismatch at wordIndex ${wordIndex}: Expected "${part}", Got "${normalizedWords[wordIndex]}"`);
         return false;
       }
       wordIndex++;
     }
 
-    // Список известных форм Past Simple и Past Participle для исключения, а также "lay" для исключения путаницы с "lie"
-    const pastForms = [
-      // Нерегулярные глаголы: Past Simple и Past Participle
-      "was", "were", "been", "did", "done", "had", "ate", "eaten", "drank", "drunk", "drove", "driven",
-      "saw", "seen", "went", "gone", "took", "taken", "gave", "given", "wrote", "written", "spoke", "spoken",
-      "stood", "said", "knew", "known", "thought", "bought", "brought", "fought", "caught", "taught",
-      "built", "sent", "spent", "left", "met", "got", "gotten", "made", "found", "felt", "heard", "held",
-      "kept", "slept", "sat", "ran", "run", "swam", "swum", "won", "became", "become",
-      // Добавляем "lay" (форма Past Simple от "lie" и базовая форма "lay" для исключения)
-      "lay", "laid", "lain",
-      // Регулярные глаголы с окончанием -ed
-      "worked", "played", "walked", "talked", "lived", "loved", "moved", "called", "asked", "answered",
-      "watched", "listened", "started", "finished", "helped", "needed", "wanted", "opened", "closed",
-      "stopped", "jumped", "laughed", "cried", "tried", "studied", "carried", "hurried", "married",
-      // Добавим формы с -d
-      "lived", "loved", "moved", "hated", "smiled", "saved", "proved"
-    ];
+    // Для структур с hasName: true проверяем уникальность
+    if (structure.hasName) {
+      const remainingWords = normalizedWords.slice(wordIndex).join(' ');
+      if (!remainingWords) return false; // Должно быть хотя бы одно слово после шаблона
+      if (usedNames.includes(remainingWords)) {
+        console.log(`Duplicate found: "${remainingWords}"`);
+        return false; // Уже использовали этот пример
+      }
+      usedNames.push(remainingWords);
+      this.usedNames = usedNames;
+      console.log('usedNames after adding:', usedNames);
+      return true;
+    }
 
-    // Для отрицательной формы (I do not, You do not, We do not, They do not + глагол)
-    if (["i-negative", "you-negative", "we-negative", "they-negative"].includes(structure.id)) {
-      if (wordIndex >= normalizedWords.length) {
-        console.log("No verb provided after 'do not'");
-        return false; // Должен быть глагол после шаблона
-      }
-      const verb = normalizedWords[wordIndex];
-      // Проверяем, что слово после "do not" не является числом, вспомогательным глаголом или формой прошедшего времени
-      const auxiliaryVerbs = ["am", "is", "are", "was", "were", "be", "been", "being", "will", "shall", "would", "should", "can", "could", "may", "might", "must"];
-      const isNumber = /^\d+$/.test(verb);
-      if (isNumber) {
-        console.log(`"${verb}" is a number, not a verb`);
-        return false;
-      }
-      if (auxiliaryVerbs.includes(verb)) {
-        console.log(`"${verb}" is an auxiliary verb, not a main verb`);
-        return false;
-      }
-      if (pastForms.includes(verb)) {
-        console.log(`"${verb}" is a past tense form or excluded verb, not a base form`);
-        return false;
-      }
-      wordIndex++;
-      // Дополнение необязательно
-      const complement = wordIndex < normalizedWords.length ? normalizedWords.slice(wordIndex).join(' ') : '';
-      const subject = structure.id.split('-')[0]; // "i", "you", "we", "they"
-      const fullAction = `${subject} not ${verb}${complement ? ` ${complement}` : ''}`; // Добавляем "not" в fullAction
-      
-      console.log(`Recognized negative action: "${fullAction}"`);
-      
-      // Проверяем уникальность действия
-      if (structure.hasName) {
-        if (usedNames.includes(fullAction)) {
-          console.log(`Action "${fullAction}" is a duplicate`);
-          return false; // Действие уже использовалось
-        }
-        this.usedNames.push(fullAction);
-        console.log(`Added "${fullAction}" to usedNames:`, this.usedNames);
+    // Для вопросов (hasName: false) проверяем, что текст заканчивается после шаблона
+    if (!structure.hasName) {
+      if (wordIndex >= normalizedWords.length) return false; // Должно быть хотя бы одно слово после шаблона
+      if (structure.id.startsWith('do-')) {
+        // Сохраняем глагол и субъект для ответа
+        const verbAndObject = normalizedWords.slice(wordIndex).join(' ');
+        window.lastAskedVerb = verbAndObject.split(' ')[0]; // Первый глагол после "do you/we/they"
+        window.lastAskedSubject = structure.pattern[1]; // "you", "we", "they"
+        console.log(`Saved lastAskedVerb: "${window.lastAskedVerb}", lastAskedSubject: "${window.lastAskedSubject}"`);
       }
       return true;
     }
 
-    // Для утвердительной формы (I, You, We, They + глагол)
-    if (["i-positive", "you-positive", "we-positive", "they-positive"].includes(structure.id)) {
-      // Исключаем фразы, начинающиеся с "do not" или "don't"
-      if (normalizedWords.length >= 3 && normalizedWords[1] === "do" && normalizedWords[2] === "not") {
-        console.log("Text starts with 'do not', should match negative structure");
-        return false; // Это отрицательная форма, не принимаем
-      }
-      if (normalizedWords.length >= 2 && normalizedWords[1] === "don't") {
-        console.log("Text starts with 'don't', should match negative structure");
-        return false; // Это отрицательная форма, не принимаем
-      }
-
-      if (wordIndex >= normalizedWords.length) {
-        console.log("No verb provided after subject");
-        return false; // Должен быть глагол после шаблона
-      }
-      const verb = normalizedWords[wordIndex];
-      // Проверяем, что слово после подлежащего не является числом, вспомогательным глаголом или формой прошедшего времени
-      const auxiliaryVerbs = ["am", "is", "are", "was", "were", "be", "been", "being", "will", "shall", "would", "should", "can", "could", "may", "might", "must"];
-      const isNumber = /^\d+$/.test(verb);
-      if (isNumber) {
-        console.log(`"${verb}" is a number, not a verb`);
-        return false;
-      }
-      if (auxiliaryVerbs.includes(verb)) {
-        console.log(`"${verb}" is an auxiliary verb, not a main verb`);
-        return false;
-      }
-      if (pastForms.includes(verb)) {
-        console.log(`"${verb}" is a past tense form or excluded verb, not a base form`);
-        return false;
-      }
-      wordIndex++;
-      // Дополнение необязательно
-      const complement = wordIndex < normalizedWords.length ? normalizedWords.slice(wordIndex).join(' ') : '';
-      const subject = structure.id.split('-')[0]; // "i", "you", "we", "they"
-      const fullAction = `${subject} ${verb}${complement ? ` ${complement}` : ''}`;
-      
-      console.log(`Recognized positive action: "${fullAction}"`);
-      
-      // Проверяем уникальность действия
-      if (structure.hasName) {
-        if (usedNames.includes(fullAction)) {
-          console.log(`Action "${fullAction}" is a duplicate`);
-          return false; // Действие уже использовалось
-        }
-        this.usedNames.push(fullAction);
-        console.log(`Added "${fullAction}" to usedNames:`, this.usedNames);
-      }
-      return true;
-    }
-
-    // Для вопросительной формы (Do you, Do we, Do they + глагол)
-    if (["do-you-question", "do-we-question", "do-they-question"].includes(structure.id)) {
-      if (wordIndex >= normalizedWords.length) {
-        console.log("No verb provided after 'do [subject]'");
-        return false; // Должен быть глагол после шаблона
-      }
-      const verb = normalizedWords[wordIndex];
-      // Проверяем, что слово после "do [subject]" не является формой прошедшего времени или исключённым глаголом
-      if (pastForms.includes(verb)) {
-        console.log(`"${verb}" is a past tense form or excluded verb, not a base form`);
-        return false;
-      }
-      const subject = normalizedWords[1]; // "you", "we", или "they"
-      window.lastAskedVerb = verb; // Сохраняем глагол для проверки ответа
-      window.lastAskedSubject = subject; // Сохраняем местоимение для ответа
-      wordIndex++;
-      // Дополнение необязательно
-      console.log(`Recognized question with verb: "${verb}" and subject: "${subject}"`);
-      return true;
-    }
-
-    console.log("No matching structure found");
     return false;
   }
 });
