@@ -768,6 +768,7 @@
       window.usedNames = []; // Сбрасываем window.usedNames
       window.lastAskedVerb = null; // Сбрасываем lastAskedVerb
       window.lastAskedSubject = null; // Сбрасываем lastAskedSubject
+      console.log('window.usedNames reset to:', window.usedNames);
       if (recognition) recognition.stop();
 
       // Проверяем, что элементы существуют, прежде чем менять их классы
@@ -828,6 +829,10 @@
       }
 
       try {
+        // Сбрасываем window.usedNames при старте практики
+        window.usedNames = [];
+        console.log('window.usedNames reset at startListening:', window.usedNames);
+
         recognition.start();
         isListening = true;
         if (startPracticeBtn) {
@@ -929,6 +934,8 @@
         const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
 
         lastSpeechTime = Date.now();
+
+        console.log('Current window.usedNames before validation:', window.usedNames);
 
         if (matchedStructure) {
           let isCorrect;
@@ -1115,6 +1122,9 @@
 
       if (part1Completed) {
         currentPart = 2;
+        // Сбрасываем window.usedNames при переходе ко второй части
+        window.usedNames = [];
+        console.log('window.usedNames reset at part transition:', window.usedNames);
         feedback.textContent = 'Отлично! Ты завершил Часть 1 (утвердительные предложения). Теперь переходи к Часть 2: говори отрицательные или вопросительные предложения.';
         updateProgressBars();
       }
