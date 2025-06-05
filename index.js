@@ -127,8 +127,8 @@ function resetLessonState() {
 // Update overall progress bar
 function updateOverallProgress(lessonId) {
   const lesson = lessonsData.find(l => l.lesson === lessonId);
-  if (!lesson) {
-    console.log(`Lesson ${lessonId} not found`);
+  if (!lesson || !lesson.structures) {
+    console.log(`Lesson ${lessonId} not found or has no structures`);
     return;
   }
 
@@ -161,8 +161,8 @@ function updateOverallProgress(lessonId) {
 // Update individual progress bars
 function updateProgressBars(lessonId) {
   const lesson = lessonsData.find(l => l.lesson === lessonId);
-  if (!lesson) {
-    console.log(`Lesson ${lessonId} not found`);
+  if (!lesson || !lesson.structures) {
+    console.log(`Lesson ${lessonId} not found or has no structures`);
     return;
   }
 
@@ -192,7 +192,6 @@ function updateProgressBars(lessonId) {
       </div>
     `;
 
-    // Убираем отображение лишнего прогресса
     barsHTML += `
       <p class="text-xs text-gray-600">${totalCorrect}/${lesson.requiredCorrect}</p>
     `;
@@ -264,7 +263,7 @@ function startRecognition() {
       if (!window.recognition || window.recognition.state !== 'listening') {
         startRecognition();
       }
-    }, 3000);
+    }, 5000);
   };
   try {
     window.recognition.start();
