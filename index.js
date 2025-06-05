@@ -1,1027 +1,219 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELC Grammar Practice</title>
-  <!-- Подключение шрифтов Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
-  <!-- Подключение styles.css -->
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <!-- Стартовый экран -->
-  <div id="start-screen">
-    <!-- Логотип и подтекст -->
-    <div class="text-center mb-6">
-      <h1 class="logo">ELC</h1>
-      <p class="logo-subtext">English Lifestyle Communication</p>
-      <p class="logo-description">Тренажер грамматических структур</p>
-    </div>
-    <!-- Поле для имени -->
-    <div class="mb-4">
-      <label for="name" class="block text-sm font-medium text-gray-700">Ваше имя</label>
-      <input type="text" id="name" placeholder="Введите ваше имя" required>
-    </div>
-    <!-- Выбор уровня -->
-    <div class="mb-4">
-      <label for="level" class="block text-sm font-medium text-gray-700">Выберите уровень</label>
-      <select id="level">
-        <option value="beginner1">Beginner Part One</option>
-        <option value="beginner2">Beginner Part Two</option>
-        <option value="elementary">Elementary</option>
-        <option value="preintermediate">Pre-Intermediate</option>
-        <option value="intermediate">Intermediate</option>
-        <option value="upperintermediate">Upper-Intermediate</option>
-      </select>
-    </div>
-    <!-- Выбор урока -->
-    <div class="mb-6">
-      <label for="lesson" class="block text-sm font-medium text-gray-700">Выберите урок</label>
-      <select id="lesson">
-        <!-- Lessons will be populated dynamically -->
-      </select>
-    </div>
-    <!-- Кнопка "Начать практику" -->
-    <button id="start-btn">Начать практику</button>
-    <!-- Текстовая ссылка "Админка" -->
-    <a href="#" id="admin-btn" class="admin-link">Админка</a>
-  </div>
-
-  <!-- Экран админки -->
-  <div id="admin-screen" class="hidden">
-    <div class="flex justify-between items-center mb-4">
-      <div class="logo text-2xl font-bold" onclick="goBackToStart()">ELC</div>
-      <h1 class="text-2xl font-bold">Админка</h1>
-      <div></div> <!-- Пустой div для выравнивания -->
-    </div>
-    <!-- Поле для ввода GitHub токена -->
-    <div class="mb-4">
-      <label for="github-token" class="block text-sm font-medium text-gray-700">GitHub токен</label>
-      <input type="password" id="github-token" placeholder="Введите GitHub токен">
-    </div>
-    <!-- Загрузка нового урока -->
-    <div class="mb-4">
-      <label for="lesson-file" class="block text-sm font-medium text-gray-700">Загрузить новый урок (.js файл)</label>
-      <input type="file" id="lesson-file" accept=".js">
-    </div>
-    <button id="upload-lesson-btn">Загрузить урок на GitHub</button>
-    <!-- Удаление урока -->
-    <div class="mb-4">
-      <label for="delete-lesson" class="block text-sm font-medium text-gray-700">Удалить урок</label>
-      <select id="delete-lesson">
-        <option value="">Выберите урок для удаления</option>
-        <!-- Lessons will be populated dynamically -->
-      </select>
-    </div>
-    <button id="delete-lesson-btn">Удалить урок</button>
-    <!-- Обновление index.html -->
-    <div class="mb-4">
-      <label for="index-html-file" class="block text-sm font-medium text-gray-700">Обновить index.html</label>
-      <input type="file" id="index-html-file" accept=".html">
-    </div>
-    <button id="upload-index-html-btn">Обновить index.html на GitHub</button>
-    <!-- Обновление index.js -->
-    <div class="mb-4">
-      <label for="index-js-file" class="block text-sm font-medium text-gray-700">Обновить index.js</label>
-      <input type="file" id="index-js-file" accept=".js">
-    </div>
-    <button id="upload-index-js-btn">Обновить index.js на GitHub</button>
-    <p id="admin-feedback" class="text-md mb-4"></p>
-  </div>
-
-  <!-- Экран практики -->
-  <div id="practice-screen" class="hidden">
-    <div class="flex justify-between items-center mb-4">
-      <div class="logo text-2xl font-bold" onclick="goBackToStart()">ELC</div>
-      <h1 class="text-2xl font-bold">Практика грамматики</h1>
-      <div></div> <!-- Пустой div для выравнивания -->
-    </div>
-    <p class="text-lg mb-2">Привет, <span id="user-name"></span>!</p>
-    <p class="text-md mb-4">Уровень: <span id="user-level"></span>, <span id="user-lesson"></span></p>
-    <button id="start-practice-btn">Начать практику</button>
-    <button id="restart-listening-btn" class="hidden">Возобновить прослушивание</button>
-    <p id="feedback" class="text-md mb-4"></p>
-    <div class="mb-6">
-      <p class="text-lg font-semibold">Прогресс:</p>
-      <div id="progress-bars"></div>
-    </div>
-    <div class="mb-6">
-      <p class="text-lg font-semibold">Протокол:</p>
-      <div id="stats" class="stats"></div>
-      <div id="log" class="h-40 overflow-y-auto border p-2 text-sm"></div>
-    </div>
-    <!-- Модальное окно завершения урока -->
-    <div id="completion-modal" class="modal hidden">
-      <div class="modal-content">
-        <h2 class="text-2xl font-bold mb-2">Урок завершён!</h2>
-        <p id="congratulations" class="text-md mb-4"></p>
-        <p class="text-sm mb-2">Результаты высланы на проверку преподавателю.</p>
-        <div class="modal-log" id="modal-log"></div>
-        <button onclick="startNewTraining()">Завершить</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Модальное окно для ввода пароля -->
-  <div id="password-modal" class="modal hidden">
-    <div class="modal-content">
-      <h2 class="text-2xl font-bold mb-2">Введите пароль</h2>
-      <input type="password" id="password-input" class="password-modal-input" placeholder="Пароль">
-      <p id="password-error" class="password-error"></p>
-      <button onclick="checkPassword()">Подтвердить</button>
-    </div>
-  </div>
-
-  <script src="index.js"></script>
-  <script>
-    // Подбадривающие сообщения
-    const encouragementMessages = [
-      "Ты большой молодец! 🌟 Отличная работа, ты справился с уроком на ура! Ты уже говоришь на английском как носитель! 💪",
-      "Молодец, ты справился блестяще! 🎉 Урок пройден, ты на высоте! Ты уже владеешь английским как настоящий профи! ✨",
-      "Ух, как здорово! 🌟 Ты прошёл урок с лёгкостью! Ты уже говоришь на английском как носитель, это потрясающе! 💪",
-      "Ты настоящий чемпион! 🏆 Урок завершён, ты большой молодец! Ты уже разговариваешь как носитель английского! 🌟",
-      "Превосходно! 🎉 Ты справился с уроком на все 100%! Ты уже общаешься на английском как носитель, это невероятно! 💪",
-      "Вау, ты супер! 🌟 Урок пройден, и ты уже говоришь как носитель английского! Продолжай в том же духе! 🚀",
-      "Отлично сработано! 🎉 Ты завершил урок, и твой английский звучит как у носителя! Ты звезда! ⭐",
-      "Как круто! 🌟 Ты прошёл урок, и твой английский уже на уровне носителя! Горжусь тобой! 💖",
-      "Ты справился на ура! 🏆 Урок завершён, и ты уже общаешься как носитель! Это фантастика! 🎈",
-      "Супер, ты сделал это! 🌟 Урок пройден, и ты уже говоришь как носитель английского! Ты молодец! 💪"
-    ];
-
-    // Проверка поддержки SpeechRecognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Ваш браузер не поддерживает SpeechRecognition API. Пожалуйста, используйте современный браузер, например, Google Chrome.");
-    }
-
-    // Инициализация распознавания речи
-    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-    if (recognition) {
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      recognition.continuous = true;
-    }
-
-    let userName = '';
-    let userLevel = '';
-    let userLesson = '';
-    let progress = {};
-    let spokenHistory = [];
-    let logEntries = [];
-    let isListening = false;
-    let lastSpeechTime = Date.now();
-    let startTime = null;
-    let endTime = null;
-    let lessonCompleted = false;
-    let currentLessonData = null;
-
-    // Конфигурация GitHub
-    const GITHUB_OWNER = 'pllato';
-    const GITHUB_REPO = 'elc-trainer';
-    const GITHUB_PATH = 'lessons';
-
-    // Фиксированный пароль для админки
-    const ADMIN_PASSWORD = 'admin123'; // Замени на свой пароль
-
-    // Элементы DOM
-    const startScreen = document.getElementById('start-screen');
-    const practiceScreen = document.getElementById('practice-screen');
-    const adminScreen = document.getElementById('admin-screen');
-    const startBtn = document.getElementById('start-btn');
-    const adminBtn = document.getElementById('admin-btn');
-    const startPracticeBtn = document.getElementById('start-practice-btn');
-    const restartListeningBtn = document.getElementById('restart-listening-btn');
-    const feedback = document.getElementById('feedback');
-    const adminFeedback = document.getElementById('admin-feedback');
-    const statsDiv = document.getElementById('stats');
-    const progressBars = document.getElementById('progress-bars');
-    const overallProgressBar = document.getElementById('overall-progress-bar');
-    const logDiv = document.getElementById('log');
-    const userNameEl = document.getElementById('user-name');
-    const userLevelEl = document.getElementById('user-level');
-    const userLessonEl = document.getElementById('user-lesson');
-    const completionModal = document.getElementById('completion-modal');
-    const congratulationsEl = document.getElementById('congratulations');
-    const modalLog = document.getElementById('modal-log');
-    const levelSelect = document.getElementById('level');
-    const lessonSelect = document.getElementById('lesson');
-    const lessonFileInput = document.getElementById('lesson-file');
-    const uploadLessonBtn = document.getElementById('upload-lesson-btn');
-    const githubTokenInput = document.getElementById('github-token');
-    const indexHtmlFileInput = document.getElementById('index-html-file');
-    const uploadIndexHtmlBtn = document.getElementById('upload-index-html-btn');
-    const indexJsFileInput = document.getElementById('index-js-file');
-    const uploadIndexJsBtn = document.getElementById('upload-index-js-btn');
-    const deleteLessonSelect = document.getElementById('delete-lesson');
-    const deleteLessonBtn = document.getElementById('delete-lesson-btn');
-    const passwordModal = document.getElementById('password-modal');
-    const passwordInput = document.getElementById('password-input');
-    const passwordError = document.getElementById('password-error');
-
-    // Показать модальное окно пароля при клике на "Админка"
-    adminBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (passwordModal) {
-        passwordModal.style.display = 'block';
-        passwordInput.value = '';
-        passwordError.textContent = '';
-        passwordInput.focus();
-      } else {
-        console.error('Password modal not found');
-      }
-    });
-
-    // Проверка пароля
-    function checkPassword() {
-      const enteredPassword = passwordInput.value.trim();
-
-      if (enteredPassword === '') {
-        passwordError.textContent = 'Пожалуйста, введите пароль.';
-        passwordInput.focus();
-        return;
-      }
-
-      // Проверяем введённый пароль
-      if (enteredPassword === ADMIN_PASSWORD) {
-        // Пароль верный, открываем админку
-        passwordModal.style.display = 'none';
-        if (startScreen && adminScreen) {
-          startScreen.classList.add('hidden');
-          adminScreen.classList.remove('hidden');
-          githubTokenInput.value = ''; // Очищаем поле токена
-        } else {
-          console.error('startScreen or adminScreen not found');
-        }
-      } else {
-        // Пароль неверный, показываем ошибку
-        passwordError.textContent = 'Неверный пароль. Попробуйте снова.';
-        passwordInput.value = '';
-        passwordInput.focus();
-      }
-    }
-
-    // Обработчик нажатия Enter для проверки пароля
-    passwordInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        checkPassword();
-      }
-    });
-
-    // Загрузка уроков с GitHub через API
-    async function loadLessonsFromGitHub() {
-      console.log('Starting to load lessons from GitHub API...');
-      lessonsData.length = 0;
-      deleteLessonSelect.innerHTML = '<option value="">Выберите урок для удаления</option>';
-      const token = githubTokenInput.value.trim();
-      const headers = {
-        'Accept': 'application/vnd.github.v3+json'
-      };
-      
-      if (token) {
-        headers['Authorization'] = `token ${token}`;
-        console.log('Using GitHub token for authorization');
-      } else {
-        console.log('No GitHub token provided, proceeding without authorization');
-      }
-
-      try {
-        const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-        console.log(`Fetching lessons from ${apiUrl}`);
-        const response = await fetch(apiUrl, { headers });
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`GitHub API error: ${response.statusText} (${response.status}) - ${errorText}`);
-        }
-        const files = await response.json();
-        console.log('Files fetched from GitHub:', files);
-
-        for (const file of files) {
-          if (file.name.endsWith('.js')) {
-            console.log(`Processing file: ${file.name}`);
-            const option = document.createElement('option');
-            option.value = file.name;
-            option.textContent = file.name;
-            deleteLessonSelect.appendChild(option);
-
-            const fileResponse = await fetch(file.download_url);
-            if (!fileResponse.ok) {
-              console.error(`Failed to fetch lesson ${file.name}: ${fileResponse.statusText}`);
-              continue;
-            }
-            const script = await fileResponse.text();
-            try {
-              eval(script);
-            } catch (error) {
-              console.error(`Error evaluating lesson ${file.name}:`, error);
-            }
-          }
-        }
-        console.log('Lessons loaded from GitHub:', lessonsData);
-        populateLessons();
-      } catch (error) {
-        console.error('Error loading lessons from GitHub:', error);
-        feedback.textContent = 'Ошибка при загрузке уроков с GitHub: ' + error.message;
-      }
-    }
-
-    // Извлечение номера урока из названия
-    function extractLessonNumber(lessonName) {
-      const match = lessonName.match(/Урок (\d+)/);
-      return match ? parseInt(match[1], 10) : 0;
-    }
-
-    // Заполнение списка уроков
-    function populateLessons() {
-      const selectedLevel = levelSelect.value;
-      lessonSelect.innerHTML = '';
-      const lessons = lessonsData.filter(lesson => lesson.level === selectedLevel);
-      console.log('Populating lessons for level:', selectedLevel, 'Found lessons:', lessons);
-      if (lessons.length === 0) {
-        const option = document.createElement('option');
-        option.textContent = 'Нет доступных уроков';
-        option.disabled = true;
-        lessonSelect.appendChild(option);
-      } else {
-        // Сортируем уроки по номеру
-        lessons.sort((a, b) => extractLessonNumber(a.name) - extractLessonNumber(b.name));
-        lessons.forEach(lesson => {
-          const option = document.createElement('option');
-          option.value = lesson.lesson;
-          option.textContent = lesson.name;
-          lessonSelect.appendChild(option);
-        });
-      }
-    }
-
-    loadLessonsFromGitHub();
-    levelSelect.addEventListener('change', populateLessons);
-
-    async function uploadFileToGitHub(file, filePath, token, successMessage) {
-      if (!file) {
-        adminFeedback.textContent = `Пожалуйста, выберите файл для ${filePath}.`;
-        return false;
-      }
-
-      if (!token) {
-        adminFeedback.textContent = 'Пожалуйста, введите GitHub токен.';
-        return false;
-      }
-
-      const reader = new FileReader();
-      return new Promise((resolve, reject) => {
-        reader.onload = async function(e) {
-          const fileContent = e.target.result;
-
-          try {
-            let sha = null;
-            try {
-              const existingFileResponse = await fetch(
-                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
-                {
-                  headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                  }
-                }
-              );
-              if (existingFileResponse.ok) {
-                const existingFile = await existingFileResponse.json();
-                sha = existingFile.sha;
-              }
-            } catch (error) {
-              // File doesn't exist, proceed with creating a new file
-            }
-
-            const content = btoa(unescape(encodeURIComponent(fileContent)));
-
-            const response = await fetch(
-              `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
-              {
-                method: 'PUT',
-                headers: {
-                  'Authorization': `token ${token}`,
-                  'Accept': 'application/vnd.github.v3+json'
-                },
-                body: JSON.stringify({
-                  message: `Update ${filePath}`,
-                  content: content,
-                  sha: sha
-                })
-              }
-            );
-
-            if (!response.ok) throw new Error(`GitHub API error: ${response.statusText}`);
-
-            adminFeedback.textContent = successMessage;
-            resolve(true);
-          } catch (error) {
-            adminFeedback.textContent = `Ошибка при загрузке ${filePath} на GitHub: ${error.message}`;
-            console.error(`Error uploading ${filePath} to GitHub:`, error);
-            resolve(false);
-          }
-        };
-        reader.onerror = function() {
-          adminFeedback.textContent = `Ошибка при чтении файла ${filePath}.`;
-          resolve(false);
-        };
-        reader.readAsText(file);
-      });
-    }
-
-    uploadLessonBtn.addEventListener('click', async () => {
-      const file = lessonFileInput.files[0];
-      const token = githubTokenInput.value.trim();
-
-      if (!file) {
-        adminFeedback.textContent = 'Пожалуйста, выберите файл урока (.js)';
-        return;
-      }
-
-      if (!file.name.endsWith('.js')) {
-        adminFeedback.textContent = 'Файл должен быть в формате .js';
-        return;
-      }
-
-      const success = await uploadFileToGitHub(
-        file,
-        `${GITHUB_PATH}/${file.name}`,
-        token,
-        'Урок успешно загружен на GitHub! Перейдите на стартовый экран, чтобы увидеть его.'
-      );
-
-      if (success) {
-        lessonFileInput.value = '';
-        githubTokenInput.value = '';
-        await loadLessonsFromGitHub();
-      }
-    });
-
-    deleteLessonBtn.addEventListener('click', async () => {
-      const lessonFile = deleteLessonSelect.value;
-      const token = githubTokenInput.value.trim();
-
-      if (!lessonFile) {
-        adminFeedback.textContent = 'Пожалуйста, выберите урок для удаления.';
-        return;
-      }
-
-      if (!token) {
-        adminFeedback.textContent = 'Пожалуйста, введите GitHub токен.';
-        return;
-      }
-
-      try {
-        const fileResponse = await fetch(
-          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}/${lessonFile}`,
-          {
-            headers: {
-              'Authorization': `token ${token}`,
-              'Accept': 'application/vnd.github.v3+json'
-            }
-          }
-        );
-        if (!fileResponse.ok) throw new Error(`GitHub API error: ${fileResponse.statusText}`);
-        const fileData = await fileResponse.json();
-        const sha = fileData.sha;
-
-        const deleteResponse = await fetch(
-          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}/${lessonFile}`,
-          {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `token ${token}`,
-              'Accept': 'application/vnd.github.v3+json'
-            },
-            body: JSON.stringify({
-              message: `Delete lesson ${lessonFile}`,
-              sha: sha
-            })
-          }
-        );
-
-        if (!deleteResponse.ok) throw new Error(`GitHub API error: ${deleteResponse.statusText}`);
-
-        adminFeedback.textContent = 'Урок успешно удалён из GitHub! Перейдите на стартовый экран, чтобы обновить список.';
-        githubTokenInput.value = '';
-        await loadLessonsFromGitHub();
-      } catch (error) {
-        adminFeedback.textContent = `Ошибка при удалении урока: ${error.message}`;
-        console.error('Error deleting lesson from GitHub:', error);
-      }
-    });
-
-    uploadIndexHtmlBtn.addEventListener('click', async () => {
-      const file = indexHtmlFileInput.files[0];
-      const token = githubTokenInput.value.trim();
-
-      const success = await uploadFileToGitHub(
-        file,
-        'index.html',
-        token,
-        'index.html успешно обновлён на GitHub! Страница перезагрузится через 3 секунды.'
-      );
-
-      if (success) {
-        indexHtmlFileInput.value = '';
-        githubTokenInput.value = '';
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }
-    });
-
-    uploadIndexJsBtn.addEventListener('click', async () => {
-      const file = indexJsFileInput.files[0];
-      const token = githubTokenInput.value.trim();
-
-      const success = await uploadFileToGitHub(
-        file,
-        'index.js',
-        token,
-        'index.js успешно обновлён на GitHub! Страница перезагрузится через 3 секунды.'
-      );
-
-      if (success) {
-        indexJsFileInput.value = '';
-        githubTokenInput.value = '';
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }
-    });
-
-    startBtn.addEventListener('click', () => {
-      userName = document.getElementById('name').value.trim();
-      userLevel = document.getElementById('level').value;
-      userLesson = document.getElementById('lesson').value;
-      if (!userName) {
-        alert('Пожалуйста, введите ваше имя.');
-        return;
-      }
-
-      currentLessonData = lessonsData.find(lesson => lesson.level === userLevel && lesson.lesson === userLesson);
-      if (!currentLessonData) {
-        alert('Урок не найден. Пожалуйста, выберите другой урок.');
-        return;
-      }
-
-      progress = {};
-      currentLessonData.structures.forEach(struct => {
-        progress[struct.id] = 0;
-      });
-
-      startScreen.classList.add('hidden');
-      practiceScreen.classList.remove('hidden');
-      userNameEl.textContent = userName;
-      userLevelEl.textContent = document.getElementById('level').options[document.getElementById('level').selectedIndex].text;
-      userLessonEl.textContent = document.getElementById('lesson').options[document.getElementById('lesson').selectedIndex].text;
-      initializeProgressBars();
-      updateStats();
-    });
-
-    function goBackToStart() {
-      console.log('goBackToStart called');
-      // Сбрасываем состояние
-      progress = {};
-      spokenHistory = [];
-      logEntries = [];
-      isListening = false;
-      lessonCompleted = false;
-      startTime = null;
-      endTime = null;
-      currentLessonData = null;
-      if (recognition) recognition.stop();
-
-      // Проверяем, что элементы существуют, прежде чем менять их классы
-      if (startPracticeBtn) {
-        startPracticeBtn.textContent = 'Начать практику';
-        startPracticeBtn.disabled = false;
-      }
-      if (restartListeningBtn) {
-        restartListeningBtn.classList.add('hidden');
-      }
-      if (completionModal) {
-        completionModal.style.display = 'none';
-      }
-      if (feedback) feedback.textContent = '';
-      if (adminFeedback) adminFeedback.textContent = '';
-      if (statsDiv) statsDiv.innerHTML = '';
-      if (logDiv) logDiv.innerHTML = '';
-      if (modalLog) modalLog.innerHTML = '';
-      updateProgressBars();
-
-      // Переключаем экраны
-      if (practiceScreen) practiceScreen.classList.add('hidden');
-      if (adminScreen) adminScreen.classList.add('hidden');
-      if (startScreen) startScreen.classList.remove('hidden');
-    }
-
-    startPracticeBtn.addEventListener('click', () => {
-      feedback.textContent = 'Попытка запустить практику...';
-      if (!isListening) {
-        startTime = new Date();
-        startListening();
-      } else {
-        feedback.textContent = 'Практика уже запущена. Если ничего не происходит, проверьте доступ к микрофону и перезапустите.';
-      }
-    });
-
-    restartListeningBtn.addEventListener('click', () => {
-      feedback.textContent = 'Попытка возобновить прослушивание...';
-      if (!isListening) {
-        startListening();
-      } else {
-        feedback.textContent = 'Прослушивание уже активно. Проверьте доступ к микрофону.';
-      }
-    });
-
-    function startNewTraining() {
-      goBackToStart();
-    }
-
-    function startListening() {
-      if (!recognition) {
-        feedback.textContent = 'SpeechRecognition не поддерживается в вашем браузере.';
-        return;
-      }
-
-      try {
-        recognition.start();
-        isListening = true;
-        if (startPracticeBtn) {
-          startPracticeBtn.textContent = 'Слушаю...';
-          startPracticeBtn.disabled = true;
-        }
-        if (restartListeningBtn) {
-          restartListeningBtn.classList.add('hidden');
-        }
-        feedback.textContent = 'Говори любой пример из структур ниже.';
-        lastSpeechTime = Date.now();
-      } catch (error) {
-        feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Проверьте доступ к микрофону и попробуйте снова.';
-        isListening = false;
-        if (startPracticeBtn) {
-          startPracticeBtn.textContent = 'Начать практику';
-          startPracticeBtn.disabled = false;
-        }
-        if (restartListeningBtn) {
-          restartListeningBtn.classList.remove('hidden');
-        }
-      }
-    }
-
-    function initializeProgressBars() {
-      updateProgressBars();
-    }
-
-    function formatDuration(start, end) {
-      if (!start || !end) return '0 минут 0 секунд';
-      const durationMs = end - start;
-      const minutes = Math.floor(durationMs / 1000 / 60);
-      const seconds = Math.floor((durationMs / 1000) % 60);
-      return `${minutes} минут ${seconds} секунд`;
-    }
-
-    function updateOverallProgressBar() {
-      if (!currentLessonData) return;
-      const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + count, 0);
-      const overallPercentage = (totalCorrect / requiredExamples) * 100;
-
-      const overallProgressBar = document.getElementById('overall-progress-bar');
-      overallProgressBar.innerHTML = `
-        <p class="text-md font-semibold">Общий прогресс:</p>
-        <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-          <div class="bg-[#373D8D] h-3 rounded-full" style="width: ${overallPercentage}%"></div>
-        </div>
-        <p class="text-sm text-gray-600">${totalCorrect}/${requiredExamples}</p>
-      `;
-    }
-
-    function updateStats() {
-      if (!currentLessonData) return;
-      const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + count, 0);
-      const totalAttempts = logEntries.length;
-      const accuracy = totalAttempts > 0 ? ((totalCorrect / totalAttempts) * 100).toFixed(2) : 0;
-
-      let statsHTML = `
-        <p><strong>Статистика:</strong></p>
-        <p>- Нужно было сказать: ${requiredExamples} примеров</p>
-        <p>- Сказано правильно: ${totalCorrect} примеров</p>
-        <p>- Всего попыток: ${totalAttempts}</p>
-        <p>- Процент аккуратности: ${accuracy}%</p>
-      `;
-      
-      if (lessonCompleted && startTime && endTime) {
-        statsHTML += `<p>- Время тренировки: ${formatDuration(startTime, endTime)}</p>`;
-      }
-
-      statsDiv.innerHTML = statsHTML;
-    }
-
-    function updateModalLog() {
-      if (!currentLessonData) return;
-      const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + count, 0);
-      const totalAttempts = logEntries.length;
-      const accuracy = totalAttempts > 0 ? ((totalCorrect / totalAttempts) * 100).toFixed(2) : 0;
-      const duration = formatDuration(startTime, endTime);
-
-      let logHTML = `
-        <p><strong>Протокол:</strong></p>
-        <p><strong>Статистика:</strong></p>
-        <p>- Нужно было сказать: ${requiredExamples} примеров</p>
-        <p>- Сказано правильно: ${totalCorrect} примеров</p>
-        <p>- Всего попыток: ${totalAttempts}</p>
-        <p>- Процент аккуратности: ${accuracy}%</p>
-        <p>- Время тренировки: ${duration}</p>
-        <p><strong>Попытки:</strong></p>
-      `;
-
-      logEntries.forEach(entry => {
-        if (entry.exceeded) {
-          logHTML += `<p>[${entry.time}] ${entry.spoken} 🎉🎈❤️</p>`;
-        } else {
-          const statusIcon = entry.correct ? '✅' : '❌';
-          const duplicateIcon = entry.duplicate ? '🔁' : '';
-          logHTML += `<p>[${entry.time}] Сказано: "${entry.spoken}"${entry.structure ? ` для "${entry.structure}")` : ''} - ${statusIcon} ${entry.correct ? 'Правильно' : 'Неправильно'}${duplicateIcon ? ` ${duplicateIcon} Повтор` : ''}</p>`;
-        }
-      });
-
-      modalLog.innerHTML = logHTML;
-    }
-
-    if (recognition) {
-      recognition.onresult = (event) => {
-        const spokenText = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-        const matchedStructure = findMatchingStructure(spokenText);
-        const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
-
-        lastSpeechTime = Date.now();
-
-        if (matchedStructure) {
-          const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
-          if (isCorrect) {
-            const isDuplicate = matchedStructure.hasName && spokenHistory.includes(spokenText);
-            logEntry.structure = matchedStructure.structure;
-            logEntry.correct = true;
-            logEntry.duplicate = isDuplicate;
-
-            if (!isDuplicate || !matchedStructure.hasName) {
-              progress[matchedStructure.id]++;
-              if (matchedStructure.hasName) spokenHistory.push(spokenText);
-
-              if (progress[matchedStructure.id] > currentLessonData.requiredCorrect) {
-                feedback.textContent = `Отлично! 🎉🎈❤️ Ты превысил цель для "${matchedStructure.structure}"!`;
-                logEntries.push({
-                  time: new Date().toLocaleTimeString(),
-                  spoken: `Превышена цель для "${matchedStructure.structure}"`,
-                  structure: matchedStructure.structure,
-                  correct: true,
-                  exceeded: true
-                });
-              } else {
-                feedback.textContent = `Правильно! Ты сказал: "${spokenText}" для "${matchedStructure.structure}"`;
-              }
-
-              updateProgressBars();
-              checkCompletion();
-            } else {
-              feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
-            }
-          } else {
-            logEntry.structure = matchedStructure.structure;
-            logEntry.correct = false;
-            feedback.textContent = `Неправильно: "${spokenText}" для "${matchedStructure.structure}"`;
-          }
-        } else {
-          logEntry.correct = false;
-          feedback.textContent = `Не совпадает: "${spokenText}". Попробуй одну из структур ниже.`;
-        }
-
-        logEntries.push(logEntry);
-        updateLog();
-        updateStats();
-
-        setTimeout(() => {
-          if (isListening && completionModal.style.display !== 'block') {
-            recognition.start();
-          }
-        }, 500);
-      };
-
-      recognition.onerror = (event) => {
-        feedback.textContent = 'Ошибка в распознавании: ' + event.error + '. Попробуйте снова или проверьте доступ к микрофону.';
-        isListening = false;
-        if (startPracticeBtn) {
-          startPracticeBtn.textContent = 'Начать практику';
-          startPracticeBtn.disabled = false;
-        }
-        if (restartListeningBtn) {
-          restartListeningBtn.classList.remove('hidden');
-        }
-      };
-
-      recognition.onend = () => {
-        const currentTime = Date.now();
-        if (currentTime - lastSpeechTime > 10000) {
-          feedback.textContent = 'Давно не слышу речи. Перезапускаю...';
-          isListening = false;
-          if (startPracticeBtn) {
-            startPracticeBtn.textContent = 'Начать практику';
-            startPracticeBtn.disabled = false;
-          }
-          if (restartListeningBtn) {
-            restartListeningBtn.classList.remove('hidden');
-          }
-          return;
-        }
-
-        if (isListening && completionModal.style.display !== 'block') {
-          setTimeout(() => {
-            try {
-              recognition.start();
-            } catch (error) {
-              feedback.textContent = 'Ошибка при перезапуске распознавания: ' + error.message + '. Попробуйте снова.';
-              isListening = false;
-              if (startPracticeBtn) {
-                startPracticeBtn.textContent = 'Начать практику';
-                startPracticeBtn.disabled = false;
-              }
-              if (restartListeningBtn) {
-                restartListeningBtn.classList.remove('hidden');
-              }
-            }
-          }, 500);
-        }
-      };
-    }
-
-    function findMatchingStructure(text) {
-      if (!currentLessonData) return null;
-      const structures = currentLessonData.structures;
-      for (let struct of structures) {
-        if (currentLessonData.validateStructure(text, struct)) {
-          return struct;
-        }
-      }
-      return null;
-    }
-
-    function updateLog() {
-      logDiv.innerHTML = '';
-      logEntries.forEach(entry => {
-        const p = document.createElement('p');
-        p.className = 'mb-1';
-        if (entry.exceeded) {
-          p.textContent = `[${entry.time}] ${entry.spoken} 🎉🎈❤️`;
-        } else {
-          const statusIcon = entry.correct ? '✅' : '❌';
-          const duplicateIcon = entry.duplicate ? '🔁' : '';
-          p.textContent = `[${entry.time}] Сказано: "${entry.spoken}"${entry.structure ? ` для "${entry.structure}"` : ''} - ${statusIcon} ${entry.correct ? 'Правильно' : 'Неправильно'}${duplicateIcon ? ` ${duplicateIcon} Повтор` : ''}`;
-          p.setAttribute('data-status', entry.correct ? 'correct' : 'incorrect');
-        }
-        logDiv.appendChild(p);
-      });
-      logDiv.scrollTop = logDiv.scrollHeight;
-    }
-
-    function updateProgressBars() {
-      if (!currentLessonData) return;
-      progressBars.innerHTML = '';
-      currentLessonData.structures.forEach(struct => {
-        const totalCorrect = progress[struct.id];
-        const div = document.createElement('div');
-        div.className = 'mb-2';
-
-        let barsHTML = `
-          <p class="text-sm">${struct.structure}</p>
-        `;
-
-        const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
-        const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
-        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
-        barsHTML += `
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
-          </div>
-        `;
-
-        if (totalCorrect > currentLessonData.requiredCorrect) {
-          const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
-          const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
-          const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
-          console.log(`Excess Percentage: ${excessPercentage}%`);
-          barsHTML += `
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
-            </div>
-          `;
-        }
-
-        barsHTML += `
-          <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
-        `;
-        div.innerHTML = barsHTML;
-        progressBars.appendChild(div);
-      });
-    }
-
-    function checkCompletion() {
-      if (!currentLessonData) return;
-      if (Object.values(progress).every(count => count >= currentLessonData.requiredCorrect)) {
-        endTime = new Date();
-        lessonCompleted = true;
-        const randomMessage = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
-        congratulationsEl.textContent = randomMessage;
-        updateModalLog();
-        completionModal.style.display = 'block';
-        isListening = false;
-        if (recognition) recognition.stop();
-        startPracticeBtn.textContent = 'Урок завершён';
-        updateStats();
-        sendResults();
-      }
-    }
-
-    async function sendResults() {
-      if (!currentLessonData) return;
-      const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + count, 0);
-      const totalAttempts = logEntries.length;
-      const accuracy = totalAttempts > 0 ? ((totalCorrect / totalAttempts) * 100).toFixed(2) : 0;
-      const duration = formatDuration(startTime, endTime);
-
-      const resultSummary = `
-Результаты для ${userName}
-Уровень: ${userLevelEl.textContent}
-Урок: ${userLessonEl.textContent}
-Прогресс: ${Object.entries(progress).map(([id, count]) => `${currentLessonData.structures.find(s => s.id === id).structure}: ${count} правильных`).join('\n')}
-Статистика:
-- Нужно было сказать: ${requiredExamples} примеров
-- Сказано правильно: ${totalCorrect} примеров
-- Всего попыток: ${totalAttempts}
-- Процент аккуратности: ${accuracy}%
-- Время тренировки: ${duration}
-Протокол:
-Статистика в протоколе:
-- Нужно было сказать: ${requiredExamples} примеров
-- Сказано правильно: ${totalCorrect} примеров
-- Всего попыток: ${totalAttempts}
-- Процент аккуратности: ${accuracy}%
-- Время тренировки: ${duration}
-${logEntries.map(entry => {
-  if (entry.exceeded) {
-    return `- ${entry.spoken} 🎉🎈❤️`;
+const lessonsData = [];
+let isFetchingLessons = false;
+let lastValidatedText = null;
+let lastValidatedTime = 0;
+
+// Function to add lesson data
+function addLesson(lesson) {
+  if (!lessonsData.some(existing => existing.lesson === lesson.lesson && existing.level === lesson.level)) {
+    lessonsData.push(lesson);
+    console.log('Lesson added:', lesson.name, 'Total lessons:', lessonsData.length);
   } else {
-    const statusIcon = entry.correct ? '✅' : '❌';
-    const duplicateIcon = entry.duplicate ? '🔁' : '';
-    return `- ${entry.spoken}${entry.structure ? ` (для "${entry.structure}")` : ''} - ${statusIcon} ${entry.correct ? 'Правильно' : 'Неправильно'}${duplicateIcon ? ` ${duplicateIcon} Повтор` : ''}`;
+    console.log('Duplicate lesson skipped:', lesson.name);
   }
-}).join('\n')}
-`;
+}
 
-      const TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
-      const TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID';
-      const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+// Function to populate lesson select dropdown
+function populateLessonSelect(attempt = 1, maxAttempts = 20) {
+  const levelLessonScreen = document.getElementById('level-lesson-screen');
+  if (levelLessonScreen && levelLessonScreen.style.display === 'none') {
+    console.log('Level-lesson screen is hidden, skipping populateLessonSelect');
+    return;
+  }
 
-      try {
-        await fetch(telegramUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: resultSummary
-          })
-        });
-      } catch (error) {
-        console.error('Ошибка отправки в Telegram:', error.message);
+  const lessonSelect = document.getElementById('lesson');
+  if (!lessonSelect) {
+    if (attempt < maxAttempts) {
+      console.warn(`Lesson select element not found, retrying in 1s (attempt ${attempt}/${maxAttempts})`);
+      console.log('Current DOM state:', document.body ? document.body.innerHTML.substring(0, 200) : 'No body');
+      setTimeout(() => populateLessonSelect(attempt + 1, maxAttempts), 1000);
+    } else {
+      console.error('Lesson select element not found after max attempts');
+    }
+    return;
+  }
+  lessonSelect.innerHTML = '<option value="">Выберите урок</option>';
+
+  lessonsData.sort((a, b) => {
+    if (a.level === b.level) {
+      const lessonA = parseInt(a.lesson.replace('lesson', '')) || 0;
+      const lessonB = parseInt(b.lesson.replace('lesson', '')) || 0;
+      return lessonA - lessonB;
+    }
+    return a.level.localeCompare(b.level);
+  });
+
+  lessonsData.forEach(lesson => {
+    const option = document.createElement('option');
+    option.value = lesson.lesson;
+    option.textContent = lesson.name;
+    lessonSelect.appendChild(option);
+  });
+  console.log('Lesson select populated with', lessonsData.length, 'lessons');
+}
+
+// Fetch lessons from GitHub API
+async function fetchLessons() {
+  if (isFetchingLessons) {
+    console.log('fetchLessons already running, skipping');
+    return;
+  }
+  isFetchingLessons = true;
+  const url = 'https://api.github.com/repos/pllato/elc-trainer/contents/lessons';
+  console.log('Starting to fetch lessons from:', url);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/vnd.github.v3+json'
       }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const files = await response.json();
+    console.log('Files fetched from GitHub:', files.length, 'files');
 
-      const BITRIX_WEBHOOK_URL = 'https://elcalmaty.bitrix24.kz/rest/1/t30j7bkqi9p4sy0b/';
-      const BITRIX_CHAT_ID = '145630';
-      const bitrixUrl = `${BITRIX_WEBHOOK_URL}im.message.add`;
-
+    for (const file of files.filter(f => f.name.endsWith('.js'))) {
+      console.log('Processing file:', file.name);
       try {
-        const response = await fetch(bitrixUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            CHAT_ID: BITRIX_CHAT_ID,
-            MESSAGE: resultSummary
-          })
-        });
-        const data = await response.json();
-        if (!data.result) {
-          console.error('Ошибка отправки в Bitrix24:', JSON.stringify(data.error));
+        const fileResponse = await fetch(file.download_url);
+        if (!fileResponse.ok) {
+          throw new Error(`Failed to fetch ${file.name}`);
         }
+        const content = await fileResponse.text();
+        eval(content);
+        console.log('Loaded file:', file.name);
       } catch (error) {
-        console.error('Ошибка отправки в Bitrix24:', error.message);
+        console.error('Error loading file:', file.name, error);
       }
     }
-  </script>
-</body>
-</html>
+
+    console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
+    setTimeout(() => populateLessonSelect(), 180000); // Increased delay to 180 seconds
+  } catch (error) {
+    console.error('Error loading lessons:', error);
+    if (lessonsData.length > 0) {
+      populateLessonSelect();
+    }
+  } finally {
+    isFetchingLessons = false;
+  }
+}
+
+// Reset lesson state
+function resetLessonState() {
+  window.lessonStarted = false;
+  window.usedVerbs = [];
+  window.userProgress = {};
+  lastValidatedText = null;
+  lastValidatedTime = 0;
+  console.log('Lesson state reset');
+}
+
+// Update progress for a specific structure
+function updateProgress(structureId, isCorrect, lessonId) {
+  if (!window.userProgress) window.userProgress = {};
+  if (!window.userProgress[structureId]) window.userProgress[structureId] = 0;
+
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  const requiredCorrect = lesson ? lesson.requiredCorrect : 10;
+
+  console.log(`Before update: ${structureId}, Current progress: ${window.userProgress[structureId]}/${requiredCorrect}`);
+
+  if (isCorrect && window.userProgress[structureId] < requiredCorrect) {
+    window.userProgress[structureId]++;
+    console.log(`Updated progress for ${structureId}: ${window.userProgress[structureId]}/${requiredCorrect}`);
+    // Update individual progress bar
+    const progressBar = document.querySelector(`#progress-bars [data-structure="${structureId}"] .progress`);
+    if (progressBar) {
+      const percentage = (window.userProgress[structureId] / requiredCorrect) * 100;
+      progressBar.style.width = `${Math.min(percentage, 100)}%`;
+      console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, Percentage: ${percentage}%`);
+    } else {
+      console.log(`Progress bar not found for ${structureId}`);
+    }
+  } else if (isCorrect) {
+    console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
+  }
+}
+
+// Handle lesson selection
+function selectLesson(lessonId) {
+  resetLessonState();
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  if (lesson) {
+    console.log(`Selected lesson: ${lesson.name}`);
+  }
+}
+
+// SpeechRecognition handler
+function startRecognition() {
+  if (window.recognition && window.recognition.state === 'listening') {
+    console.log('Recognition already active');
+    return;
+  }
+  window.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  window.recognition.lang = 'en-US';
+  window.recognition.onresult = function(event) {
+    let text = event.results[0][0].transcript;
+    text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    console.log('Speech recognized:', text);
+    const now = Date.now();
+    if (text !== lastValidatedText || now - lastValidatedTime > 15000) {
+      validateInput(text);
+      lastValidatedText = text;
+      lastValidatedTime = now;
+    } else {
+      console.log('Duplicate input skipped:', text);
+    }
+  };
+  window.recognition.onerror = function(event) {
+    console.log('Speech recognition error:', event.error);
+    window.recognition = null;
+  };
+  window.recognition.onend = function() {
+    console.log('Speech recognition ended');
+    window.recognition = null;
+    // Delay before restarting to prevent InvalidStateError
+    setTimeout(() => {
+      if (!window.recognition || window.recognition.state !== 'listening') {
+        startRecognition();
+      }
+    }, 2000);
+  };
+  try {
+    window.recognition.start();
+  } catch (error) {
+    console.error('Speech recognition start error:', error);
+  }
+}
+
+// Validate input
+function validateInput(text, lessonId = 'lesson13') {
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  if (!lesson) {
+    console.log(`Lesson ${lessonId} not found`);
+    return;
+  }
+
+  let isCorrect = false;
+  let currentStructure;
+  for (const structure of lesson.structures) {
+    if (lesson.validateStructure(text, structure)) {
+      isCorrect = true;
+      currentStructure = structure;
+      break;
+    }
+  }
+
+  console.log(`Validation result for "${text}": ${isCorrect ? 'Correct' : 'Incorrect'}`);
+  if (isCorrect) {
+    updateProgress(currentStructure.id, true, lessonId);
+  }
+}
+
+// Start fetching lessons
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded, starting fetchLessons');
+  fetchLessons();
+}, { once: true });
