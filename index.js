@@ -491,10 +491,15 @@ function goBackToStart() {
   endTime = null;
   currentLessonData = null;
   currentPart = 1; // Сбрасываем текущую часть
-  window.usedNames = []; // Сбрасываем window.usedNames
+  if (typeof window.usedNames !== 'undefined') {
+    window.usedNames.length = 0; // Очищаем массив
+    console.log('window.usedNames cleared at goBackToStart:', window.usedNames);
+  } else {
+    window.usedNames = [];
+    console.log('window.usedNames initialized at goBackToStart:', window.usedNames);
+  }
   window.lastAskedVerb = null; // Сбрасываем lastAskedVerb
   window.lastAskedSubject = null; // Сбрасываем lastAskedSubject
-  console.log('window.usedNames reset to:', window.usedNames);
   if (recognition) recognition.stop();
 
   // Проверяем, что элементы существуют, прежде чем менять их классы
@@ -562,6 +567,12 @@ function startListening() {
     } else {
       window.usedNames = [];
       console.log('window.usedNames initialized at startListening:', window.usedNames);
+    }
+
+    // Сбрасываем локальные usedNames для текущего урока
+    if (currentLessonData && currentLessonData.validateStructure) {
+      currentLessonData.usedNames = []; // Сбрасываем локальный массив
+      console.log('currentLessonData.usedNames reset at startListening:', currentLessonData.usedNames);
     }
 
     recognition.start();
@@ -853,7 +864,12 @@ function checkPartProgress() {
 
   if (part1Completed) {
     currentPart = 2;
-    // Сбрасываем window.usedNames при переходе ко второй части
+    // Сбрасываем локальные usedNames при переходе ко второй части
+    if (currentLessonData.validateStructure) {
+      currentLessonData.usedNames = [];
+      console.log('currentLessonData.usedNames reset at part transition:', currentLessonData.usedNames);
+    }
+    // Сбрасываем window.usedNames для совместимости с другими уроками
     if (typeof window.usedNames !== 'undefined') {
       window.usedNames.length = 0; // Очищаем массив
       console.log('window.usedNames cleared at part transition:', window.usedNames);
