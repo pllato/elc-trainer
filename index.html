@@ -104,7 +104,6 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
-      <div id="overall-progress-bar" class="mb-4"></div>
       <div id="progress-bars"></div>
     </div>
     <div class="mb-6">
@@ -273,6 +272,12 @@
     // Загрузка уроков с GitHub через API
     async function loadLessonsFromGitHub() {
       console.log('Starting to load lessons from GitHub API...');
+      // Защита от отсутствия lessonsData
+      if (typeof lessonsData === 'undefined') {
+        console.error('lessonsData is not defined. Ensure index.js is loaded correctly.');
+        feedback.textContent = 'Ошибка: lessonsData не определена. Проверьте загрузку index.js.';
+        return;
+      }
       lessonsData.length = 0;
       deleteLessonSelect.innerHTML = '<option value="">Выберите урок для удаления</option>';
       const token = githubTokenInput.value.trim();
@@ -337,6 +342,12 @@
     function populateLessons() {
       const selectedLevel = levelSelect.value;
       lessonSelect.innerHTML = '';
+      // Защита от отсутствия lessonsData
+      if (typeof lessonsData === 'undefined') {
+        console.error('lessonsData is not defined. Ensure index.js is loaded correctly.');
+        feedback.textContent = 'Ошибка: lessonsData не определена. Проверьте загрузку index.js.';
+        return;
+      }
       const lessons = lessonsData.filter(lesson => lesson.level === selectedLevel);
       console.log('Populating lessons for level:', selectedLevel, 'Found lessons:', lessons);
       if (lessons.length === 0) {
@@ -685,22 +696,6 @@
       return `${minutes} минут ${seconds} секунд`;
     }
 
-    function updateOverallProgressBar() {
-      if (!currentLessonData) return;
-      const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + count, 0);
-      const overallPercentage = (totalCorrect / requiredExamples) * 100;
-
-      const overallProgressBar = document.getElementById('overall-progress-bar');
-      overallProgressBar.innerHTML = `
-        <p class="text-md font-semibold">Общий прогресс:</p>
-        <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-          <div class="bg-[#373D8D] h-3 rounded-full" style="width: ${overallPercentage}%"></div>
-        </div>
-        <p class="text-sm text-gray-600">${totalCorrect}/${requiredExamples}</p>
-      `;
-    }
-
     function updateStats() {
       if (!currentLessonData) return;
       const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
@@ -892,7 +887,6 @@
 
     function updateProgressBars() {
       if (!currentLessonData) return;
-      updateOverallProgressBar();
       progressBars.innerHTML = '';
       currentLessonData.structures.forEach(struct => {
         const totalCorrect = progress[struct.id];
