@@ -674,6 +674,22 @@ function updateModalLog() {
 if (recognition) {
   recognition.onresult = (event) => {
     const spokenText = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+    
+    // Игнорируем пустой ввод
+    if (!spokenText) {
+      console.log('Empty speech input detected, ignoring.');
+      setTimeout(() => {
+        if (isListening && !recognition.recognizing && completionModal.style.display !== 'block') {
+          try {
+            recognition.start();
+          } catch (error) {
+            console.error('Failed to restart recognition:', error);
+          }
+        }
+      }, 500);
+      return;
+    }
+
     const matchedStructure = findMatchingStructure(spokenText);
     const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
 
@@ -897,6 +913,10 @@ function checkPartProgress() {
 }
 
 function updateLog() {
+  if (!logDiv) {
+    console.warn('logDiv element not found, skipping updateLog.');
+    return;
+  }
   logDiv.innerHTML = '';
   logEntries.forEach(entry => {
     const p = document.createElement('p');
@@ -910,7 +930,9 @@ function updateLog() {
     }
     logDiv.appendChild(p);
   });
-  logDiv.scrollTop = logDiv.scrollHeight;
+  if (logDiv.scrollHeight) {
+    logDiv.scrollTop = logDiv.scrollHeight;
+  }
 }
 
 function updateProgressBars() {
@@ -1055,7 +1077,18 @@ function updateProgressBars() {
 
 function checkCompletion() {
   if (!currentLessonData) return;
-  if (Object.values(progress).every(count => count >= currentLessonData.requiredCorrect)) {
+  
+  const allStructuresComplete = Object.entries(progress).every(([id, count]) => {
+    const structure = currentLessonData.structures.find(s => s.id === id);
+    const meetsRequirement = count >= currentLessonData.requiredCorrect;
+    if (!meetsRequirement) {
+      console.log(`Structure "${structure.structure}" has ${count} correct answers, needs ${currentLessonData.requiredCorrect}`);
+    }
+    return meetsRequirement;
+  });
+
+  if (allStructuresComplete) {
+    console.log('All structures completed, finishing lesson.');
     endTime = new Date();
     lessonCompleted = true;
     const randomMessage = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
@@ -1067,6 +1100,8 @@ function checkCompletion() {
     startPracticeBtn.textContent = 'Урок завершён';
     updateStats();
     sendResults();
+  } else {
+    console.log('Lesson not yet complete, waiting for more examples.');
   }
 }
 
