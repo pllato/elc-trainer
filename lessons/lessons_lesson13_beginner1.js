@@ -220,6 +220,17 @@ addLesson({
         return false; // Должен быть глагол после шаблона
       }
       const verb = normalizedWords[wordIndex];
+      // Проверяем, что слово после "do not" не является числом или вспомогательным глаголом
+      const auxiliaryVerbs = ["am", "is", "are", "was", "were", "be", "been", "being", "will", "shall", "would", "should", "can", "could", "may", "might", "must"];
+      const isNumber = /^\d+$/.test(verb);
+      if (isNumber) {
+        console.log(`"${verb}" is a number, not a verb`);
+        return false;
+      }
+      if (auxiliaryVerbs.includes(verb)) {
+        console.log(`"${verb}" is an auxiliary verb, not a main verb`);
+        return false;
+      }
       wordIndex++;
       // Дополнение необязательно
       const complement = wordIndex < normalizedWords.length ? normalizedWords.slice(wordIndex).join(' ') : '';
@@ -257,6 +268,17 @@ addLesson({
         return false; // Должен быть глагол после шаблона
       }
       const verb = normalizedWords[wordIndex];
+      // Проверяем, что слово после подлежащего не является числом или вспомогательным глаголом
+      const auxiliaryVerbs = ["am", "is", "are", "was", "were", "be", "been", "being", "will", "shall", "would", "should", "can", "could", "may", "might", "must"];
+      const isNumber = /^\d+$/.test(verb);
+      if (isNumber) {
+        console.log(`"${verb}" is a number, not a verb`);
+        return false;
+      }
+      if (auxiliaryVerbs.includes(verb)) {
+        console.log(`"${verb}" is an auxiliary verb, not a main verb`);
+        return false;
+      }
       wordIndex++;
       // Дополнение необязательно
       const complement = wordIndex < normalizedWords.length ? normalizedWords.slice(wordIndex).join(' ') : '';
