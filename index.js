@@ -83,7 +83,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 10000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 12000); // Increased delay
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -117,6 +117,7 @@ function updateProgress(structureId, isCorrect, lessonId) {
     console.log(`Updated progress for ${structureId}: ${window.userProgress[structureId]}/${requiredCorrect}`);
   } else if (isCorrect) {
     console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
+    return; // Early return to prevent further processing
   }
 
   const progressBar = document.querySelector(`#progress-bars [data-structure="${structureId}"] .progress`);
@@ -144,9 +145,14 @@ function updateOverallProgress(lessonId) {
 
   lesson.structures.forEach(structure => {
     const count = window.userProgress[structure.id] || 0;
-    totalCorrect += Math.min(count, lesson.requiredCorrect);
-    console.log(`Structure ${structure.id}: ${Math.min(count, lesson.requiredCorrect)}/${lesson.requiredCorrect}`);
+    const cappedCount = Math.min(count, lesson.requiredCorrect);
+    totalCorrect += cappedCount;
+    console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}`);
   });
+
+  // Ensure totalCorrect does not exceed totalRequired
+  totalCorrect = Math.min(totalCorrect, totalRequired);
+  console.log(`Total progress capped at: ${totalCorrect}/${totalRequired}`);
 
   const overallProgressBar = document.querySelector('#overall-progress-bar .progress');
   if (overallProgressBar) {
