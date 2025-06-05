@@ -1,5 +1,8 @@
 const lessonsData = [];
 
+// Declare recognition globally to avoid re-declaration
+let recognition = null;
+
 // Function to add lesson data
 function addLesson(lesson) {
   lessonsData.push(lesson);
@@ -10,7 +13,8 @@ function addLesson(lesson) {
 function populateLessonSelect() {
   const lessonSelect = document.getElementById('lesson-select');
   if (!lessonSelect) {
-    console.error('Lesson select element not found');
+    console.error('Lesson select element not found, retrying in 1s');
+    setTimeout(populateLessonSelect, 1000); // Retry after 1 second
     return;
   }
   lessonSelect.innerHTML = '<option value="">Выберите урок</option>';
@@ -50,23 +54,27 @@ async function fetchLessons() {
     const files = await response.json();
     console.log('Files fetched from GitHub:', files);
 
-    for (const file of files) {
-      if (file.name.endsWith('.js')) {
+    const loadPromises = files
+      .filter(file => file.name.endsWith('.js'))
+      .map(file => {
         console.log('Processing file:', file.name);
-        try {
+        return new Promise((resolve, reject) => {
           const script = document.createElement('script');
           script.src = file.download_url;
+          script.onload = () => {
+            console.log(`Loaded file: ${file.name}`);
+            resolve();
+          };
+          script.onerror = () => {
+            console.error(`Error loading file: ${file.name}`);
+            reject(new Error(`Failed to load ${file.name}`));
+          };
           document.head.appendChild(script);
-          // Wait for script to load
-          await new Promise((resolve, reject) => {
-            script.onload = resolve;
-            script.onerror = () => reject(new Error(`Failed to load ${file.name}`));
-          });
-        } catch (error) {
-          console.error('Error loading file:', file.name, error);
-        }
-      }
-    }
+        });
+      });
+
+    // Wait for all scripts to load
+    await Promise.allSettled(loadPromises);
     console.log('Lessons loaded from GitHub:', lessonsData);
     populateLessonSelect();
   } catch (error) {
@@ -164,7 +172,6 @@ function selectLesson(lessonId) {
 }
 
 // SpeechRecognition handler
-let recognition;
 function startRecognition() {
   if (recognition && recognition.state === 'listening') {
     console.log('Recognition already active');
