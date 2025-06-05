@@ -22,7 +22,7 @@ addLesson({
       examples: [
         "You drink too much. (Ты пьёшь слишком много.)",
         "You study. (Ты учишься.)",
-        "You drink. (Ты пьёшь.)"
+        "You work. (Ты работаешь.)"
       ], 
       id: "you-verb", 
       hasVerb: true 
@@ -54,53 +54,31 @@ addLesson({
   ],
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
-    console.log('Validating:', text, 'for structure:', structure.structure);
+    console.log('Input text:', text);
+    console.log('Validating for structure:', structure.structure);
 
-    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+    // Нормализация входного текста
+    const words = text.trim().toLowerCase().split(/\s+/).filter(word => word.length > 0);
+    console.log('Split words:', words);
+
     const pattern = structure.pattern;
     let wordIndex = 0;
 
-    // Сбрасываем usedVerbs при старте урока
-    if (!window.lessonStarted) {
-      window.usedVerbs = [];
-      window.lessonStarted = true;
-      console.log('Reset usedVerbs');
-    }
-
-    function normalizeWord(word) {
-      return word.toLowerCase().replace(/[.,!?]/g, '');
-    }
-
-    const normalizedWords = words.map(normalizeWord);
-    console.log('Normalized words:', normalizedWords);
-
     // Проверяем местоимение
     for (let part of pattern) {
-      if (!normalizedWords[wordIndex] || normalizedWords[wordIndex] !== part) {
-        console.log('Pattern mismatch:', normalizedWords[wordIndex], '!==', part);
+      if (!words[wordIndex] || words[wordIndex] !== part) {
+        console.log('Pattern mismatch:', words[wordIndex], '!==', part, 'at index', wordIndex);
         return false;
       }
       wordIndex++;
     }
 
-    // Проверяем наличие слов после местоимения
-    if (wordIndex >= normalizedWords.length) {
+    // Проверяем, есть ли слова после местоимения
+    if (wordIndex >= words.length) {
       console.log('No words after pronoun');
       return false;
     }
 
-    // Формируем фразу после местоимения
-    const verbPhrase = normalizedWords.slice(wordIndex).join(' ');
-    console.log('Verb phrase:', verbPhrase);
-
-    // Проверяем уникальность фразы
-    if (structure.hasVerb && window.usedVerbs.includes(verbPhrase)) {
-      console.log('Verb phrase already used:', verbPhrase);
-      return false;
-    }
-
-    // Добавляем фразу в использованные
-    window.usedVerbs.push(verbPhrase);
     console.log('Validation passed for:', text);
     return true;
   }
