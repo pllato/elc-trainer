@@ -327,6 +327,12 @@
       }
     }
 
+    // Извлечение номера урока из названия
+    function extractLessonNumber(lessonName) {
+      const match = lessonName.match(/Урок (\d+)/);
+      return match ? parseInt(match[1], 10) : 0;
+    }
+
     // Заполнение списка уроков
     function populateLessons() {
       const selectedLevel = levelSelect.value;
@@ -339,6 +345,8 @@
         option.disabled = true;
         lessonSelect.appendChild(option);
       } else {
+        // Сортируем уроки по номеру
+        lessons.sort((a, b) => extractLessonNumber(a.name) - extractLessonNumber(b.name));
         lessons.forEach(lesson => {
           const option = document.createElement('option');
           option.value = lesson.lesson;
