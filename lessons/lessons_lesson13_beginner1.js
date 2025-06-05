@@ -131,11 +131,12 @@ addLesson({
     "you-negative": 2,
     "we-negative": 2,
     "they-negative": 2,
-    "do-you-question": 2,
-    "do-we-question": 2,
-    "do-they-question": 2
+    "do-you-question": 3,
+    "do-we-question": 3,
+    "do-they-question": 3
   },
-  validateStructure: function(text, structure) {
+  currentPart: 1, // Начальная часть урока
+  validateStructure: function(text, structure, feedback) {
     const words = text.split(' ').filter(word => word.length > 0);
     let wordIndex = 0;
 
@@ -165,6 +166,20 @@ addLesson({
 
     console.log(`Validating text: "${text}" for structure: "${structure ? structure.structure : 'answer'}"`);
     console.log('usedNames before validation:', usedNames);
+
+    // Проверяем текущую часть урока
+    if (structure && this.parts[structure.id] !== this.currentPart) {
+      let message = '';
+      if (this.currentPart === 1) {
+        message = 'Сейчас нужно говорить примеры с I _____, We _____, You _____, They _____. Например: I live in London.';
+      } else if (this.currentPart === 2) {
+        message = 'Сейчас нужно говорить примеры с I do not _____, You do not _____, We do not _____, They do not _____. Например: I do not play tennis.';
+      } else if (this.currentPart === 3) {
+        message = 'Сейчас нужно задавать вопросы с Do you ____?, Do we ____?, Do they _____? Например: Do you live in Almaty?';
+      }
+      feedback.textContent = message;
+      return false;
+    }
 
     // Проверяем, является ли текст ответом на вопрос (Yes/No)
     if (!structure && window.lastAskedVerb && window.lastAskedSubject) {
@@ -207,6 +222,27 @@ addLesson({
       wordIndex++;
     }
 
+    // Дополнительные проверки в зависимости от части
+    if (this.currentPart === 1) {
+      // Часть 1: Проверяем наличие глагола в настоящем времени
+      const remainingWords = normalizedWords.slice(wordIndex);
+      if (remainingWords.length < 1) return false; // Должен быть хотя бы глагол
+      const verb = remainingWords[0];
+      // Простая проверка: глагол должен быть в настоящем времени (не заканчиваться на "ed", не "did")
+      if (verb.endsWith('ed') || verb === 'did') {
+        feedback.textContent = 'Используйте глагол в настоящем времени. Например: I live in London.';
+        return false;
+      }
+    } else if (this.currentPart === 2) {
+      // Часть 2: Проверяем наличие отрицания (уже проверено через pattern: ["i", "do", "not"])
+      const remainingWords = normalizedWords.slice(wordIndex);
+      if (remainingWords.length < 1) return false; // Должен быть хотя бы глагол после "do not"
+    } else if (this.currentPart === 3) {
+      // Часть 3: Проверяем вопросительную форму (уже проверено через pattern: ["do", "you/we/they"])
+      const remainingWords = normalizedWords.slice(wordIndex);
+      if (remainingWords.length < 1) return false; // Должен быть хотя бы глагол после "do you/we/they"
+    }
+
     // Для структур с hasName: true проверяем уникальность
     if (structure.hasName) {
       const remainingWords = normalizedWords.slice(wordIndex).join(' ');
@@ -235,5 +271,17 @@ addLesson({
     }
 
     return false;
+  },
+  onProgressUpdate: function(progress) {
+    // Проверяем прогресс текущей части
+    const partStructures = Object.keys(this.parts).filter(id => this.parts[id] === this.currentPart);
+    const allStructuresCompleted = partStructures.every(id => progress[id] >= this.requiredCorrect);
+    
+    if (allStructuresCompleted) {
+      if (this.currentPart < 3) {
+        this.currentPart++;
+        console.log(`Переходим к части ${this.currentPart}`);
+      }
+    }
   }
 });
