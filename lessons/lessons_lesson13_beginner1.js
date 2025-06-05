@@ -96,7 +96,22 @@ addLesson({
       'manage', 'motivate', 'negotiate', 'organize', 'participate', 'perform', 'persuade',
       'plan', 'prepare', 'present', 'prevent', 'promote', 'provide', 'recognize', 'recommend',
       'reflect', 'represent', 'research', 'resolve', 'respond', 'review', 'share', 'solve',
-      'suggest', 'support', 'train', 'travel', 'understand', 'volunteer'
+      'suggest', 'support', 'train', 'travel', 'understand', 'volunteer',
+      'prefer', 'transfer', 'receive', 'dry', 'admire', 'apologize', 'approve', 'assume',
+      'attract', 'belong', 'challenge', 'commit', 'confirm', 'consult', 'convince', 'cope',
+      'correct', 'criticize', 'decrease', 'dedicate', 'demonstrate', 'depend', 'deserve',
+      'detect', 'disagree', 'discover', 'distribute', 'divide', 'donate', 'emphasize', 'enable',
+      'ensure', 'estimate', 'expand', 'extend', 'fail', 'forgive', 'fulfill', 'gain', 'gather',
+      'generate', 'guarantee', 'hire', 'ignore', 'implement', 'impress', 'increase', 'insist',
+      'install', 'integrate', 'intend', 'introduce', 'invent', 'invest', 'invite', 'involve',
+      'judge', 'justify', 'limit', 'maintain', 'measure', 'mention', 'monitor', 'observe',
+      'obtain', 'offer', 'operate', 'oppose', 'order', 'overcome', 'predict', 'preserve',
+      'pretend', 'proceed', 'produce', 'protect', 'publish', 'pursue', 'raise', 'reduce',
+      'refer', 'reject', 'relate', 'relax', 'release', 'rely', 'remind', 'remove', 'repair',
+      'replace', 'request', 'require', 'resist', 'retain', 'retire', 'reveal', 'satisfy',
+      'save', 'scan', 'search', 'select', 'separate', 'serve', 'sign', 'specialize', 'specify',
+      'struggle', 'succeed', 'supply', 'survive', 'suspect', 'test', 'transform', 'translate',
+      'trust', 'update', 'utilize', 'value', 'vary', 'verify', 'warn', 'welcome'
     ];
 
     // Проверяем, является ли первое слово после местоимения глаголом
