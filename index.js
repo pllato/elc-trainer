@@ -3,8 +3,7 @@ let isFetchingLessons = false;
 let lastValidatedText = null;
 let lastValidatedTime = 0;
 
-// Initialize global capped progress
-window.cappedProgress = {};
+// Initialize global total progress
 window.totalProgress = 0;
 
 // Function to add lesson data
@@ -93,7 +92,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 90000); // Increased delay
+    setTimeout(() => populateLessonSelect(), 120000); // Increased delay to 120 seconds
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -109,7 +108,6 @@ function resetLessonState() {
   window.lessonStarted = false;
   window.usedVerbs = [];
   window.userProgress = {};
-  window.cappedProgress = {};
   window.totalProgress = 0; // Reset total progress
   lastValidatedText = null;
   lastValidatedTime = 0;
@@ -120,9 +118,7 @@ function resetLessonState() {
 // Update progress for a specific structure
 function updateProgress(structureId, isCorrect, lessonId) {
   if (!window.userProgress) window.userProgress = {};
-  if (!window.cappedProgress) window.cappedProgress = {};
   if (!window.userProgress[structureId]) window.userProgress[structureId] = 0;
-  if (!window.cappedProgress[structureId]) window.cappedProgress[structureId] = 0;
 
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   const requiredCorrect = lesson ? lesson.requiredCorrect : 10;
@@ -131,20 +127,19 @@ function updateProgress(structureId, isCorrect, lessonId) {
 
   if (isCorrect && window.userProgress[structureId] < requiredCorrect) {
     window.userProgress[structureId]++;
-    window.cappedProgress[structureId] = Math.min(window.userProgress[structureId], requiredCorrect);
-    console.log(`Updated progress for ${structureId}: ${window.userProgress[structureId]}/${requiredCorrect}, Capped: ${window.cappedProgress[structureId]}`);
+    console.log(`Updated progress for ${structureId}: ${window.userProgress[structureId]}/${requiredCorrect}`);
     // Update individual progress bar
     const progressBar = document.querySelector(`#progress-bars [data-structure="${structureId}"] .progress`);
     if (progressBar) {
-      const percentage = (window.cappedProgress[structureId] / requiredCorrect) * 100;
+      const percentage = (window.userProgress[structureId] / requiredCorrect) * 100;
       progressBar.style.width = `${Math.min(percentage, 100)}%`;
-      console.log(`Structure: ${structureId}, Total Correct: ${window.cappedProgress[structureId]}, Percentage: ${percentage}%`);
+      console.log(`Structure: ${structureId}, Total Correct: ${window.userProgress[structureId]}, Percentage: ${percentage}%`);
     } else {
       console.log(`Progress bar not found for ${structureId}`);
     }
     updateOverallProgress(lessonId);
   } else if (isCorrect) {
-    console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}, Capped: ${window.cappedProgress[structureId]}`);
+    console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
     return; // Early return to prevent further processing
   }
 }
@@ -177,7 +172,8 @@ function updateOverallProgress(lessonId, attempt = 1, maxAttempts = 10) {
 
   // Calculate total progress based on capped contributions
   lesson.structures.forEach(structure => {
-    const cappedCount = window.cappedProgress[structure.id] || 0;
+    const count = window.userProgress[structure.id] || 0;
+    const cappedCount = Math.min(count, lesson.requiredCorrect);
     totalCorrect += cappedCount;
     console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}, Contributes: ${cappedCount} to total`);
   });
@@ -233,7 +229,7 @@ function startRecognition() {
     text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
     console.log('Speech recognized:', text);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 7000) {
+    if (text !== lastValidatedText || now - lastValidatedTime > 10000) {
       validateInput(text);
       lastValidatedText = text;
       lastValidatedTime = now;
@@ -253,7 +249,7 @@ function startRecognition() {
       if (!window.recognition || window.recognition.state !== 'listening') {
         startRecognition();
       }
-    }, 1000);
+    }, 2000);
   };
   try {
     window.recognition.start();
