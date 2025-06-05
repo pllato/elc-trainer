@@ -668,7 +668,11 @@ function updateModalLog() {
     }
   });
 
-  modalLog.innerHTML = logHTML;
+  if (modalLog) {
+    modalLog.innerHTML = logHTML;
+  } else {
+    console.warn('modalLog element not found, skipping updateModalLog.');
+  }
 }
 
 if (recognition) {
@@ -679,7 +683,7 @@ if (recognition) {
     if (!spokenText) {
       console.log('Empty speech input detected, ignoring.');
       setTimeout(() => {
-        if (isListening && !recognition.recognizing && completionModal.style.display !== 'block') {
+        if (isListening && !recognition.recognizing && (completionModal ? completionModal.style.display !== 'block' : true)) {
           try {
             recognition.start();
           } catch (error) {
@@ -754,7 +758,7 @@ if (recognition) {
 
     // Убедимся, что не пытаемся запустить recognition, если оно уже активно
     setTimeout(() => {
-      if (isListening && !recognition.recognizing && completionModal.style.display !== 'block') {
+      if (isListening && !recognition.recognizing && (completionModal ? completionModal.style.display !== 'block' : true)) {
         try {
           recognition.start();
         } catch (error) {
@@ -796,7 +800,7 @@ if (recognition) {
       return;
     }
 
-    if (isListening && completionModal.style.display !== 'block') {
+    if (isListening && (completionModal ? completionModal.style.display !== 'block' : true)) {
       setTimeout(() => {
         if (!recognition.recognizing) {
           try {
@@ -1092,9 +1096,18 @@ function checkCompletion() {
     endTime = new Date();
     lessonCompleted = true;
     const randomMessage = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
-    congratulationsEl.textContent = randomMessage;
+    if (congratulationsEl) {
+      congratulationsEl.textContent = randomMessage;
+    } else {
+      console.warn('congratulationsEl element not found, cannot display message.');
+    }
     updateModalLog();
-    completionModal.style.display = 'block';
+    if (completionModal) {
+      completionModal.style.display = 'block';
+    } else {
+      console.warn('completionModal element not found, cannot display completion modal.');
+      feedback.textContent = 'Урок завершён! 🎉 Но модальное окно недоступно. Нажмите "Начать заново", чтобы продолжить.';
+    }
     isListening = false;
     if (recognition) recognition.stop();
     startPracticeBtn.textContent = 'Урок завершён';
