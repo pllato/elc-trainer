@@ -108,6 +108,49 @@ function resetLessonState() {
   lastValidatedText = null;
   lastValidatedTime = 0;
   console.log('Lesson state reset');
+  // Reset overall progress bar
+  const overallProgress = document.getElementById('overall-progress');
+  const overallProgressText = document.getElementById('overall-progress-text');
+  if (overallProgress) {
+    overallProgress.style.width = '0%';
+  }
+  if (overallProgressText) {
+    overallProgressText.textContent = '0/0';
+  }
+}
+
+// Update overall progress bar
+function updateOverallProgress(lessonId) {
+  const lesson = lessonsData.find(l => l.lesson === lessonId);
+  if (!lesson) {
+    console.log(`Lesson ${lessonId} not found`);
+    return;
+  }
+
+  const totalRequired = lesson.structures.length * lesson.requiredCorrect;
+  let totalCorrect = 0;
+
+  // Calculate total progress based on capped contributions
+  lesson.structures.forEach(structure => {
+    const count = window.userProgress[structure.id] || 0;
+    const cappedCount = Math.min(count, lesson.requiredCorrect);
+    totalCorrect += cappedCount;
+    console.log(`Structure ${structure.id}: ${cappedCount}/${lesson.requiredCorrect}, Contributes: ${cappedCount} to total`);
+  });
+
+  totalCorrect = Math.min(totalCorrect, totalRequired);
+  console.log(`Total progress: ${totalCorrect}/${totalRequired}`);
+
+  const overallProgress = document.getElementById('overall-progress');
+  const overallProgressText = document.getElementById('overall-progress-text');
+  if (overallProgress && overallProgressText) {
+    const percentage = (totalCorrect / totalRequired) * 100;
+    overallProgress.style.width = `${percentage}%`;
+    overallProgressText.textContent = `${totalCorrect}/${totalRequired}`;
+    console.log(`Overall progress: ${totalCorrect}/${totalRequired}, Percentage: ${percentage}%`);
+  } else {
+    console.log('Overall progress elements not found');
+  }
 }
 
 // Update progress for a specific structure
@@ -132,6 +175,7 @@ function updateProgress(structureId, isCorrect, lessonId) {
     } else {
       console.log(`Progress bar not found for ${structureId}`);
     }
+    updateOverallProgress(lessonId);
   } else if (isCorrect) {
     console.log(`Excess answer for ${structureId}, not counted: ${window.userProgress[structureId]}/${requiredCorrect}`);
   }
