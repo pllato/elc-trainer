@@ -104,6 +104,7 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
+      <div id="overall-progress-bar" class="mb-4"></div>
       <div id="progress-bars"></div>
     </div>
     <div class="mb-6">
@@ -197,6 +198,7 @@
     const adminFeedback = document.getElementById('admin-feedback');
     const statsDiv = document.getElementById('stats');
     const progressBars = document.getElementById('progress-bars');
+    const overallProgressBar = document.getElementById('overall-progress-bar');
     const logDiv = document.getElementById('log');
     const userNameEl = document.getElementById('user-name');
     const userLevelEl = document.getElementById('user-level');
@@ -675,6 +677,22 @@
       return `${minutes} минут ${seconds} секунд`;
     }
 
+    function updateOverallProgressBar() {
+      if (!currentLessonData) return;
+      const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
+      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + count, 0);
+      const overallPercentage = (totalCorrect / requiredExamples) * 100;
+
+      const overallProgressBar = document.getElementById('overall-progress-bar');
+      overallProgressBar.innerHTML = `
+        <p class="text-md font-semibold">Общий прогресс:</p>
+        <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+          <div class="bg-[#373D8D] h-3 rounded-full" style="width: ${overallPercentage}%"></div>
+        </div>
+        <p class="text-sm text-gray-600">${totalCorrect}/${requiredExamples}</p>
+      `;
+    }
+
     function updateStats() {
       if (!currentLessonData) return;
       const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
@@ -866,6 +884,7 @@
 
     function updateProgressBars() {
       if (!currentLessonData) return;
+      updateOverallProgressBar();
       progressBars.innerHTML = '';
       currentLessonData.structures.forEach(struct => {
         const totalCorrect = progress[struct.id];
@@ -878,7 +897,7 @@
 
         const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
         const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
-        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`); // Отладка
+        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
         barsHTML += `
           <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
             <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
@@ -889,7 +908,7 @@
           const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
           const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
           const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
-          console.log(`Excess Percentage: ${excessPercentage}%`); // Отладка
+          console.log(`Excess Percentage: ${excessPercentage}%`);
           barsHTML += `
             <div class="w-full bg-gray-200 rounded-full h-2.5">
               <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
