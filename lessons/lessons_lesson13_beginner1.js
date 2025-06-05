@@ -54,6 +54,8 @@ addLesson({
   ],
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
+    console.log('Validating:', text, 'for structure:', structure.structure);
+
     const words = text.trim().split(/\s+/).filter(word => word.length > 0);
     const pattern = structure.pattern;
     let wordIndex = 0;
@@ -62,54 +64,43 @@ addLesson({
     if (!window.lessonStarted) {
       window.usedVerbs = [];
       window.lessonStarted = true;
+      console.log('Reset usedVerbs');
     }
 
     function normalizeWord(word) {
       return word.toLowerCase().replace(/[.,!?]/g, '');
     }
 
-    let normalizedWords = words.map(normalizeWord);
-
-    console.log('Input text:', text);
+    const normalizedWords = words.map(normalizeWord);
     console.log('Normalized words:', normalizedWords);
-    console.log('Expected pattern:', pattern);
 
-    // Проверяем, начинается ли текст с нужного местоимения
+    // Проверяем местоимение
     for (let part of pattern) {
       if (!normalizedWords[wordIndex] || normalizedWords[wordIndex] !== part) {
-        console.log('Pattern mismatch at index', wordIndex, ':', normalizedWords[wordIndex], '!==', part);
+        console.log('Pattern mismatch:', normalizedWords[wordIndex], '!==', part);
         return false;
       }
       wordIndex++;
     }
 
-    // Проверяем, есть ли слова после местоимения
+    // Проверяем наличие слов после местоимения
     if (wordIndex >= normalizedWords.length) {
-      console.log('No verb provided after pronoun');
+      console.log('No words after pronoun');
       return false;
     }
 
-    // Проверяем наличие глагола (первое слово после местоимения)
+    // Формируем фразу после местоимения
     const verbPhrase = normalizedWords.slice(wordIndex).join(' ');
-    const mainVerb = normalizedWords[wordIndex];
-
-    console.log('Verb phrase:', verbPhrase, 'Main verb:', mainVerb);
+    console.log('Verb phrase:', verbPhrase);
 
     // Проверяем уникальность фразы
-    if (structure.hasVerb) {
-      if (window.usedVerbs.includes(verbPhrase)) {
-        console.log('Verb phrase already used:', verbPhrase);
-        return false;
-      }
-      window.usedVerbs.push(verbPhrase);
-    }
-
-    // Проверяем, что глагол — это слово длиной хотя бы 2 символа
-    if (mainVerb.length < 2) {
-      console.log('Main verb too short:', mainVerb);
+    if (structure.hasVerb && window.usedVerbs.includes(verbPhrase)) {
+      console.log('Verb phrase already used:', verbPhrase);
       return false;
     }
 
+    // Добавляем фразу в использованные
+    window.usedVerbs.push(verbPhrase);
     console.log('Validation passed for:', text);
     return true;
   }
