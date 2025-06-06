@@ -219,8 +219,8 @@ p {
 #progress-chart {
   display: block;
   margin: 0 auto;
-  width: 255px; /* Уменьшено на 15% */
-  height: 255px; /* Уменьшено на 15% */
+  width: 200px; /* Фиксированный размер */
+  height: 200px; /* Фиксированный размер */
 }
 
 #progress-details .mb-1 {
