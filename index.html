@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ELC Grammar Practice</title>
   <!-- Подключение favicon -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <!-- Подключение шрифтов Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
   <!-- Подключение styles.css -->
@@ -790,7 +789,9 @@
     if (recognition) {
       recognition.onresult = (event) => {
         console.log('SpeechRecognition onresult triggered');
-        const spokenText = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        let spokenText = event.results[event.results.length - 1][0].transcript.trim();
+        // Заменяем "what's" на "what is"
+        spokenText = spokenText.replace(/what's/gi, 'what is');
         console.log('Recognized text:', spokenText);
         const matchedStructure = findMatchingStructure(spokenText);
         const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
@@ -800,15 +801,20 @@
         if (matchedStructure) {
           const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
           if (isCorrect) {
-            // Проверяем, не является ли фраза повтором
-            const isDuplicate = spokenHistory.includes(spokenText);
+            // Проверяем, не является ли фраза повтором, только если hasName: true
+            let isDuplicate = false;
+            if (matchedStructure.hasName) {
+              isDuplicate = spokenHistory.includes(spokenText.toLowerCase());
+            }
             logEntry.structure = matchedStructure.structure;
             logEntry.correct = true;
             logEntry.duplicate = isDuplicate;
 
-            if (!isDuplicate) {
+            if (!isDuplicate || !matchedStructure.hasName) {
               progress[matchedStructure.id]++;
-              spokenHistory.push(spokenText); // Добавляем в историю независимо от hasName
+              if (matchedStructure.hasName) {
+                spokenHistory.push(spokenText.toLowerCase()); // Добавляем в историю только если hasName: true
+              }
 
               if (progress[matchedStructure.id] > currentLessonData.requiredCorrect) {
                 feedback.textContent = `Отлично! 🎉🎈❤️ Ты превысил цель для "${matchedStructure.structure}"!`;
@@ -829,13 +835,13 @@
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
             }
           } else {
-            totalErrors++; // Увеличчиваем счётчик ошибок
+            totalErrors++; // Увеличиваем счётчик ошибок
             logEntry.structure = matchedStructure.structure;
             logEntry.correct = false;
             feedback.textContent = `Неправильно: "${spokenText}" для "${matchedStructure.structure}"`;
           }
         } else {
-          totalErrors++; // Увеличчиваем счётчик ошибок
+          totalErrors++; // Увеличиваем счётчик ошибок
           logEntry.correct = false;
           feedback.textContent = `Не совпадает: "${spokenText}". Попробуй одну из структур ниже.`;
         }
@@ -869,7 +875,7 @@
         console.log('SpeechRecognition ended');
         const currentTime = Date.now();
         // Если прошло 10 секунд без речи или распознавание завершилось, показываем кнопку перезапуска
-        if (currentTime - lastSpeechTime > 10000 || !isListening) { // Уменьшили тайм-аут до 10 секунд
+        if (currentTime - lastSpeechTime > 10000 || !isListening) {
           console.log('No speech detected for 10 seconds or recognition stopped, showing restart button');
           feedback.textContent = 'Микрофон отключился. Нажмите "Возобновить прослушивание" или начните заново.';
           isListening = false;
