@@ -165,6 +165,9 @@
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
       recognition.continuous = true;
+      console.log('SpeechRecognition initialized successfully');
+    } else {
+      console.error('SpeechRecognition not supported');
     }
 
     let userName = '';
@@ -197,7 +200,7 @@
     const startBtn = document.getElementById('start-btn');
     const adminBtn = document.getElementById('admin-btn');
     const startPracticeBtn = document.getElementById('start-practice-btn');
-    const restartListeningBtn = document.getElementById('restart-listing-btn');
+    const restartListeningBtn = document.getElementById('restart-listening-btn');
     const feedback = document.getElementById('feedback');
     const adminFeedback = document.getElementById('admin-feedback');
     const statsDiv = document.getElementById('stats');
@@ -657,10 +660,12 @@
     function startListening() {
       if (!recognition) {
         feedback.textContent = 'SpeechRecognition не поддерживается в вашем браузере.';
+        console.error('SpeechRecognition not available in startListening');
         return;
       }
 
       try {
+        console.log('Starting SpeechRecognition...');
         recognition.start();
         isListening = true;
         shouldRestart = false;
@@ -673,6 +678,7 @@
         }
         feedback.textContent = 'Говори любой пример из структур ниже.';
         lastSpeechTime = Date.now();
+        console.log('SpeechRecognition started successfully');
       } catch (error) {
         console.error('Ошибка при запуске распознавания речи:', error);
         feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Проверьте доступ к микрофону и попробуйте снова.';
@@ -771,7 +777,9 @@
 
     if (recognition) {
       recognition.onresult = (event) => {
+        console.log('SpeechRecognition onresult triggered');
         const spokenText = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        console.log('Recognized text:', spokenText);
         const matchedStructure = findMatchingStructure(spokenText);
         const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
 
