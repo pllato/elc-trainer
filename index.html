@@ -197,7 +197,7 @@
     const startBtn = document.getElementById('start-btn');
     const adminBtn = document.getElementById('admin-btn');
     const startPracticeBtn = document.getElementById('start-practice-btn');
-    const restartListeningBtn = document.getElementById('restart-listening-btn');
+    const restartListeningBtn = document.getElementById('restart-listing-btn');
     const feedback = document.getElementById('feedback');
     const adminFeedback = document.getElementById('admin-feedback');
     const statsDiv = document.getElementById('stats');
@@ -985,12 +985,25 @@
           ctx.stroke();
         }
 
-        // Добавляем текстовую информацию под диаграммой
+        // Добавляем информацию о структуре и прогрессе
         const detailDiv = document.createElement('div');
         detailDiv.className = 'mb-1';
         detailDiv.innerHTML = `
           <p class="text-sm">${struct.structure}: ${totalCorrect}/${currentLessonData.requiredCorrect}</p>
         `;
+
+        // Добавляем примеры для структуры
+        if (struct.examples && struct.examples.length > 0) {
+          const examplesList = document.createElement('ul');
+          examplesList.className = 'text-xs text-gray-600 ml-4';
+          struct.examples.forEach(example => {
+            const exampleItem = document.createElement('li');
+            exampleItem.textContent = example;
+            examplesList.appendChild(exampleItem);
+          });
+          detailDiv.appendChild(examplesList);
+        }
+
         detailsElement.appendChild(detailDiv);
       });
 
