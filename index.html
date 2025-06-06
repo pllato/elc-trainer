@@ -117,6 +117,8 @@
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-2">Урок завершён!</h2>
         <p id="congratulations" class="text-md mb-4"></p>
+        <canvas id="modal-progress-chart" width="200" height="200" class="mb-4"></canvas>
+        <div id="modal-progress-details" class="mt-2 mb-4"></div>
         <p class="text-sm mb-2">Результаты высланы на проверку преподавателю.</p>
         <div class="modal-log" id="modal-log"></div>
         <button onclick="startNewTraining()">Завершить</button>
@@ -208,6 +210,8 @@
     const completionModal = document.getElementById('completion-modal');
     const congratulationsEl = document.getElementById('congratulations');
     const modalLog = document.getElementById('modal-log');
+    const modalProgressChart = document.getElementById('modal-progress-chart');
+    const modalProgressDetails = document.getElementById('modal-progress-details');
     const levelSelect = document.getElementById('level');
     const lessonSelect = document.getElementById('lesson');
     const lessonFileInput = document.getElementById('lesson-file');
@@ -619,7 +623,7 @@
       if (statsDiv) statsDiv.innerHTML = '';
       if (logDiv) logDiv.innerHTML = '';
       if (modalLog) modalLog.innerHTML = '';
-      updateProgressBars();
+      updateProgressBars('progress-chart');
 
       // Переключаем экраны
       if (practiceScreen) practiceScreen.classList.add('hidden');
@@ -684,7 +688,7 @@
     }
 
     function initializeProgressBars() {
-      updateProgressBars();
+      updateProgressBars('progress-chart');
     }
 
     function formatDuration(start, end) {
@@ -725,6 +729,9 @@
       const totalAttempts = logEntries.length;
       const accuracy = totalAttempts > 0 ? ((totalCorrect / totalAttempts) * 100).toFixed(2) : 0;
       const duration = formatDuration(startTime, endTime);
+
+      // Обновляем диаграмму в модальном окне
+      updateProgressBars('modal-progress-chart', 'modal-progress-details');
 
       let logHTML = `
         <p><strong>Протокол:</strong></p>
@@ -795,7 +802,7 @@
                 feedback.textContent = `Правильно! Ты сказал: "${spokenText}" для "${matchedStructure.structure}"`;
               }
 
-              updateProgressBars();
+              updateProgressBars('progress-chart');
               checkCompletion();
             } else {
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
@@ -815,7 +822,7 @@
         logEntries.push(logEntry);
         updateLog();
         updateStats();
-        updateProgressBars(); // Обновляем диаграмму для отображения ошибок
+        updateProgressBars('progress-chart'); // Обновляем диаграмму для отображения ошибок
 
         // Устанавливаем флаг для перезапуска
         if (isListening && completionModal.style.display !== 'block') {
@@ -904,17 +911,21 @@
       logDiv.scrollTop = logDiv.scrollHeight;
     }
 
-    function updateProgressBars() {
+    function updateProgressBars(chartId, detailsId = 'progress-details') {
       if (!currentLessonData) return;
 
-      const ctx = progressChart.getContext('2d');
+      const chartElement = document.getElementById(chartId);
+      const detailsElement = document.getElementById(detailsId);
+      if (!chartElement || !detailsElement) return;
+
+      const ctx = chartElement.getContext('2d');
       const dpr = window.devicePixelRatio || 1; // Получаем плотность пикселей
       const canvasWidth = 200; // Фиксированный размер
       const canvasHeight = 200; // Фиксированный размер
 
       // Устанавливаем физическое разрешение canvas с учётом dpr
-      progressChart.width = canvasWidth * dpr;
-      progressChart.height = canvasHeight * dpr;
+      chartElement.width = canvasWidth * dpr;
+      chartElement.height = canvasHeight * dpr;
       ctx.scale(dpr, dpr);
 
       const structures = currentLessonData.structures;
@@ -932,7 +943,7 @@
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
       // Очищаем текстовую информацию
-      progressDetails.innerHTML = '';
+      detailsElement.innerHTML = '';
 
       // Рисуем кольца прогресса
       structures.forEach((struct, index) => {
@@ -979,7 +990,7 @@
         detailDiv.innerHTML = `
           <p class="text-sm">${struct.structure}: ${totalCorrect}/${currentLessonData.requiredCorrect}</p>
         `;
-        progressDetails.appendChild(detailDiv);
+        detailsElement.appendChild(detailDiv);
       });
 
       // Рисуем внешние окружности ошибок
@@ -1021,7 +1032,7 @@
       errorDiv.innerHTML = `
         <p class="text-sm text-red-600">Ошибок: ${totalErrors}</p>
       `;
-      progressDetails.appendChild(errorDiv);
+      detailsElement.appendChild(errorDiv);
     }
 
     function checkCompletion() {
