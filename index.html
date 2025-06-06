@@ -178,6 +178,7 @@
     let endTime = null;
     let lessonCompleted = false;
     let currentLessonData = null;
+    let totalErrors = 0; // Счётчик ошибок
 
     // Конфигурация GitHub
     const GITHUB_OWNER = 'pllato';
@@ -573,6 +574,7 @@
       currentLessonData.structures.forEach(struct => {
         progress[struct.id] = 0;
       });
+      totalErrors = 0; // Сбрасываем счётчик ошибок при начале нового урока
 
       startScreen.classList.add('hidden');
       practiceScreen.classList.remove('hidden');
@@ -594,6 +596,7 @@
       lessonCompleted = false;
       startTime = null;
       endTime = null;
+      totalErrors = 0; // Сбрасываем счётчик ошибок
       currentLessonData = null;
       if (recognition) {
         recognition.stop();
@@ -704,6 +707,7 @@
         <p>- Нужно было сказать: ${requiredExamples} примеров</p>
         <p>- Сказано правильно: ${totalCorrect} примеров</p>
         <p>- Всего попыток: ${totalAttempts}</p>
+        <p>- Ошибок: ${totalErrors}</p>
         <p>- Процент аккуратности: ${accuracy}%</p>
       `;
       
@@ -728,6 +732,7 @@
         <p>- Нужно было сказать: ${requiredExamples} примеров</p>
         <p>- Сказано правильно: ${totalCorrect} примеров</p>
         <p>- Всего попыток: ${totalAttempts}</p>
+        <p>- Ошибок: ${totalErrors}</p>
         <p>- Процент аккуратности: ${accuracy}%</p>
         <p>- Время тренировки: ${duration}</p>
         <p><strong>Попытки:</strong></p>
@@ -796,11 +801,13 @@
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
             }
           } else {
+            totalErrors++; // Увеличиваем счётчик ошибок
             logEntry.structure = matchedStructure.structure;
             logEntry.correct = false;
             feedback.textContent = `Неправильно: "${spokenText}" для "${matchedStructure.structure}"`;
           }
         } else {
+          totalErrors++; // Увеличиваем счётчик ошибок
           logEntry.correct = false;
           feedback.textContent = `Не совпадает: "${spokenText}". Попробуй одну из структур ниже.`;
         }
@@ -808,6 +815,7 @@
         logEntries.push(logEntry);
         updateLog();
         updateStats();
+        updateProgressBars(); // Обновляем диаграмму для отображения ошибок
 
         // Устанавливаем флаг для перезапуска
         if (isListening && completionModal.style.display !== 'block') {
@@ -926,6 +934,7 @@
       // Очищаем текстовую информацию
       progressDetails.innerHTML = '';
 
+      // Рисуем кольца прогресса
       structures.forEach((struct, index) => {
         const totalCorrect = progress[struct.id];
         const outerRadius = baseRadius + index * (ringWidth + gap);
@@ -972,6 +981,47 @@
         `;
         progressDetails.appendChild(detailDiv);
       });
+
+      // Рисуем внешние окружности ошибок
+      const errorsPerRing = 10; // 10 ошибок на один полный круг
+      const numErrorRings = Math.ceil(totalErrors / errorsPerRing); // Количество колец ошибок
+      const maxProgressRadius = baseRadius + (structures.length - 1) * (ringWidth + gap); // Радиус последнего кольца прогресса
+      const errorRingGap = 3; // Расстояние между кольцами ошибок
+
+      for (let i = 0; i < numErrorRings; i++) {
+        const errorsInThisRing = Math.min(totalErrors - i * errorsPerRing, errorsPerRing);
+        const errorPercentage = errorsInThisRing / errorsPerRing;
+        const errorAngle = errorPercentage * 2 * Math.PI - Math.PI / 2;
+        const errorRadius = maxProgressRadius + (i + 1) * (ringWidth + errorRingGap);
+
+        // Определяем цвет в зависимости от номера кольца
+        let errorColor;
+        if (i === 0) errorColor = '#FFA500'; // Оранжевый (первый круг)
+        else if (i === 1) errorColor = '#FF0000'; // Красный (второй круг)
+        else errorColor = '#800000'; // Бордовый (третий и последующие круги)
+
+        // Рисуем серый фон для кольца ошибок
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, errorRadius - ringWidth / 2, 0, 2 * Math.PI);
+        ctx.lineWidth = ringWidth;
+        ctx.strokeStyle = '#e5e7eb'; // Серый цвет фона
+        ctx.stroke();
+
+        // Рисуем заполненное кольцо ошибок
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, errorRadius - ringWidth / 2, -Math.PI / 2, errorAngle);
+        ctx.lineWidth = ringWidth;
+        ctx.strokeStyle = errorColor;
+        ctx.stroke();
+      }
+
+      // Добавляем информацию об ошибках под диаграммой
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'mb-1';
+      errorDiv.innerHTML = `
+        <p class="text-sm text-red-600">Ошибок: ${totalErrors}</p>
+      `;
+      progressDetails.appendChild(errorDiv);
     }
 
     function checkCompletion() {
@@ -1009,6 +1059,7 @@
 - Нужно было сказать: ${requiredExamples} примеров
 - Сказано правильно: ${totalCorrect} примеров
 - Всего попыток: ${totalAttempts}
+- Ошибок: ${totalErrors}
 - Процент аккуратности: ${accuracy}%
 - Время тренировки: ${duration}
 Протокол:
@@ -1016,6 +1067,7 @@
 - Нужно было сказать: ${requiredExamples} примеров
 - Сказано правильно: ${totalCorrect} примеров
 - Всего попыток: ${totalAttempts}
+- Ошибок: ${totalErrors}
 - Процент аккуратности: ${accuracy}%
 - Время тренировки: ${duration}
 ${logEntries.map(entry => {
