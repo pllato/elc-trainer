@@ -640,7 +640,7 @@
         startTime = new Date();
         startListening();
       } else {
-        feedback.textContent = 'Практика уже запущена. Если ничего не происходит, проверьте доступ к микрофону и перезапустите.';
+        feedback.textContent = 'Практика уже запущена. Если ничего не происходит, нажмите "Возобновить прослушивание".';
       }
     });
 
@@ -665,6 +665,11 @@
       }
 
       try {
+        // Принудительно останавливаем предыдущую сессию, если она зависла
+        if (isListening) {
+          recognition.stop();
+          console.log('Previous SpeechRecognition session stopped');
+        }
         console.log('Starting SpeechRecognition...');
         recognition.start();
         isListening = true;
@@ -681,7 +686,7 @@
         console.log('SpeechRecognition started successfully');
       } catch (error) {
         console.error('Ошибка при запуске распознавания речи:', error);
-        feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Проверьте доступ к микрофону и попробуйте снова.';
+        feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Нажмите "Возобновить прослушивание".';
         isListening = false;
         if (startPracticeBtn) {
           startPracticeBtn.textContent = 'Начать практику';
@@ -783,7 +788,7 @@
         const matchedStructure = findMatchingStructure(spokenText);
         const logEntry = { time: new Date().toLocaleTimeString(), spoken: spokenText };
 
-        lastSpeechTime = Date.now();
+        lastSpeechTime = Date.now(); // Обновляем время последнего распознавания
 
         if (matchedStructure) {
           const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
@@ -841,7 +846,7 @@
 
       recognition.onerror = (event) => {
         console.error('SpeechRecognition error:', event.error);
-        feedback.textContent = 'Ошибка в распознавании: ' + event.error + '. Попробуйте снова или проверьте доступ к микрофону.';
+        feedback.textContent = 'Ошибка в распознавании: ' + event.error + '. Нажмите "Возобновить прослушивание".';
         isListening = false;
         shouldRestart = false;
         if (startPracticeBtn) {
@@ -856,9 +861,9 @@
       recognition.onend = () => {
         console.log('SpeechRecognition ended');
         const currentTime = Date.now();
-        if (currentTime - lastSpeechTime > 10000) {
-          console.log('No speech detected for 10 seconds, stopping recognition');
-          feedback.textContent = 'Давно не слышу речи. Перезапускаю...';
+        if (currentTime - lastSpeechTime > 15000) { // 15 секунд без речи
+          console.log('No speech detected for 15 seconds, stopping recognition');
+          feedback.textContent = 'Давно не слышу речи. Нажмите "Возобновить прослушивание" или начните заново.';
           isListening = false;
           shouldRestart = false;
           if (startPracticeBtn) {
@@ -879,6 +884,7 @@
             shouldRestart = false; // Сбрасываем флаг после успешного перезапуска
           } catch (error) {
             console.error('Ошибка при перезапуске распознавания:', error);
+            feedback.textContent = 'Ошибка при перезапуске: ' + error.message + '. Нажмите "Возобновить прослушивание".';
             isListening = false;
             shouldRestart = false;
             if (startPracticeBtn) {
