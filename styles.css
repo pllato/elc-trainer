@@ -231,6 +231,11 @@ p {
   font-size: 14px;
 }
 
+#progress-details .text-sm.text-red-600 {
+  font-size: 14px;
+  color: #dc3545; /* Красный цвет для текста ошибок */
+}
+
 /* Секция статистики */
 .stats {
   color: #373D8D;
