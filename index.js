@@ -247,42 +247,100 @@ function selectLesson(lessonId) {
 // SpeechRecognition handler
 function startRecognition() {
   if (window.recognition && window.recognition.state === 'listening') {
-    console.log('Recognition already active');
+    console.log('Распознавание уже активно');
     return;
   }
+
   window.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  window.recognition.lang = 'en-US';
+  window.recognition.lang = 'en'; // Убрали региональную привязку для большей гибкости
+  window.recognition.continuous = true; // Включаем непрерывное распознавание
+  window.recognition.interimResults = false; // Только финальные результаты
+
+  const micIndicator = document.getElementById('mic-indicator');
+  if (micIndicator) {
+    micIndicator.textContent = 'Микрофон: Слушает...';
+    micIndicator.className = 'text-green-600';
+  }
+
   window.recognition.onresult = function(event) {
-    let text = event.results[0][0].transcript;
-    text = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
-    console.log('Speech recognized:', text);
+    const text = event.results[event.results.length - 1][0].transcript;
+    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    console.log('Распознанный текст:', cleanedText);
     const now = Date.now();
-    if (text !== lastValidatedText || now - lastValidatedTime > 15000) {
-      validateInput(text);
-      lastValidatedText = text;
+    if (cleanedText !== lastValidatedText || now - lastValidatedTime > 15000) {
+      validateInput(cleanedText);
+      lastValidatedText = cleanedText;
       lastValidatedTime = now;
     } else {
-      console.log('Duplicate input skipped:', text);
+      console.log('Повторный ввод пропущен:', cleanedText);
     }
   };
+
   window.recognition.onerror = function(event) {
-    console.log('Speech recognition error:', event.error);
+    console.error('Ошибка распознавания:', event.error);
+    if (micIndicator) {
+      micIndicator.textContent = `Микрофон: Ошибка (${event.error})`;
+      micIndicator.className = 'text-red-600';
+    }
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'text-red-600 text-sm mb-1';
+    errorMessage.textContent = `Ошибка распознавания: ${event.error}. Проверьте микрофон или интернет.`;
+    const log = document.getElementById('log');
+    if (log) log.appendChild(errorMessage);
+
+    if (event.error === 'network') {
+      console.log('Проблема с сетью, пытаемся перезапустить через 5 секунд');
+    } else if (event.error === 'no-speech') {
+      console.log('Речь не обнаружена, продолжаем слушать');
+      return; // Не останавливаем для no-speech
+    } else if (event.error === 'aborted') {
+      console.log('Распознавание прервано, перезапускаем');
+    }
+
     window.recognition = null;
   };
+
   window.recognition.onend = function() {
-    console.log('Speech recognition ended');
+    console.log('Распознавание завершено');
+    if (micIndicator) {
+      micIndicator.textContent = 'Микрофон: Остановлен';
+      micIndicator.className = 'text-red-600';
+    }
     window.recognition = null;
-    // Delay before restarting to prevent InvalidStateError
+    // Показываем кнопку перезапуска
+    const restartButton = document.getElementById('restart-listening-btn');
+    if (restartButton) restartButton.classList.remove('hidden');
+
+    // Перезапускаем через 5 секунд, если не активно
     setTimeout(() => {
       if (!window.recognition || window.recognition.state !== 'listening') {
+        console.log('Перезапуск SpeechRecognition');
         startRecognition();
       }
     }, 5000);
   };
+
   try {
     window.recognition.start();
+    console.log('SpeechRecognition запущен');
+    if (micIndicator) {
+      micIndicator.textContent = 'Микрофон: Слушает...';
+      micIndicator.className = 'text-green-600';
+    }
+    // Скрываем кнопку перезапуска при старте
+    const restartButton = document.getElementById('restart-listening-btn');
+    if (restartButton) restartButton.classList.add('hidden');
   } catch (error) {
-    console.error('Speech recognition start error:', error);
+    console.error('Ошибка при запуске SpeechRecognition:', error);
+    if (micIndicator) {
+      micIndicator.textContent = 'Микрофон: Ошибка запуска';
+      micIndicator.className = 'text-red-600';
+    }
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'text-red-600 text-sm mb-1';
+    errorMessage.textContent = 'Не удалось запустить распознавание. Проверьте микрофон и настройки браузера.';
+    const log = document.getElementById('log');
+    if (log) log.appendChild(errorMessage);
   }
 }
 
