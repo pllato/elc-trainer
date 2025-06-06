@@ -9,7 +9,8 @@ addLesson({
       translations: ["Есть ли ______ на/в/у _______?"], 
       examples: [
         "Is there a book on the table? (Есть ли книга на столе?)",
-        "Is there a dog? (Есть ли собака?)"
+        "Is there a dog? (Есть ли собака?)",
+        "Is there any dog in your hand? (Есть ли собака в твоей руке?)"
       ], 
       id: "is-there-a-noun-prep-place", 
       hasVerb: false,
@@ -21,7 +22,8 @@ addLesson({
       translations: ["Да, есть ______ на/в/у ______."], 
       examples: [
         "Yes, there is an apple in the bag. (Да, в сумке есть яблоко.)",
-        "Yes, there is a car. (Да, есть машина.)"
+        "Yes, there is a car. (Да, есть машина.)",
+        "Yes, there is a dog in my house. (Да, есть собака в моём доме.)"
       ], 
       id: "yes-there-is-a-noun-prep-place", 
       hasVerb: false,
@@ -33,7 +35,8 @@ addLesson({
       translations: ["Нет, ______ на/в/у ______ нет."], 
       examples: [
         "No, there isn't a pen at the desk. (Нет, на столе нет ручки.)",
-        "No, there is no dog. (Нет, собаки нет.)"
+        "No, there is no dog. (Нет, собаки нет.)",
+        "No, there is not a cat in the house. (Нет, в доме нет кошки.)"
       ], 
       id: "no-there-is-not-a-noun-prep-place", 
       hasVerb: false,
@@ -52,11 +55,16 @@ addLesson({
     const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
     console.log('Split words:', words);
 
+    if (words.length === 0) {
+      console.log('Пустая строка');
+      return false;
+    }
+
     let wordIndex = 0;
 
     // Проверяем начальные слова структуры
     if (structure.id === "is-there-a-noun-prep-place") {
-      // "Is there a/an _____ on/in/at _______?"
+      // "Is there a/an _____ on/in/at _______?" или "Is there any _____"
       if (!words[wordIndex] || words[wordIndex] !== 'is') {
         console.log('Ожидалось "is" на позиции', wordIndex, ', получено', words[wordIndex]);
         return false;
@@ -111,20 +119,22 @@ addLesson({
       return false;
     }
 
-    // Проверяем наличие "any" (опционально, для отрицательной структуры)
+    // Проверяем наличие "any" (опционально, для вопросительной и отрицательной структуры)
     let hasAny = false;
-    if (structure.id === "no-there-is-not-a-noun-prep-place" && words[wordIndex] === 'any') {
+    if ((structure.id === "is-there-a-noun-prep-place" || structure.id === "no-there-is-not-a-noun-prep-place") && words[wordIndex] === 'any') {
       hasAny = true;
       wordIndex++;
     }
 
-    // Проверяем наличие артикля "a" или "an"
-    if (!words[wordIndex] || (words[wordIndex] !== 'a' && words[wordIndex] !== 'an')) {
-      console.log('Нет артикля "a" или "an" на позиции', wordIndex, ', получено', words[wordIndex]);
-      return false;
+    // Проверяем наличие артикля "a" или "an" (если нет "any")
+    if (!hasAny) {
+      if (!words[wordIndex] || (words[wordIndex] !== 'a' && words[wordIndex] !== 'an')) {
+        console.log('Нет артикля "a" или "an" на позиции', wordIndex, ', получено', words[wordIndex]);
+        return false;
+      }
     }
-    const article = words[wordIndex];
-    wordIndex++;
+    const article = hasAny ? null : words[wordIndex];
+    if (!hasAny) wordIndex++;
 
     // Проверяем существительное после артикля
     if (!words[wordIndex]) {
@@ -162,15 +172,17 @@ addLesson({
 
     wordIndex++;
 
-    // Проверяем правильность артикля ("a" или "an")
-    const startsWithVowelSound = /^[aeiou]/i.test(noun);
-    if (startsWithVowelSound && article !== 'an') {
-      console.log('Неправильный артикль: ожидалось "an" для', noun);
-      return false;
-    }
-    if (!startsWithVowelSound && article !== 'a') {
-      console.log('Неправильный артикль: ожидалось "a" для', noun);
-      return false;
+    // Проверяем правильность артикля ("a" или "an"), если не было "any"
+    if (!hasAny) {
+      const startsWithVowelSound = /^[aeiou]/i.test(noun);
+      if (startsWithVowelSound && article !== 'an') {
+        console.log('Неправильный артикль: ожидалось "an" для', noun);
+        return false;
+      }
+      if (!startsWithVowelSound && article !== 'a') {
+        console.log('Неправильный артикль: ожидалось "a" для', noun);
+        return false;
+      }
     }
 
     // Если нет больше слов, принимаем как корректное (короткая форма)
@@ -191,6 +203,19 @@ addLesson({
       console.log('Нет существительного места после предлога');
       return false;
     }
+
+    // Проверяем наличие притяжательного местоимения (my, your, his, her, its, our, their)
+    let possessivePronoun = null;
+    const possessivePronouns = ['my', 'your', 'his', 'her', 'its', 'our', 'their'];
+    if (possessivePronouns.includes(words[wordIndex])) {
+      possessivePronoun = words[wordIndex];
+      wordIndex++;
+      if (!words[wordIndex]) {
+        console.log('Нет существительного места после притяжательного местоимения', possessivePronoun);
+        return false;
+      }
+    }
+
     let place = words[wordIndex];
     // Проверяем наличие артикля "the"
     if (place === 'the') {
@@ -212,7 +237,7 @@ addLesson({
     const validPlaces = [
       'table', 'desk', 'chair', 'bag', 'box', 'room', 'kitchen', 'bedroom', 'bathroom',
       'car', 'park', 'school', 'office', 'shop', 'street', 'garden', 'floor', 'shelf', 'window',
-      'here', 'parking lot', 'house', 'classroom', 'pocket', 'back', 'computer'
+      'here', 'parking lot', 'house', 'classroom', 'pocket', 'back', 'computer', 'hand'
     ];
     if (!validPlaces.includes(place)) {
       console.log('Недопустимое место:', place);
