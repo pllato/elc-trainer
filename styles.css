@@ -219,8 +219,8 @@ p {
 #progress-chart {
   display: block;
   margin: 0 auto;
-  width: 300px;
-  height: 300px;
+  width: 255px; /* Уменьшено на 15% */
+  height: 255px; /* Уменьшено на 15% */
 }
 
 #progress-details .mb-1 {
