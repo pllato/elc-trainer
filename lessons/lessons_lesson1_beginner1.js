@@ -12,8 +12,10 @@ addLesson({
   requiredCorrect: 2, // 2 correct examples per structure
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
-    // Удаляем пунктуацию, приводим к нижнему регистру и нормализуем пробелы
-    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
+    // Заменяем "i'm" на "i am" и нормализуем пробелы
+    let processedText = text.replace(/i'm/gi, 'i am').replace(/\s+/g, ' ');
+    // Удаляем пунктуацию и приводим к нижнему регистру
+    const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
 
     const words = cleanedText.split(' ').filter(word => word.length > 0);
