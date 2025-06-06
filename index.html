@@ -104,7 +104,7 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
-      <canvas id="progress-chart" width="255" height="255"></canvas>
+      <canvas id="progress-chart" width="200" height="200"></canvas>
       <div id="progress-details" class="mt-2"></div>
     </div>
     <div class="mb-6">
@@ -901,8 +901,8 @@
 
       const ctx = progressChart.getContext('2d');
       const dpr = window.devicePixelRatio || 1; // Получаем плотность пикселей
-      const canvasWidth = progressChart.width;
-      const canvasHeight = progressChart.height;
+      const canvasWidth = 200; // Фиксированный размер
+      const canvasHeight = 200; // Фиксированный размер
 
       // Устанавливаем физическое разрешение canvas с учётом dpr
       progressChart.width = canvasWidth * dpr;
@@ -912,9 +912,9 @@
       const structures = currentLessonData.structures;
       const centerX = canvasWidth / 2;
       const centerY = canvasHeight / 2;
-      const baseRadius = 25.5; // Уменьшенный начальный радиус (30 * 0.85)
-      const ringWidth = 8.5; // Уменьшенная толщина кольца (10 * 0.85)
-      const gap = 4.25; // Уменьшенное расстояние между кольцами (5 * 0.85)
+      const baseRadius = 20; // Начальный радиус для первого кольца
+      const ringWidth = 7; // Толщина каждого кольца
+      const gap = 3; // Расстояние между кольцами
 
       // Настраиваем сглаживание
       ctx.lineCap = 'round';
