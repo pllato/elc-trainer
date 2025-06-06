@@ -40,8 +40,10 @@ addLesson({
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
-    // Заменяем "can't" на "can not" для поддержки сокращений
-    let processedText = text.replace(/can't/g, 'can not');
+    // Заменяем "can't" и "cannot" на "can not" для поддержки сокращений и полной формы
+    let processedText = text
+      .replace(/can't/g, 'can not')
+      .replace(/cannot/g, 'can not');
     // Удаляем пунктуацию и приводим к нижнему регистру
     const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
