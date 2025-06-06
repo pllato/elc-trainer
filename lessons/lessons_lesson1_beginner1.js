@@ -11,19 +11,45 @@ addLesson({
   ],
   requiredCorrect: 2, // 2 correct examples per structure
   validateStructure: function(text, structure) {
-    const words = text.split(' ').filter(word => word.length > 0);
+    console.log('Raw input:', text);
+    // Удаляем пунктуацию, приводим к нижнему регистру и нормализуем пробелы
+    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
+    console.log('Cleaned text:', cleanedText);
+
+    const words = cleanedText.split(' ').filter(word => word.length > 0);
+    console.log('Split words:', words);
+
+    if (words.length === 0) {
+      console.log('Пустая строка');
+      return false;
+    }
+
     const pattern = structure.pattern;
     let wordIndex = 0;
 
     for (let part of pattern) {
       if (part === 'name') {
-        if (!words[wordIndex]) return false; // Must have a word for name
+        if (!words[wordIndex]) {
+          console.log('Ожидалось имя на позиции', wordIndex, ', но слово отсутствует');
+          return false; // Должно быть слово для имени
+        }
         wordIndex++;
       } else {
-        if (!words[wordIndex] || words[wordIndex] !== part) return false;
+        if (!words[wordIndex] || words[wordIndex] !== part) {
+          console.log('Ожидалось слово "', part, '" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+          return false;
+        }
         wordIndex++;
       }
     }
-    return wordIndex === words.length; // Ensure no extra words
+
+    // Проверяем, что нет лишних слов
+    if (wordIndex !== words.length) {
+      console.log('Лишние слова:', words.slice(wordIndex));
+      return false;
+    }
+
+    console.log('Валидация пройдена для:', text);
+    return true;
   }
 });
