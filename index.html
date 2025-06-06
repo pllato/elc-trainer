@@ -46,6 +46,7 @@
     <button id="start-btn">Начать практику</button>
     <!-- Текстовая ссылка "Админка" -->
     <a href="#" id="admin-btn" class="admin-link">Админка</a>
+    <div id="level-lesson-screen"></div>
   </div>
 
   <!-- Экран админки -->
@@ -99,6 +100,9 @@
     </div>
     <p class="text-lg mb-2">Привет, <span id="user-name"></span>!</p>
     <p class="text-md mb-4">Уровень: <span id="user-level"></span>, <span id="user-lesson"></span></p>
+    <div id="mic-status" class="text-sm mb-4">
+      <span id="mic-indicator" class="text-gray-600">Микрофон: Инициализация...</span>
+    </div>
     <button id="start-practice-btn">Начать практику</button>
     <button id="restart-listening-btn" class="hidden">Возобновить прослушивание</button>
     <p id="feedback" class="text-md mb-4"></p>
@@ -513,7 +517,7 @@
 
         if (!deleteResponse.ok) throw new Error(`GitHub API error: ${deleteResponse.statusText}`);
 
-        adminFeedback.textContent = 'Урок успешно удалён из GitHub! Перейдите на стартовый экран, чтобы обновить список.';
+        adminFeedback.textContent = 'Урок успешно удалён из GitHub! Перейдите на стартовый экран, чтобы обновить данные.';
         githubTokenInput.value = '';
         await loadLessonsFromGitHub();
       } catch (error) {
@@ -571,7 +575,7 @@
         return;
       }
 
-      currentLessonData = lessonsData.find(lesson => lesson.level === userLevel && lesson.lesson === userLesson);
+      currentLessonData = lessonsData.find(l => l.level === userLevel && l.lesson === userLesson);
       if (!currentLessonData) {
         alert('Урок не найден. Пожалуйста, выберите другой урок.');
         return;
@@ -822,13 +826,13 @@
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
             }
           } else {
-            totalErrors++; // Увеличиваем счётчик ошибок
+            totalErrors++; // Увеличчиваем счётчик ошибок
             logEntry.structure = matchedStructure.structure;
             logEntry.correct = false;
             feedback.textContent = `Неправильно: "${spokenText}" для "${matchedStructure.structure}"`;
           }
         } else {
-          totalErrors++; // Увеличиваем счётчик ошибок
+          totalErrors++; // Увеличчиваем счётчик ошибок
           logEntry.correct = false;
           feedback.textContent = `Не совпадает: "${spokenText}". Попробуй одну из структур ниже.`;
         }
@@ -899,6 +903,8 @@
         } else if (!isListening) {
           console.log('Recognition stopped, showing restart button');
           feedback.textContent = 'Микрофон отключился. Нажмите "Возобновить прослушивание".';
+          isListening = false;
+          shouldRestart = false;
           if (startPracticeBtn) {
             startPracticeBtn.textContent = 'Начать практику';
             startPracticeBtn.disabled = false;
@@ -940,7 +946,7 @@
       const canvasWidth = 200; // Фиксированный размер
       const canvasHeight = 200; // Фиксированный размер
 
-      // Устанавливаем физическое разрешение canvas с учётом dpr
+      // Устанавливаем физическое разрешение canvas с учетом dpr
       chartElement.width = canvasWidth * dpr;
       chartElement.height = canvasHeight * dpr;
       ctx.scale(dpr, dpr);
@@ -1114,11 +1120,10 @@
 ${logEntries.map(entry => {
   if (entry.exceeded) {
     return `- ${entry.spoken} 🎉🎈❤️`;
-  } else {
-    const statusIcon = entry.correct ? '✅' : '❌';
-    const duplicateIcon = entry.duplicate ? '🔁' : '';
-    return `- ${entry.spoken}${entry.structure ? ` (для "${entry.structure}")` : ''} - ${statusIcon} ${entry.correct ? 'Правильно' : 'Неправильно'}${duplicateIcon ? ` ${duplicateIcon} Повтор` : ''}`;
   }
+  const statusIcon = entry.correct ? '✅' : '❌';
+  const duplicateIcon = entry.duplicate ? '🔁' : '';
+  return `- ${entry.spoken}${entry.structure ? ` (для "${entry.structure}")` : ''} - ${statusIcon} ${entry.correct ? 'Правильно' : 'Неправильно'}${duplicateIcon ? ` ${duplicateIcon} Повтор` : ''}`;
 }).join('\n')}
 `;
 
