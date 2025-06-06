@@ -215,37 +215,6 @@ p {
   font-size: 14px;
 }
 
-/* Общий прогресс-бар */
-#overall-progress-bar .mb-4 {
-  margin-bottom: 16px;
-}
-
-#overall-progress-bar .text-md.font-semibold {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-#overall-progress-bar .w-full.bg-gray-200.rounded-full.h-3.mb-2 {
-  width: 100%;
-  background-color: #e5e7eb;
-  border-radius: 9999px;
-  height: 12px;
-  margin-bottom: 8px;
-  position: relative;
-}
-
-#overall-progress-bar .bg-\[#373D8D\].h-3.rounded-full {
-  background-color: #373D8D;
-  height: 12px;
-  border-radius: 9999px;
-  transition: width 0.3s ease;
-}
-
-#overall-progress-bar .text-sm.text-gray-600 {
-  font-size: 14px;
-  color: #4b5563;
-}
-
 /* Прогресс-бары для структур */
 #progress-bars .mb-2 {
   margin-bottom: 8px;
