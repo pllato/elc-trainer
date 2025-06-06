@@ -780,14 +780,15 @@
         if (matchedStructure) {
           const isCorrect = currentLessonData.validateStructure(spokenText, matchedStructure);
           if (isCorrect) {
-            const isDuplicate = matchedStructure.hasName && spokenHistory.includes(spokenText);
+            // Проверяем, не является ли фраза повтором
+            const isDuplicate = spokenHistory.includes(spokenText);
             logEntry.structure = matchedStructure.structure;
             logEntry.correct = true;
             logEntry.duplicate = isDuplicate;
 
-            if (!isDuplicate || !matchedStructure.hasName) {
+            if (!isDuplicate) {
               progress[matchedStructure.id]++;
-              if (matchedStructure.hasName) spokenHistory.push(spokenText);
+              spokenHistory.push(spokenText); // Добавляем в историю независимо от hasName
 
               if (progress[matchedStructure.id] > currentLessonData.requiredCorrect) {
                 feedback.textContent = `Отлично! 🎉🎈❤️ Ты превысил цель для "${matchedStructure.structure}"!`;
