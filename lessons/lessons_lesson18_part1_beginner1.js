@@ -15,7 +15,7 @@ addLesson({
       hasName: false
     }
   ],
-  requiredCorrect: 10,
+  requiredCorrect: 30,
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
     // Удаляем пунктуацию и приводим к нижнему регистру
