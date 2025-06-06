@@ -171,6 +171,7 @@
     let spokenHistory = [];
     let logEntries = [];
     let isListening = false;
+    let shouldRestart = false; // Флаг для перезапуска распознавания
     let lastSpeechTime = Date.now();
     let startTime = null;
     let endTime = null;
@@ -587,6 +588,7 @@
       spokenHistory = [];
       logEntries = [];
       isListening = false;
+      shouldRestart = false;
       lessonCompleted = false;
       startTime = null;
       endTime = null;
@@ -652,6 +654,7 @@
       try {
         recognition.start();
         isListening = true;
+        shouldRestart = false;
         if (startPracticeBtn) {
           startPracticeBtn.textContent = 'Слушаю...';
           startPracticeBtn.disabled = true;
@@ -803,32 +806,16 @@
         updateLog();
         updateStats();
 
-        // Перезапускаем распознавание, если нужно
+        // Устанавливаем флаг для перезапуска
         if (isListening && completionModal.style.display !== 'block') {
-          try {
-            recognition.stop();
-            setTimeout(() => {
-              if (isListening && completionModal.style.display !== 'block') {
-                recognition.start();
-              }
-            }, 100);
-          } catch (error) {
-            console.error('Ошибка при перезапуске распознавания:', error);
-            isListening = false;
-            if (startPracticeBtn) {
-              startPracticeBtn.textContent = 'Начать практику';
-              startPracticeBtn.disabled = false;
-            }
-            if (restartListeningBtn) {
-              restartListeningBtn.classList.remove('hidden');
-            }
-          }
+          shouldRestart = true;
         }
       };
 
       recognition.onerror = (event) => {
         feedback.textContent = 'Ошибка в распознавании: ' + event.error + '. Попробуйте снова или проверьте доступ к микрофону.';
         isListening = false;
+        shouldRestart = false;
         if (startPracticeBtn) {
           startPracticeBtn.textContent = 'Начать практику';
           startPracticeBtn.disabled = false;
@@ -843,6 +830,7 @@
         if (currentTime - lastSpeechTime > 10000) {
           feedback.textContent = 'Давно не слышу речи. Перезапускаю...';
           isListening = false;
+          shouldRestart = false;
           if (startPracticeBtn) {
             startPracticeBtn.textContent = 'Начать практику';
             startPracticeBtn.disabled = false;
@@ -850,8 +838,27 @@
           if (restartListeningBtn) {
             restartListeningBtn.classList.remove('hidden');
           }
+          return;
         }
-        // Убрали автоматический перезапуск здесь, так как он уже есть в onresult
+
+        // Перезапускаем распознавание, если флаг установлен
+        if (shouldRestart && isListening && completionModal.style.display !== 'block') {
+          try {
+            recognition.start();
+            shouldRestart = false; // Сбрасываем флаг после успешного перезапуска
+          } catch (error) {
+            console.error('Ошибка при перезапуске распознавания:', error);
+            isListening = false;
+            shouldRestart = false;
+            if (startPracticeBtn) {
+              startPracticeBtn.textContent = 'Начать практику';
+              startPracticeBtn.disabled = false;
+            }
+            if (restartListeningBtn) {
+              restartListeningBtn.classList.remove('hidden');
+            }
+          }
+        }
       };
     }
 
@@ -924,6 +931,7 @@
         updateModalLog();
         completionModal.style.display = 'block';
         isListening = false;
+        shouldRestart = false;
         if (recognition) recognition.stop();
         startPracticeBtn.textContent = 'Урок завершён';
         updateStats();
