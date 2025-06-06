@@ -104,7 +104,6 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
-      <div id="overall-progress-bar" class="mb-4"></div>
       <div id="progress-bars"></div>
     </div>
     <div class="mb-6">
@@ -198,7 +197,6 @@
     const adminFeedback = document.getElementById('admin-feedback');
     const statsDiv = document.getElementById('stats');
     const progressBars = document.getElementById('progress-bars');
-    const overallProgressBar = document.getElementById('overall-progress-bar');
     const logDiv = document.getElementById('log');
     const userNameEl = document.getElementById('user-name');
     const userLevelEl = document.getElementById('user-level');
@@ -688,22 +686,6 @@
       return `${minutes} минут ${seconds} секунд`;
     }
 
-    function updateOverallProgressBar() {
-      if (!currentLessonData) return;
-      const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      // Учитываем только примеры до requiredCorrect для каждой структуры
-      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + Math.min(count, currentLessonData.requiredCorrect), 0);
-      const overallPercentage = (totalCorrect / requiredExamples) * 100;
-
-      overallProgressBar.innerHTML = `
-        <p class="text-md font-semibold">Общий прогресс:</p>
-        <div class="w-full bg-gray-200 rounded-full h-3.5 mb-2">
-          <div class="bg-[#373D8D] h-3.5 rounded-full" style="width: ${overallPercentage}%"></div>
-        </div>
-        <p class="text-sm text-gray-600">${totalCorrect}/${requiredExamples} примеров</p>
-      `;
-    }
-
     function updateStats() {
       if (!currentLessonData) return;
       const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
@@ -824,13 +806,7 @@
         if (isListening && completionModal.style.display !== 'block') {
           setTimeout(() => {
             try {
-              // Останавливаем текущую сессию перед перезапуском
-              recognition.stop();
-              setTimeout(() => {
-                if (isListening && completionModal.style.display !== 'block') {
-                  recognition.start();
-                }
-              }, 100);
+              recognition.start();
             } catch (error) {
               console.error('Ошибка при перезапуске распознавания:', error);
               isListening = false;
@@ -873,7 +849,23 @@
           return;
         }
 
-        // Убрали автоматический перезапуск здесь, так как он уже есть в onresult
+        if (isListening && completionModal.style.display !== 'block') {
+          setTimeout(() => {
+            try {
+              recognition.start();
+            } catch (error) {
+              console.error('Ошибка при перезапуске распознавания:', error);
+              isListening = false;
+              if (startPracticeBtn) {
+                startPracticeBtn.textContent = 'Начать практику';
+                startPracticeBtn.disabled = false;
+              }
+              if (restartListeningBtn) {
+                restartListeningBtn.classList.remove('hidden');
+              }
+            }
+          }, 500);
+        }
       };
     }
 
@@ -897,7 +889,6 @@
 
     function updateProgressBars() {
       if (!currentLessonData) return;
-      updateOverallProgressBar();
       progressBars.innerHTML = '';
       currentLessonData.structures.forEach(struct => {
         const totalCorrect = progress[struct.id];
