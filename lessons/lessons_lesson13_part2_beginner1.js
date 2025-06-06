@@ -11,7 +11,8 @@ addLesson({
         "I do not like tennis. (Я не люблю теннис.)"
       ], 
       id: "i-do-not-verb", 
-      hasVerb: true 
+      hasVerb: true,
+      hasName: false // Добавляем флаг
     },
     { 
       structure: "You do not ____.", 
@@ -21,7 +22,8 @@ addLesson({
         "You do not speak French. (Ты не говоришь по-французски.)"
       ], 
       id: "you-do-not-verb", 
-      hasVerb: true 
+      hasVerb: true,
+      hasName: false // Добавляем флаг
     },
     { 
       structure: "We do not ____.", 
@@ -31,7 +33,8 @@ addLesson({
         "We do not play basketball. (Мы не играем в баскетбол.)"
       ], 
       id: "we-do-not-verb", 
-      hasVerb: true 
+      hasVerb: true,
+      hasName: false // Добавляем флаг
     },
     { 
       structure: "They do not ____.", 
@@ -41,7 +44,8 @@ addLesson({
         "They do not read books. (Они не читают книги.)"
       ], 
       id: "they-do-not-verb", 
-      hasVerb: true 
+      hasVerb: true,
+      hasName: false // Добавляем флаг
     }
   ],
   requiredCorrect: 10,
