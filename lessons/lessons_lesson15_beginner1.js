@@ -64,41 +64,72 @@ addLesson({
       console.log('No article "a" or "an" at index', wordIndex);
       return false;
     }
+    const article = words[wordIndex];
     wordIndex++;
 
-    // Проверяем наличие существительного после артикля
+    // Проверяем наличие слов после артикля
     if (wordIndex >= words.length) {
-      console.log('No noun after article');
+      console.log('No words after article');
       return false;
     }
 
-    const noun = words[wordIndex];
-    // Список допустимых существительных (профессии и роли)
-    const validNouns = [
-      'teacher', 'doctor', 'student', 'engineer', 'nurse', 'driver', 'lawyer', 'chef',
-      'artist', 'writer', 'singer', 'actor', 'dancer', 'pilot', 'farmer', 'manager',
-      'child', 'boy', 'girl', 'man', 'woman'
+    // Проверяем, есть ли прилагательное перед существительным (например, "good dog")
+    let adjective = null;
+    let noun = words[wordIndex];
+    wordIndex++;
+
+    // Если есть ещё одно слово, считаем первое прилагательным, а второе — существительным
+    if (wordIndex < words.length) {
+      adjective = noun;
+      noun = words[wordIndex];
+      wordIndex++;
+    }
+
+    // Проверяем правильность артикля ("a" или "an") в зависимости от первого звука следующего слова
+    const wordAfterArticle = adjective || noun; // Проверяем "a/an" относительно первого слова после артикля
+    const startsWithVowelSound = /^[aeiou]/i.test(wordAfterArticle);
+    if (startsWithVowelSound && article !== 'an') {
+      console.log('Incorrect article: expected "an" for', wordAfterArticle);
+      return false;
+    }
+    if (!startsWithVowelSound && article !== 'a') {
+      console.log('Incorrect article: expected "a" for', wordAfterArticle);
+      return false;
+    }
+
+    // Список исключений (неправильные слова)
+    const invalidWords = [
+      // Глаголы с окончаниями
+      'is', 'are', 'am', 'was', 'were', 'been', 'being',
+      'will', 'would', 'can', 'could', 'should', 'must', 'may', 'might', 'shall', 'ought',
+      'going', 'doing', 'saying', 'running', 'swimming', // Примеры с -ing
+      'likes', 'runs', 'swims', 'works', 'does', 'has', // Примеры с -s или -es
+      // Временные наречия и другие неподходящие слова
+      'tomorrow', 'yesterday', 'today', 'now', 'later'
     ];
-    if (!validNouns.includes(noun)) {
+
+    // Проверяем прилагательное (если есть)
+    if (adjective) {
+      // Список допустимых прилагательных
+      const validAdjectives = [
+        'good', 'bad', 'big', 'small', 'tall', 'short', 'young', 'old',
+        'happy', 'sad', 'kind', 'smart', 'brave', 'funny', 'serious'
+      ];
+      if (!validAdjectives.includes(adjective) || invalidWords.includes(adjective)) {
+        console.log('Invalid adjective:', adjective);
+        return false;
+      }
+    }
+
+    // Проверяем существительное
+    if (invalidWords.includes(noun)) {
       console.log('Invalid noun:', noun);
       return false;
     }
 
-    // Проверяем правильность артикля ("a" или "an") в зависимости от первого звука существительного
-    const startsWithVowelSound = /^[aeiou]/i.test(noun);
-    const article = words[wordIndex - 1];
-    if (startsWithVowelSound && article !== 'an') {
-      console.log('Incorrect article: expected "an" for', noun);
-      return false;
-    }
-    if (!startsWithVowelSound && article !== 'a') {
-      console.log('Incorrect article: expected "a" for', noun);
-      return false;
-    }
-
     // Проверяем, что после существительного нет лишних слов
-    if (wordIndex + 1 < words.length) {
-      console.log('Extra words after noun:', words.slice(wordIndex + 1));
+    if (wordIndex < words.length) {
+      console.log('Extra words after noun:', words.slice(wordIndex));
       return false;
     }
 
