@@ -43,8 +43,8 @@ addLesson({
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
-    // Заменяем "isn't" на "is not" и "no" для поддержки сокращений
-    let processedText = text.replace(/isn't/g, 'is not');
+    // Заменяем "isn't" на "is not" и нормализуем пробелы
+    let processedText = text.replace(/isn't/gi, 'is not').replace(/\s+/g, ' ');
     // Удаляем пунктуацию и приводим к нижнему регистру
     const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
@@ -106,6 +106,9 @@ addLesson({
         return false;
       }
       wordIndex++;
+    } else {
+      console.log('Неизвестная структура:', structure.id);
+      return false;
     }
 
     // Проверяем наличие "any" (опционально, для отрицательной структуры)
@@ -117,7 +120,7 @@ addLesson({
 
     // Проверяем наличие артикля "a" или "an"
     if (!words[wordIndex] || (words[wordIndex] !== 'a' && words[wordIndex] !== 'an')) {
-      console.log('Нет артикля "a" или "an" на позиции', wordIndex);
+      console.log('Нет артикля "a" или "an" на позиции', wordIndex, ', получено', words[wordIndex]);
       return false;
     }
     const article = words[wordIndex];
@@ -209,7 +212,7 @@ addLesson({
     const validPlaces = [
       'table', 'desk', 'chair', 'bag', 'box', 'room', 'kitchen', 'bedroom', 'bathroom',
       'car', 'park', 'school', 'office', 'shop', 'street', 'garden', 'floor', 'shelf', 'window',
-      'here', 'parking lot', 'house', 'classroom', 'pocket', 'back'
+      'here', 'parking lot', 'house', 'classroom', 'pocket', 'back', 'computer'
     ];
     if (!validPlaces.includes(place)) {
       console.log('Недопустимое место:', place);
