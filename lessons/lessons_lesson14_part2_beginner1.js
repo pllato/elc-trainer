@@ -37,7 +37,7 @@ addLesson({
       hasName: false
     }
   ],
-  requiredCorrect: 10,
+  requiredCorrect: 20,
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
     // Заменяем "doesn't" на "does not" для поддержки сокращений
