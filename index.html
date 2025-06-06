@@ -861,9 +861,10 @@
       recognition.onend = () => {
         console.log('SpeechRecognition ended');
         const currentTime = Date.now();
-        if (currentTime - lastSpeechTime > 15000) { // 15 секунд без речи
-          console.log('No speech detected for 15 seconds, stopping recognition');
-          feedback.textContent = 'Давно не слышу речи. Нажмите "Возобновить прослушивание" или начните заново.';
+        // Если прошло 10 секунд без речи или распознавание завершилось, показываем кнопку перезапуска
+        if (currentTime - lastSpeechTime > 10000 || !isListening) { // Уменьшили тайм-аут до 10 секунд
+          console.log('No speech detected for 10 seconds or recognition stopped, showing restart button');
+          feedback.textContent = 'Микрофон отключился. Нажмите "Возобновить прослушивание" или начните заново.';
           isListening = false;
           shouldRestart = false;
           if (startPracticeBtn) {
@@ -897,6 +898,7 @@
           }
         } else if (!isListening) {
           console.log('Recognition stopped, showing restart button');
+          feedback.textContent = 'Микрофон отключился. Нажмите "Возобновить прослушивание".';
           if (startPracticeBtn) {
             startPracticeBtn.textContent = 'Начать практику';
             startPracticeBtn.disabled = false;
