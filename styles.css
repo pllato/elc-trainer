@@ -240,6 +240,15 @@ p {
   color: #dc3545; /* Красный цвет для текста ошибок */
 }
 
+/* Стили для списка примеров */
+#progress-details ul.text-xs.text-gray-600.ml-4,
+#modal-progress-details ul.text-xs.text-gray-600.ml-4 {
+  font-size: 12px;
+  color: #666;
+  margin-left: 16px;
+  list-style-type: disc;
+}
+
 /* Секция статистики */
 .stats {
   color: #373D8D;
