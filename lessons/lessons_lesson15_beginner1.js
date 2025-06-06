@@ -40,8 +40,12 @@ addLesson({
   requiredCorrect: 10,
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
+    // Заменяем сокращения "i'm" на "i am" и "i'm not" на "i am not"
+    let processedText = text
+      .replace(/i'm not/g, 'i am not')
+      .replace(/i'm/g, 'i am');
     // Удаляем пунктуацию и приводим к нижнему регистру
-    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
+    const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
 
     const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
