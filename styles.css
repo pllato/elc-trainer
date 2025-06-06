@@ -216,22 +216,26 @@ p {
 }
 
 /* Стили для круговой диаграммы */
-#progress-chart {
+#progress-chart,
+#modal-progress-chart {
   display: block;
   margin: 0 auto;
   width: 200px; /* Фиксированный размер */
   height: 200px; /* Фиксированный размер */
 }
 
-#progress-details .mb-1 {
+#progress-details .mb-1,
+#modal-progress-details .mb-1 {
   margin-bottom: 4px;
 }
 
-#progress-details .text-sm {
+#progress-details .text-sm,
+#modal-progress-details .text-sm {
   font-size: 14px;
 }
 
-#progress-details .text-sm.text-red-600 {
+#progress-details .text-sm.text-red-600,
+#modal-progress-details .text-sm.text-red-600 {
   font-size: 14px;
   color: #dc3545; /* Красный цвет для текста ошибок */
 }
