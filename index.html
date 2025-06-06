@@ -104,7 +104,8 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
-      <div id="progress-bars"></div>
+      <canvas id="progress-chart" width="300" height="300"></canvas>
+      <div id="progress-details" class="mt-2"></div>
     </div>
     <div class="mb-6">
       <p class="text-lg font-semibold">Протокол:</p>
@@ -197,7 +198,8 @@
     const feedback = document.getElementById('feedback');
     const adminFeedback = document.getElementById('admin-feedback');
     const statsDiv = document.getElementById('stats');
-    const progressBars = document.getElementById('progress-bars');
+    const progressChart = document.getElementById('progress-chart');
+    const progressDetails = document.getElementById('progress-details');
     const logDiv = document.getElementById('log');
     const userNameEl = document.getElementById('user-name');
     const userLevelEl = document.getElementById('user-level');
@@ -882,42 +884,66 @@
 
     function updateProgressBars() {
       if (!currentLessonData) return;
-      progressBars.innerHTML = '';
-      currentLessonData.structures.forEach(struct => {
+
+      const ctx = progressChart.getContext('2d');
+      const structures = currentLessonData.structures;
+      const centerX = progressChart.width / 2;
+      const centerY = progressChart.height / 2;
+      const baseRadius = 30; // Начальный радиус для первого кольца
+      const ringWidth = 10; // Толщина каждого кольца
+      const gap = 5; // Расстояние между кольцами
+
+      // Очищаем canvas перед перерисовкой
+      ctx.clearRect(0, 0, progressChart.width, progressChart.height);
+
+      // Очищаем текстовую информацию
+      progressDetails.innerHTML = '';
+
+      structures.forEach((struct, index) => {
         const totalCorrect = progress[struct.id];
-        const div = document.createElement('div');
-        div.className = 'mb-2';
+        const outerRadius = baseRadius + index * (ringWidth + gap);
+        const innerRadius = outerRadius - ringWidth;
 
-        let barsHTML = `
-          <p class="text-sm">${struct.structure}</p>
-        `;
+        // Рисуем серый фон (незаполненное кольцо)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, outerRadius - ringWidth / 2, 0, 2 * Math.PI);
+        ctx.lineWidth = ringWidth;
+        ctx.strokeStyle = '#e5e7eb'; // Серый цвет фона
+        ctx.stroke();
 
-        const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
-        const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
-        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
-        barsHTML += `
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
-          </div>
-        `;
+        // Вычисляем прогресс для основного кольца (до requiredCorrect)
+        const firstProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
+        const firstPercentage = firstProgress / currentLessonData.requiredCorrect;
+        const firstAngle = firstPercentage * 2 * Math.PI - Math.PI / 2; // Начинаем с верхней точки
 
+        // Рисуем заполненное кольцо (основной прогресс)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, outerRadius - ringWidth / 2, -Math.PI / 2, firstAngle);
+        ctx.lineWidth = ringWidth;
+        ctx.strokeStyle = '#373D8D'; // Синий цвет
+        ctx.stroke();
+
+        // Если есть избыточные примеры, рисуем второй круг
         if (totalCorrect > currentLessonData.requiredCorrect) {
           const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
-          const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
-          const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
-          console.log(`Excess Percentage: ${excessPercentage}%`);
-          barsHTML += `
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
-            </div>
-          `;
+          const excessProgress = (excessCorrect % currentLessonData.requiredCorrect) / currentLessonData.requiredCorrect;
+          const excessAngle = excessProgress * 2 * Math.PI - Math.PI / 2;
+
+          // Рисуем избыточный прогресс другим цветом
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, outerRadius - ringWidth / 2, -Math.PI / 2, excessAngle);
+          ctx.lineWidth = ringWidth;
+          ctx.strokeStyle = '#28A745'; // Зелёный цвет
+          ctx.stroke();
         }
 
-        barsHTML += `
-          <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
+        // Добавляем текстовую информацию под диаграммой
+        const detailDiv = document.createElement('div');
+        detailDiv.className = 'mb-1';
+        detailDiv.innerHTML = `
+          <p class="text-sm">${struct.structure}: ${totalCorrect}/${currentLessonData.requiredCorrect}</p>
         `;
-        div.innerHTML = barsHTML;
-        progressBars.appendChild(div);
+        progressDetails.appendChild(detailDiv);
       });
     }
 
