@@ -691,7 +691,8 @@
     function updateOverallProgressBar() {
       if (!currentLessonData) return;
       const requiredExamples = currentLessonData.requiredCorrect * currentLessonData.structures.length;
-      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + count, 0);
+      // Учитываем только примеры до requiredCorrect для каждой структуры
+      const totalCorrect = Object.values(progress).reduce((sum, count) => sum + Math.min(count, currentLessonData.requiredCorrect), 0);
       const overallPercentage = (totalCorrect / requiredExamples) * 100;
 
       overallProgressBar.innerHTML = `
@@ -823,11 +824,23 @@
         if (isListening && completionModal.style.display !== 'block') {
           setTimeout(() => {
             try {
-              if (!recognition.isStarted) {
-                recognition.start();
-              }
+              // Останавливаем текущую сессию перед перезапуском
+              recognition.stop();
+              setTimeout(() => {
+                if (isListening && completionModal.style.display !== 'block') {
+                  recognition.start();
+                }
+              }, 100);
             } catch (error) {
               console.error('Ошибка при перезапуске распознавания:', error);
+              isListening = false;
+              if (startPracticeBtn) {
+                startPracticeBtn.textContent = 'Начать практику';
+                startPracticeBtn.disabled = false;
+              }
+              if (restartListeningBtn) {
+                restartListeningBtn.classList.remove('hidden');
+              }
             }
           }, 500);
         }
@@ -860,25 +873,7 @@
           return;
         }
 
-        if (isListening && completionModal.style.display !== 'block') {
-          setTimeout(() => {
-            try {
-              if (!recognition.isStarted) {
-                recognition.start();
-              }
-            } catch (error) {
-              console.error('Ошибка при перезапуске распознавания:', error);
-              isListening = false;
-              if (startPracticeBtn) {
-                startPracticeBtn.textContent = 'Начать практику';
-                startPracticeBtn.disabled = false;
-              }
-              if (restartListeningBtn) {
-                restartListeningBtn.classList.remove('hidden');
-              }
-            }
-          }, 500);
-        }
+        // Убрали автоматический перезапуск здесь, так как он уже есть в onresult
       };
     }
 
