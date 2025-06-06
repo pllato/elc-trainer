@@ -104,7 +104,7 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
-      <canvas id="progress-chart" width="300" height="300"></canvas>
+      <canvas id="progress-chart" width="255" height="255"></canvas>
       <div id="progress-details" class="mt-2"></div>
     </div>
     <div class="mb-6">
@@ -667,6 +667,7 @@
         feedback.textContent = 'Говори любой пример из структур ниже.';
         lastSpeechTime = Date.now();
       } catch (error) {
+        console.error('Ошибка при запуске распознавания речи:', error);
         feedback.textContent = 'Ошибка при запуске распознавания речи: ' + error.message + '. Проверьте доступ к микрофону и попробуйте снова.';
         isListening = false;
         if (startPracticeBtn) {
@@ -815,6 +816,7 @@
       };
 
       recognition.onerror = (event) => {
+        console.error('SpeechRecognition error:', event.error);
         feedback.textContent = 'Ошибка в распознавании: ' + event.error + '. Попробуйте снова или проверьте доступ к микрофону.';
         isListening = false;
         shouldRestart = false;
@@ -828,8 +830,10 @@
       };
 
       recognition.onend = () => {
+        console.log('SpeechRecognition ended');
         const currentTime = Date.now();
         if (currentTime - lastSpeechTime > 10000) {
+          console.log('No speech detected for 10 seconds, stopping recognition');
           feedback.textContent = 'Давно не слышу речи. Перезапускаю...';
           isListening = false;
           shouldRestart = false;
@@ -846,6 +850,7 @@
         // Перезапускаем распознавание, если флаг установлен
         if (shouldRestart && isListening && completionModal.style.display !== 'block') {
           try {
+            console.log('Restarting SpeechRecognition');
             recognition.start();
             shouldRestart = false; // Сбрасываем флаг после успешного перезапуска
           } catch (error) {
@@ -859,6 +864,15 @@
             if (restartListeningBtn) {
               restartListeningBtn.classList.remove('hidden');
             }
+          }
+        } else if (!isListening) {
+          console.log('Recognition stopped, showing restart button');
+          if (startPracticeBtn) {
+            startPracticeBtn.textContent = 'Начать практику';
+            startPracticeBtn.disabled = false;
+          }
+          if (restartListeningBtn) {
+            restartListeningBtn.classList.remove('hidden');
           }
         }
       };
@@ -886,15 +900,28 @@
       if (!currentLessonData) return;
 
       const ctx = progressChart.getContext('2d');
+      const dpr = window.devicePixelRatio || 1; // Получаем плотность пикселей
+      const canvasWidth = progressChart.width;
+      const canvasHeight = progressChart.height;
+
+      // Устанавливаем физическое разрешение canvas с учётом dpr
+      progressChart.width = canvasWidth * dpr;
+      progressChart.height = canvasHeight * dpr;
+      ctx.scale(dpr, dpr);
+
       const structures = currentLessonData.structures;
-      const centerX = progressChart.width / 2;
-      const centerY = progressChart.height / 2;
-      const baseRadius = 30; // Начальный радиус для первого кольца
-      const ringWidth = 10; // Толщина каждого кольца
-      const gap = 5; // Расстояние между кольцами
+      const centerX = canvasWidth / 2;
+      const centerY = canvasHeight / 2;
+      const baseRadius = 25.5; // Уменьшенный начальный радиус (30 * 0.85)
+      const ringWidth = 8.5; // Уменьшенная толщина кольца (10 * 0.85)
+      const gap = 4.25; // Уменьшенное расстояние между кольцами (5 * 0.85)
+
+      // Настраиваем сглаживание
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
 
       // Очищаем canvas перед перерисовкой
-      ctx.clearRect(0, 0, progressChart.width, progressChart.height);
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
       // Очищаем текстовую информацию
       progressDetails.innerHTML = '';
