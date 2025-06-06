@@ -104,13 +104,6 @@
     <p id="feedback" class="text-md mb-4"></p>
     <div class="mb-6">
       <p class="text-lg font-semibold">Прогресс:</p>
-      <div id="overall-progress-bar" class="mb-4">
-        <p class="text-md font-semibold">Общий прогресс:</p>
-        <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-          <div id="overall-progress" class="bg-[#373D8D] h-3 rounded-full" style="width: 0%"></div>
-        </div>
-        <p id="overall-progress-text" class="text-sm text-gray-600">0/0</p>
-      </div>
       <div id="progress-bars"></div>
     </div>
     <div class="mb-6">
@@ -204,7 +197,6 @@
     const adminFeedback = document.getElementById('admin-feedback');
     const statsDiv = document.getElementById('stats');
     const progressBars = document.getElementById('progress-bars');
-    const overallProgressBar = document.getElementById('overall-progress-bar');
     const logDiv = document.getElementById('log');
     const userNameEl = document.getElementById('user-name');
     const userLevelEl = document.getElementById('user-level');
@@ -279,12 +271,6 @@
     // Загрузка уроков с GitHub через API
     async function loadLessonsFromGitHub() {
       console.log('Starting to load lessons from GitHub API...');
-      // Защита от отсутствия lessonsData
-      if (typeof lessonsData === 'undefined') {
-        console.error('lessonsData is not defined. Ensure index.js is loaded correctly.');
-        feedback.textContent = 'Ошибка: lessonsData не определена. Проверьте загрузку index.js.';
-        return;
-      }
       lessonsData.length = 0;
       deleteLessonSelect.innerHTML = '<option value="">Выберите урок для удаления</option>';
       const token = githubTokenInput.value.trim();
@@ -349,12 +335,6 @@
     function populateLessons() {
       const selectedLevel = levelSelect.value;
       lessonSelect.innerHTML = '';
-      // Защита от отсутствия lessonsData
-      if (typeof lessonsData === 'undefined') {
-        console.error('lessonsData is not defined. Ensure index.js is loaded correctly.');
-        feedback.textContent = 'Ошибка: lessonsData не определена. Проверьте загрузку index.js.';
-        return;
-      }
       const lessons = lessonsData.filter(lesson => lesson.level === selectedLevel);
       console.log('Populating lessons for level:', selectedLevel, 'Found lessons:', lessons);
       if (lessons.length === 0) {
@@ -596,9 +576,7 @@
       userNameEl.textContent = userName;
       userLevelEl.textContent = document.getElementById('level').options[document.getElementById('level').selectedIndex].text;
       userLessonEl.textContent = document.getElementById('lesson').options[document.getElementById('lesson').selectedIndex].text;
-      if (userLesson) {
-        updateProgressBars(userLesson); // Инициализируем прогресс-бары после установки всех данных
-      }
+      initializeProgressBars();
       updateStats();
     });
 
@@ -613,8 +591,10 @@
       startTime = null;
       endTime = null;
       currentLessonData = null;
-      userLesson = ''; // Сбрасываем userLesson
-      if (recognition) recognition.stop();
+      if (recognition) {
+        recognition.stop();
+        recognition.onend = null; // Сбрасываем обработчик, чтобы избежать лишних перезапусков
+      }
 
       // Проверяем, что элементы существуют, прежде чем менять их классы
       if (startPracticeBtn) {
@@ -632,7 +612,7 @@
       if (statsDiv) statsDiv.innerHTML = '';
       if (logDiv) logDiv.innerHTML = '';
       if (modalLog) modalLog.innerHTML = '';
-      resetLessonState();
+      updateProgressBars();
 
       // Переключаем экраны
       if (practiceScreen) practiceScreen.classList.add('hidden');
@@ -692,6 +672,10 @@
           restartListeningBtn.classList.remove('hidden');
         }
       }
+    }
+
+    function initializeProgressBars() {
+      updateProgressBars();
     }
 
     function formatDuration(start, end) {
@@ -756,6 +740,17 @@
       modalLog.innerHTML = logHTML;
     }
 
+    function findMatchingStructure(text) {
+      if (!currentLessonData) return null;
+      const structures = currentLessonData.structures;
+      for (let struct of structures) {
+        if (currentLessonData.validateStructure(text, struct)) {
+          return struct;
+        }
+      }
+      return null;
+    }
+
     if (recognition) {
       recognition.onresult = (event) => {
         const spokenText = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
@@ -789,7 +784,7 @@
                 feedback.textContent = `Правильно! Ты сказал: "${spokenText}" для "${matchedStructure.structure}"`;
               }
 
-              updateProgressBars(userLesson); // Вызываем из index.js
+              updateProgressBars();
               checkCompletion();
             } else {
               feedback.textContent = `Повтор: "${spokenText}". Скажи новый пример для: ${matchedStructure.structure}`;
@@ -808,11 +803,17 @@
         updateLog();
         updateStats();
 
-        setTimeout(() => {
-          if (isListening && completionModal.style.display !== 'block') {
-            recognition.start();
-          }
-        }, 500);
+        if (isListening && completionModal.style.display !== 'block') {
+          setTimeout(() => {
+            try {
+              if (!recognition.isStarted) {
+                recognition.start();
+              }
+            } catch (error) {
+              console.error('Ошибка при перезапуске распознавания:', error);
+            }
+          }, 500);
+        }
       };
 
       recognition.onerror = (event) => {
@@ -845,9 +846,11 @@
         if (isListening && completionModal.style.display !== 'block') {
           setTimeout(() => {
             try {
-              recognition.start();
+              if (!recognition.isStarted) {
+                recognition.start();
+              }
             } catch (error) {
-              feedback.textContent = 'Ошибка при перезапуске распознавания: ' + error.message + '. Попробуйте снова.';
+              console.error('Ошибка при перезапуске распознавания:', error);
               isListening = false;
               if (startPracticeBtn) {
                 startPracticeBtn.textContent = 'Начать практику';
@@ -860,17 +863,6 @@
           }, 500);
         }
       };
-    }
-
-    function findMatchingStructure(text) {
-      if (!currentLessonData) return null;
-      const structures = currentLessonData.structures;
-      for (let struct of structures) {
-        if (currentLessonData.validateStructure(text, struct)) {
-          return struct;
-        }
-      }
-      return null;
     }
 
     function updateLog() {
@@ -889,6 +881,47 @@
         logDiv.appendChild(p);
       });
       logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function updateProgressBars() {
+      if (!currentLessonData) return;
+      progressBars.innerHTML = '';
+      currentLessonData.structures.forEach(struct => {
+        const totalCorrect = progress[struct.id];
+        const div = document.createElement('div');
+        div.className = 'mb-2';
+
+        let barsHTML = `
+          <p class="text-sm">${struct.structure}</p>
+        `;
+
+        const firstBarProgress = Math.min(totalCorrect, currentLessonData.requiredCorrect);
+        const firstBarPercentage = (firstBarProgress / currentLessonData.requiredCorrect) * 100;
+        console.log(`Structure: ${struct.structure}, Total Correct: ${totalCorrect}, First Bar Percentage: ${firstBarPercentage}%`);
+        barsHTML += `
+          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+            <div class="bg-[#373D8D] h-2.5 rounded-full" style="width: ${firstBarPercentage}%"></div>
+          </div>
+        `;
+
+        if (totalCorrect > currentLessonData.requiredCorrect) {
+          const excessCorrect = totalCorrect - currentLessonData.requiredCorrect;
+          const excessProgress = excessCorrect % currentLessonData.requiredCorrect;
+          const excessPercentage = (excessProgress / currentLessonData.requiredCorrect) * 100;
+          console.log(`Excess Percentage: ${excessPercentage}%`);
+          barsHTML += `
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-[#28A745] h-2.5 rounded-full" style="width: ${excessPercentage}%"></div>
+            </div>
+          `;
+        }
+
+        barsHTML += `
+          <p class="text-xs text-gray-600">${totalCorrect}/${currentLessonData.requiredCorrect}</p>
+        `;
+        div.innerHTML = barsHTML;
+        progressBars.appendChild(div);
+      });
     }
 
     function checkCompletion() {
