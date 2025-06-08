@@ -828,15 +828,38 @@
                   segments.push(currentSegment.join(' '));
                   currentSegment = [];
                 }
-                let segment = words.slice(i, i + patternWords.length).join(' ');
-                segments.push(segment);
+                let segmentStart = i;
                 i += patternWords.length;
+                // Добавляем все слова до следующего паттерна или конца текста
+                while (i < words.length) {
+                  let nextPatternMatch = false;
+                  for (let nextPattern of startPatterns) {
+                    let nextPatternWords = nextPattern.split(' ');
+                    if (i + nextPatternWords.length <= words.length) {
+                      let nextMatch = true;
+                      for (let k = 0; k < nextPatternWords.length; k++) {
+                        if (words[i + k] !== nextPatternWords[k]) {
+                          nextMatch = false;
+                          break;
+                        }
+                      }
+                      if (nextMatch) {
+                        nextPatternMatch = true;
+                        break;
+                      }
+                    }
+                  }
+                  if (nextPatternMatch) break;
+                  currentSegment.push(words[i]);
+                  i++;
+                }
+                segments.push(words.slice(segmentStart, i).join(' '));
                 foundPattern = true;
                 break;
               }
             }
           }
-          if (!foundPattern) {
+          if (!foundPattern && i < words.length) {
             currentSegment.push(words[i]);
             i++;
           }
