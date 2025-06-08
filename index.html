@@ -794,7 +794,8 @@
         spokenText = spokenText.replace(/what's/gi, 'what is').replace(/i'm/gi, 'i am');
         console.log('Recognized text:', spokenText);
 
-        // Динамическое определение ключевых слов для разделения
+        // Динамическое определение субъектов и глаголов
+        const subjects = new Set(['i', 'you', 'he', 'she', 'it', 'we', 'they']);
         const verbs = new Set();
         currentLessonData.structures.forEach(struct => {
           struct.pattern.forEach(word => {
@@ -808,22 +809,22 @@
         const words = spokenText.toLowerCase().split(' ').filter(word => word.length > 0);
         let segments = [];
         let currentSegment = [];
-        let lastVerbIndex = -1;
+        let lastSubjectIndex = -1;
 
         for (let i = 0; i < words.length; i++) {
-          if (verbs.has(words[i]) && i > 0 && ['i', 'you', 'he', 'she', 'it', 'we', 'they'].includes(words[i - 1])) {
+          if (subjects.has(words[i]) && (i + 1 < words.length && verbs.has(words[i + 1]))) {
             if (currentSegment.length > 0) {
               segments.push(currentSegment.join(' '));
               currentSegment = [];
             }
-            lastVerbIndex = i;
+            lastSubjectIndex = i;
           }
           currentSegment.push(words[i]);
         }
-        if (currentSegment.length > 0 && lastVerbIndex >= 0) {
+        if (currentSegment.length > 0 && lastSubjectIndex >= 0) {
           segments.push(currentSegment.join(' '));
         } else if (words.length > 0) {
-          segments = [spokenText]; // Если нет подходящих глаголов, считаем как одно предложение
+          segments = [spokenText]; // Если нет подходящих комбинаций, считаем как одно предложение
         }
 
         lastSpeechTime = Date.now(); // Обновляем время последнего распознавания
