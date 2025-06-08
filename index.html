@@ -794,37 +794,55 @@
         spokenText = spokenText.replace(/what's/gi, 'what is').replace(/i'm/gi, 'i am');
         console.log('Recognized text:', spokenText);
 
-        // Динамическое определение субъектов и глаголов
-        const subjects = new Set(['i', 'you', 'he', 'she', 'it', 'we', 'they']);
-        const verbs = new Set();
+        // Динамическое определение начальных паттернов
+        const startPatterns = new Set();
         currentLessonData.structures.forEach(struct => {
-          struct.pattern.forEach(word => {
-            if (['am', 'is', 'are', 'was', 'were', 'do', 'does', 'have', 'has', 'can'].includes(word)) {
-              verbs.add(word);
-            }
-          });
+          let pattern = struct.pattern.slice();
+          while (pattern.length > 0) {
+            let currentPattern = pattern.join(' ');
+            startPatterns.add(currentPattern);
+            pattern.pop(); // Убираем последний элемент для проверки более коротких паттернов
+          }
         });
 
-        // Разделяем текст на сегменты на основе субъектов и глаголов
+        // Разделяем текст на сегменты на основе начальных паттернов
         const words = spokenText.toLowerCase().split(' ').filter(word => word.length > 0);
         let segments = [];
         let currentSegment = [];
-        let lastSubjectIndex = -1;
+        let i = 0;
 
-        for (let i = 0; i < words.length; i++) {
-          if (subjects.has(words[i]) && (i + 1 < words.length && verbs.has(words[i + 1]))) {
-            if (currentSegment.length > 0) {
-              segments.push(currentSegment.join(' '));
-              currentSegment = [];
+        while (i < words.length) {
+          let foundPattern = false;
+          for (let pattern of startPatterns) {
+            let patternWords = pattern.split(' ');
+            if (i + patternWords.length <= words.length) {
+              let match = true;
+              for (let j = 0; j < patternWords.length; j++) {
+                if (words[i + j] !== patternWords[j]) {
+                  match = false;
+                  break;
+                }
+              }
+              if (match) {
+                if (currentSegment.length > 0) {
+                  segments.push(currentSegment.join(' '));
+                  currentSegment = [];
+                }
+                let segment = words.slice(i, i + patternWords.length).join(' ');
+                segments.push(segment);
+                i += patternWords.length;
+                foundPattern = true;
+                break;
+              }
             }
-            lastSubjectIndex = i;
           }
-          currentSegment.push(words[i]);
+          if (!foundPattern) {
+            currentSegment.push(words[i]);
+            i++;
+          }
         }
-        if (currentSegment.length > 0 && lastSubjectIndex >= 0) {
+        if (currentSegment.length > 0) {
           segments.push(currentSegment.join(' '));
-        } else if (words.length > 0) {
-          segments = [spokenText]; // Если нет подходящих комбинаций, считаем как одно предложение
         }
 
         lastSpeechTime = Date.now(); // Обновляем время последнего распознавания
