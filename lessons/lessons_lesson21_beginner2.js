@@ -5,7 +5,7 @@ addLesson({
   structures: [
     { 
       structure: "I/she/he/it was ________.", 
-      pattern: ["i", "was"], 
+      pattern: ["i", "she", "he", "it", "was"], 
       translations: ["Я/она/он/оно был(а) ______."], 
       examples: ["I was fine. (Я был(а) хорошо.)", "She was at home. (Она была дома.)"], 
       id: "s1", 
@@ -13,17 +13,17 @@ addLesson({
     },
     { 
       structure: "We/you/they were ______.", 
-      pattern: ["we", "were"], 
+      pattern: ["we", "you", "they", "were"], 
       translations: ["Мы/вы/они были ______."], 
       examples: ["They were at home. (Они были дома.)", "You were fine. (Вы были хорошо.)"], 
       id: "s2", 
       hasName: false 
     }
   ],
-  requiredCorrect: 2, // 2 correct examples per structure
+  requiredCorrect: 10, // 10 correct examples per structure
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
-    // Заменяем "she's/he's/it's" на "she is/he is/it is" и нормализуем пробелы
+    // Заменяем "she's/he's/it's" на "she was/he was/it was" и нормализуем пробелы
     let processedText = text
       .replace(/she's/gi, 'she was')
       .replace(/he's/gi, 'he was')
@@ -43,23 +43,25 @@ addLesson({
 
     let wordIndex = 0;
 
-    // Проверяем первое слово структуры
-    if (!words[wordIndex] || !structure.pattern.includes(words[wordIndex])) {
-      console.log('Ожидалось одно из слов паттерна:', structure.pattern, 'на позиции', wordIndex, ', получено', words[wordIndex]);
+    // Проверяем первое слово (субъект)
+    const validSubjects = structure.pattern.slice(0, -1); // Все слова кроме последнего (was/were)
+    if (!words[wordIndex] || !validSubjects.includes(words[wordIndex])) {
+      console.log('Ожидалось одно из слов:', validSubjects, 'на позиции', wordIndex, ', получено', words[wordIndex]);
       return false;
     }
     wordIndex++;
 
-    // Проверяем второе слово структуры
-    if (wordIndex >= words.length || (words[wordIndex] !== 'was' && words[wordIndex] !== 'were')) {
-      console.log('Ожидалось "was" или "were" на позиции', wordIndex, ', получено', words[wordIndex]);
+    // Проверяем второе слово (was или were)
+    const expectedVerb = structure.pattern[structure.pattern.length - 1]; // Последний элемент паттерна
+    if (wordIndex >= words.length || words[wordIndex] !== expectedVerb) {
+      console.log('Ожидалось "', expectedVerb, '" на позиции', wordIndex, ', получено', words[wordIndex]);
       return false;
     }
     wordIndex++;
 
     // Всё остальное после "was" или "were" принимаем как валидную часть
     if (wordIndex >= words.length) {
-      console.log('Нет слов после "was" или "were"');
+      console.log('Нет слов после "', expectedVerb, '"');
       return false;
     }
 
