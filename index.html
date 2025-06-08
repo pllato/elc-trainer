@@ -794,32 +794,62 @@
         spokenText = spokenText.replace(/what's/gi, 'what is').replace(/i'm/gi, 'i am');
         console.log('Recognized text:', spokenText);
 
-        // Разделяем текст на предложения
-        let sentences = spokenText.split('.').map(sentence => sentence.trim()).filter(sentence => sentence.length > 0);
-        if (sentences.length === 0) {
-          // Если нет точек, пробуем разделить по "and" или "then" как дополнительный способ
-          sentences = spokenText.split(/(?<=[\w])\s+(?=(and|then)\s+)/i).map(sentence => sentence.trim()).filter(sentence => sentence.length > 0);
-          if (sentences.length === 0) {
-            sentences = [spokenText]; // Если ничего не найдено, считаем как одно предложение
+        // Динамическое определение ключевых слов для разделения
+        const verbs = new Set();
+        currentLessonData.structures.forEach(struct => {
+          struct.pattern.forEach(word => {
+            if (['am', 'is', 'are', 'was', 'were', 'do', 'does', 'have', 'has', 'can'].includes(word)) {
+              verbs.add(word);
+            }
+          });
+        });
+
+        // Разделяем текст на сегменты на основе субъектов и глаголов
+        const words = spokenText.toLowerCase().split(' ').filter(word => word.length > 0);
+        let segments = [];
+        let currentSegment = [];
+        let lastVerbIndex = -1;
+
+        for (let i = 0; i < words.length; i++) {
+          if (verbs.has(words[i]) && i > 0 && ['i', 'you', 'he', 'she', 'it', 'we', 'they'].includes(words[i - 1])) {
+            if (currentSegment.length > 0) {
+              segments.push(currentSegment.join(' '));
+              currentSegment = [];
+            }
+            lastVerbIndex = i;
           }
+          currentSegment.push(words[i]);
+        }
+        if (currentSegment.length > 0 && lastVerbIndex >= 0) {
+          segments.push(currentSegment.join(' '));
+        } else if (words.length > 0) {
+          segments = [spokenText]; // Если нет подходящих глаголов, считаем как одно предложение
         }
 
         lastSpeechTime = Date.now(); // Обновляем время последнего распознавания
         let feedbackMessages = [];
         let correctCount = 0;
 
-        // Обрабатываем каждое предложение отдельно
-        sentences.forEach((sentence, index) => {
-          const logEntry = { time: new Date().toLocaleTimeString(), spoken: sentence };
-          const matchedStructure = findMatchingStructure(sentence);
+        // Обрабатываем каждое сегмент отдельно
+        segments.forEach((segment, index) => {
+          const logEntry = { time: new Date().toLocaleTimeString(), spoken: segment };
+          let matchedStructure = null;
+
+          // Проверяем все структуры для каждого сегмента
+          for (let struct of currentLessonData.structures) {
+            if (currentLessonData.validateStructure(segment, struct)) {
+              matchedStructure = struct;
+              break;
+            }
+          }
 
           if (matchedStructure) {
-            const isCorrect = currentLessonData.validateStructure(sentence, matchedStructure);
+            const isCorrect = currentLessonData.validateStructure(segment, matchedStructure);
             if (isCorrect) {
               // Проверяем, не является ли фраза повтором, только если hasName: true
               let isDuplicate = false;
               if (matchedStructure.hasName) {
-                isDuplicate = spokenHistory.includes(sentence.toLowerCase());
+                isDuplicate = spokenHistory.includes(segment.toLowerCase());
               }
               logEntry.structure = matchedStructure.structure;
               logEntry.correct = true;
@@ -828,7 +858,7 @@
               if (!isDuplicate || !matchedStructure.hasName) {
                 progress[matchedStructure.id]++;
                 if (matchedStructure.hasName) {
-                  spokenHistory.push(sentence.toLowerCase()); // Добавляем в историю только если hasName: true
+                  spokenHistory.push(segment.toLowerCase()); // Добавляем в историю только если hasName: true
                 }
                 correctCount++;
                 if (progress[matchedStructure.id] > currentLessonData.requiredCorrect) {
@@ -841,21 +871,21 @@
                     exceeded: true
                   });
                 } else {
-                  feedbackMessages.push(`Правильно! Ты сказал: "${sentence}" для "${matchedStructure.structure}" (Пример ${index + 1})`);
+                  feedbackMessages.push(`Правильно! Ты сказал: "${segment}" для "${matchedStructure.structure}" (Пример ${index + 1})`);
                 }
               } else {
-                feedbackMessages.push(`Повтор: "${sentence}". Скажи новый пример для: ${matchedStructure.structure} (Пример ${index + 1})`);
+                feedbackMessages.push(`Повтор: "${segment}". Скажи новый пример для: ${matchedStructure.structure} (Пример ${index + 1})`);
               }
             } else {
               totalErrors++; // Увеличиваем счётчик ошибок
               logEntry.structure = matchedStructure.structure;
               logEntry.correct = false;
-              feedbackMessages.push(`Неправильно: "${sentence}" для "${matchedStructure.structure}" (Пример ${index + 1})`);
+              feedbackMessages.push(`Неправильно: "${segment}" для "${matchedStructure.structure}" (Пример ${index + 1})`);
             }
           } else {
             totalErrors++; // Увеличиваем счётчик ошибок
             logEntry.correct = false;
-            feedbackMessages.push(`Не совпадает: "${sentence}". Попробуй одну из структур ниже. (Пример ${index + 1})`);
+            feedbackMessages.push(`Не совпадает: "${segment}". Попробуй одну из структур ниже. (Пример ${index + 1})`);
           }
 
           logEntries.push(logEntry);
@@ -864,7 +894,7 @@
         // Обновляем feedback с указанием количества правильных примеров
         feedback.textContent = feedbackMessages.join('\n');
         if (correctCount > 0) {
-          feedback.textContent += `\nПравильных примеров: ${correctCount} из ${sentences.length}.`;
+          feedback.textContent += `\nПравильных примеров: ${correctCount} из ${segments.length}.`;
         }
         updateLog();
         updateStats();
