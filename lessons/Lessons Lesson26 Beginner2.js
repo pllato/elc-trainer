@@ -248,8 +248,8 @@ addLesson({
         console.log('Недопустимо использовать форму Past Simple в вопросе:', verb);
         return false;
       }
-      // Исключаем модальные и вспомогательные глаголы
-      if (['am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'].includes(verb)) {
+      // Исключаем вспомогательные глаголы, кроме "do"
+      if (['am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did'].includes(verb)) {
         console.log('Запрещённый вспомогательный глагол:', verb);
         return false;
       }
