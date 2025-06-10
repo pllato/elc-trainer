@@ -196,6 +196,17 @@ addLesson({
       return false;
     }
 
+    // Инициализация spokenHistory при старте урока
+    if (!window.spokenHistory) {
+      window.spokenHistory = [];
+    }
+
+    // Проверяем, не является ли фраза повтором
+    if (window.spokenHistory.includes(cleanedText)) {
+      console.log('Фраза уже использовалась:', cleanedText);
+      return false;
+    }
+
     let wordIndex = 0;
 
     // Список исключённых слов, которые нельзя использовать в дополнении
@@ -257,7 +268,7 @@ addLesson({
 
       // Проверяем, что нет лишних слов
       if (wordIndex < words.length) {
-        console.log('Лишние слова:', words.slice(wordIndex));
+        console.log('Лишные слова:', words.slice(wordIndex));
         return false;
       }
     } else if (structure.id === "pronoun-verbed-object") {
@@ -282,7 +293,7 @@ addLesson({
         console.log('Глагол не в форме Past Simple:', verb);
         return false;
       }
-      // Проверяем, что базовая форма глагола не является вспомогательным глаголом
+      // Проверяем, что базовая форма глагола не является вспомогательным
       let baseVerb = verb;
       if (isRegular) {
         // Для регулярных глаголов убираем -ed
@@ -318,6 +329,10 @@ addLesson({
         }
       }
     }
+
+    // Если фраза прошла валидацию, добавляем её в spokenHistory
+    window.spokenHistory.push(cleanedText);
+    console.log('Фраза добавлена в историю:', cleanedText);
 
     console.log('Валидация пройдена для:', text);
     return true;
