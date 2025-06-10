@@ -22,7 +22,7 @@ addLesson({
       ], 
       id: "i-was-born-on-the-date", 
       hasVerb: false,
-      hasName: true
+      hasName: false // Отключена проверка уникальности
     }
   ],
   requiredCorrect: 6,
@@ -112,16 +112,6 @@ addLesson({
       if (wordIndex < words.length) {
         console.log('Extra words after date:', words.slice(wordIndex));
         return false;
-      }
-
-      // Проверяем уникальность даты (если hasName: true)
-      if (structure.hasName) {
-        if (!window.usedDates) window.usedDates = [];
-        if (window.usedDates.includes(datePart)) {
-          console.log('Date already used:', datePart);
-          return false;
-        }
-        window.usedDates.push(datePart);
       }
 
       console.log('Validation passed for:', text);
