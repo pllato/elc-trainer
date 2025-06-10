@@ -11,7 +11,8 @@ addLesson({
         "Where did you go? (Куда ты ходил?)",
         "What did she eat? (Что она ела?)",
         "When did they play? (Когда они играли?)",
-        "Why did he run? (Почему он бежал?)"
+        "Why did he run? (Почему он бежал?)",
+        "What did you do? (Что ты делал?)"
       ], 
       id: "wh-did-pronoun-verb", 
       hasVerb: true,
@@ -25,7 +26,8 @@ addLesson({
         "I went to school. (Я ходил в школу.)",
         "She ate an apple. (Она съела яблоко.)",
         "They played football. (Они играли в футбол.)",
-        "He ran home. (Он побежал домой.)"
+        "He ran home. (Он побежал домой.)",
+        "I cooked because I was hungry. (Я готовил, потому что был голоден.)"
       ], 
       id: "pronoun-verbed-object", 
       hasVerb: true,
@@ -196,10 +198,9 @@ addLesson({
 
     let wordIndex = 0;
 
-    // Список исключённых глаголов и модальных глаголов
+    // Список исключённых слов, которые нельзя использовать в дополнении
     const excludedWords = [
       'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-      'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
       'going', 'doing', 'saying', 'running', 'swimming', 'singing', // Примеры с -ing
       'likes', 'runs', 'swims', 'works', 'calls', 'plays', 'watches', 'studies' // Примеры с -s или -es
     ];
@@ -247,8 +248,9 @@ addLesson({
         console.log('Недопустимо использовать форму Past Simple в вопросе:', verb);
         return false;
       }
-      if (excludedWords.includes(verb)) {
-        console.log('Запрещённый глагол:', verb);
+      // Исключаем модальные и вспомогательные глаголы
+      if (['am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'].includes(verb)) {
+        console.log('Запрещённый вспомогательный глагол:', verb);
         return false;
       }
       wordIndex++;
@@ -280,7 +282,7 @@ addLesson({
         console.log('Глагол не в форме Past Simple:', verb);
         return false;
       }
-      // Проверяем, что базовая форма глагола не в списке исключённых
+      // Проверяем, что базовая форма глагола не является вспомогательным глаголом
       let baseVerb = verb;
       if (isRegular) {
         // Для регулярных глаголов убираем -ed
@@ -296,8 +298,8 @@ addLesson({
         console.log('Не удалось определить базовую форму глагола:', verb);
         return false;
       }
-      if (excludedWords.includes(baseVerb)) {
-        console.log('Запрещённый глагол (базовая форма):', baseVerb);
+      if (['am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'].includes(baseVerb)) {
+        console.log('Запрещённый вспомогательный глагол (базовая форма):', baseVerb);
         return false;
       }
       wordIndex++;
@@ -307,7 +309,7 @@ addLesson({
         console.log('Нет дополнения после глагола');
         return false;
       }
-      // Дополнение может быть любым, но исключаем модальные глаголы и неподходящие слова
+      // Дополнение может быть любым, но исключаем модальные глаголы и формы с -ing, -s
       const remainingWords = words.slice(wordIndex);
       for (const word of remainingWords) {
         if (excludedWords.includes(word)) {
