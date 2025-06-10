@@ -28,12 +28,12 @@ addLesson({
       hasName: false
     },
     { 
-      structure: "No, I/you/he/she/it/we/they didn't _______.", 
+      structure: "No, I/you/he/she/it/we/they did not _______.", 
       pattern: ["no"], 
       translations: ["Нет, я/ты/мы/вы/он/она/оно не _______."], 
       examples: [
-        "No, I didn't play. (Нет, я не играл.)",
-        "No, I didn't go. (Нет, я не ходил.)"
+        "No, I did not play. (Нет, я не играл.)",
+        "No, I did not go. (Нет, я не ходил.)"
       ], 
       id: "no-pronoun-did-not-verb", 
       hasVerb: true,
@@ -316,7 +316,7 @@ addLesson({
         return false;
       }
     } else if (structure.id === "no-pronoun-did-not-verb") {
-      // Структура "No, I/you/he/she/it/we/they didn't _______."
+      // Структура "No, I/you/he/she/it/we/they did not _______."
       // Проверяем "no"
       if (!words[wordIndex] || words[wordIndex] !== 'no') {
         console.log('Ожидалось "no" на позиции', wordIndex, ', получено', words[wordIndex]);
