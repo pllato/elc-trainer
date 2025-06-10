@@ -6,34 +6,34 @@ addLesson({
     { 
       structure: "Did I/you/he/she/it/we/they _______?", 
       pattern: ["did"], 
-      translations: ["Я/ты/он/она/оно/мы/вы/они _______?"], 
+      translations: ["Я/ты/мы/вы/он/она/оно _______?"], 
       examples: [
         "Did you play football? (Ты играл в футбол?)",
-        "Did she sing? (Она пела?)"
+        "Did she go to school? (Она ходила в школу?)"
       ], 
       id: "did-pronoun-verb", 
       hasVerb: true,
       hasName: false
     },
     { 
-      structure: "Yes, I ______ed.", 
+      structure: "Yes, I/you/he/she/it/we/they ______.", 
       pattern: ["yes"], 
-      translations: ["Да, я _______."], 
+      translations: ["Да, я/ты/мы/вы/он/она/оно _______."], 
       examples: [
         "Yes, I played. (Да, я играл.)",
-        "Yes, I ate. (Да, я ел.)"
+        "Yes, I went. (Да, я ходил.)"
       ], 
       id: "yes-pronoun-verbed", 
       hasVerb: true,
       hasName: false
     },
     { 
-      structure: "No, I did not _______.", 
+      structure: "No, I/you/he/she/it/we/they didn't _______.", 
       pattern: ["no"], 
-      translations: ["Нет, я не _______."], 
+      translations: ["Нет, я/ты/мы/вы/он/она/оно не _______."], 
       examples: [
-        "No, I did not play. (Нет, я не играл.)",
-        "No, I did not drink. (Нет, я не пил.)"
+        "No, I didn't play. (Нет, я не играл.)",
+        "No, I didn't go. (Нет, я не ходил.)"
       ], 
       id: "no-pronoun-did-not-verb", 
       hasVerb: true,
@@ -185,7 +185,6 @@ addLesson({
     "wind": "wound",
     "withdraw": "withdrew",
     "write": "wrote"
-    // ... (и другие глаголы, полный список включен)
   },
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
@@ -244,6 +243,11 @@ addLesson({
         console.log('Недопустимая форма глагола (должна быть базовая):', verb);
         return false;
       }
+      // Проверяем, что глагол не является неправильной формой Past Simple
+      if (Object.values(this.irregularVerbs).includes(verb)) {
+        console.log('Недопустимо использовать форму Past Simple в вопросе:', verb);
+        return false;
+      }
       if (excludedWords.includes(verb)) {
         console.log('Запрещённый глагол:', verb);
         return false;
@@ -256,7 +260,7 @@ addLesson({
         return false;
       }
     } else if (structure.id === "yes-pronoun-verbed") {
-      // Структура "Yes, I ______ed."
+      // Структура "Yes, I/you/he/she/it/we/they ______."
       // Проверяем "yes"
       if (!words[wordIndex] || words[wordIndex] !== 'yes') {
         console.log('Ожидалось "yes" на позиции', wordIndex, ', получено', words[wordIndex]);
@@ -296,6 +300,10 @@ addLesson({
         // Для неправильных глаголов ищем базовую форму
         baseVerb = Object.keys(this.irregularVerbs).find(key => this.irregularVerbs[key] === verb);
       }
+      if (!baseVerb) {
+        console.log('Не удалось определить базовую форму глагола:', verb);
+        return false;
+      }
       if (excludedWords.includes(baseVerb)) {
         console.log('Запрещённый глагол (базовая форма):', baseVerb);
         return false;
@@ -308,7 +316,7 @@ addLesson({
         return false;
       }
     } else if (structure.id === "no-pronoun-did-not-verb") {
-      // Структура "No, I did not _______."
+      // Структура "No, I/you/he/she/it/we/they didn't _______."
       // Проверяем "no"
       if (!words[wordIndex] || words[wordIndex] !== 'no') {
         console.log('Ожидалось "no" на позиции', wordIndex, ', получено', words[wordIndex]);
@@ -346,6 +354,11 @@ addLesson({
       // Проверяем, что глагол в базовой форме
       if (verb.endsWith('ing') || verb.endsWith('s') || verb.endsWith('es') || verb.endsWith('ed')) {
         console.log('Недопустимая форма глагола (должна быть базовая):', verb);
+        return false;
+      }
+      // Проверяем, что глагол не является неправильной формой Past Simple
+      if (Object.values(this.irregularVerbs).includes(verb)) {
+        console.log('Недопустимо использовать форму Past Simple в отрицательном ответе:', verb);
         return false;
       }
       if (excludedWords.includes(verb)) {
