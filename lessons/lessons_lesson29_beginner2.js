@@ -1,63 +1,39 @@
 addLesson({
   level: "beginner2",
   lesson: "lesson29",
-  name: "Урок 29: I would like ______ / I'd like ______ / There is ______ in/on/at ________.",
+  name: "Урок 29: I would like / I'd like ______ / There is / There's ______ in/on/at ________.",
   structures: [
     {
-      structure: "I would like ______.",
+      structure: "I would like / I'd like ______.",
       pattern: ["would", "like"],
       translations: ["Я хотел бы ______."],
       examples: [
         "I would like to go. (Я хотел бы пойти.)",
-        "I would like a coffee. (Я хотел бы кофе.)",
-        "I would like to do something. (Я хотел бы сделать что-нибудь.)",
-        "I would like it. (Я хотел бы это.)",
-        "I would like dancing. (Я хотел бы танцевать.)"
-      ],
-      id: "i-would-like-object",
-      hasVerb: true,
-      hasName: false
-    },
-    {
-      structure: "I'd like ______.",
-      pattern: ["id", "like"],
-      translations: ["Я хотел бы ______."],
-      examples: [
-        "I'd like to go. (Я хотел бы пойти.)",
         "I'd like a coffee. (Я хотел бы кофе.)",
-        "I'd like to play football. (Я хотел бы играть в футбол.)",
+        "I would like to do something. (Я хотел бы сделать что-нибудь.)",
         "I'd like it. (Я хотел бы это.)",
-        "I'd like dancing. (Я хотел бы танцевать.)"
+        "I would like dancing. (Я хотел бы танцевать.)",
+        "I'd like to play football. (Я хотел бы играть в футбол.)",
+        "I would like a new book. (Я хотел бы новую книгу.)"
       ],
-      id: "id-like-object",
+      id: "would-like-object",
       hasVerb: true,
       hasName: false
     },
     {
-      structure: "There is ______ in/on/at ________.",
+      structure: "There is / There's ______ in/on/at ________.",
       pattern: ["there", "is"],
       translations: ["Есть ______ в/на/в ________."],
       examples: [
         "There is a book on the table. (Есть книга на столе.)",
-        "There is a cat in the room. (Есть кошка в комнате.)",
+        "There's a cat in the room. (Есть кошка в комнате.)",
         "There is a party at the house. (Есть вечеринка в доме.)",
-        "There is water in the glass. (Есть вода в стакане.)"
+        "There's water in the glass. (Есть вода в стакане.)",
+        "There is a new book on the shelf. (Есть новая книга на полке.)",
+        "There's a dog in the park. (Есть собака в парке.)",
+        "There is a pen on the desk. (Есть ручка на столе.)"
       ],
       id: "there-is-noun-prep-place",
-      hasVerb: false,
-      hasName: false
-    },
-    {
-      structure: "There's ______ in/on/at ________.",
-      pattern: ["theres"],
-      translations: ["Есть ______ в/на/в ________."],
-      examples: [
-        "There's a book on the table. (Есть книга на столе.)",
-        "There's a cat in the room. (Есть кошка в комнате.)",
-        "There's a party at the house. (Есть вечеринка в доме.)",
-        "There's water in the glass. (Есть вода в стакане.)"
-      ],
-      id: "theres-noun-prep-place",
       hasVerb: false,
       hasName: false
     }
@@ -214,6 +190,9 @@ addLesson({
       .replace(/I'd/gi, 'I would')
       .replace(/There's/gi, 'There is')
       .replace(/wouldn't/gi, 'would not');
+    if (processedText !== text) {
+      console.log('Expanded contractions:', processedText);
+    }
     // Удаляем пунктуацию и приводим к нижнему регистру
     const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
@@ -241,6 +220,7 @@ addLesson({
 
     // Проверяем объект для "would like" (глагольная фраза или существительное)
     const validateWouldLikeObject = () => {
+      console.log('Validating "would like" object at index', wordIndex);
       if (!words[wordIndex]) {
         console.log('Нет объекта после "like"');
         return false;
@@ -299,12 +279,13 @@ addLesson({
 
     // Проверяем объект для "there is" (существительное + предлог + место)
     const validateThereIsObject = () => {
+      console.log('Validating "there is" object at index', wordIndex);
       if (!words[wordIndex]) {
         console.log('Нет существительного после "is"');
         return false;
       }
 
-      // Проверяем существительное (может начинаться с артикля или быть местоимением)
+      // Проверяем существительное (может начинаться с артикля)
       const nounWord = words[wordIndex];
       if (excludedWords.includes(nounWord) || Object.values(this.irregularVerbs).includes(nounWord)) {
         console.log('Недопустимое существительное:', nounWord);
@@ -324,7 +305,7 @@ addLesson({
 
       // Проверяем предлог
       if (!words[wordIndex] || !['in', 'on', 'at'].includes(words[wordIndex])) {
-        console.log('Ожидался предлог "in/on/at" на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидался предлог "in/on/at" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
         return false;
       }
       wordIndex++;
@@ -354,48 +335,24 @@ addLesson({
       return true;
     };
 
-    if (structure.id === "i-would-like-object") {
+    if (structure.id === "would-like-object") {
       // Проверяем "i"
       if (!words[wordIndex] || words[wordIndex] !== 'i') {
-        console.log('Ожидалось "i" на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось "i" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
         return false;
       }
       wordIndex++;
 
       // Проверяем "would"
       if (!words[wordIndex] || words[wordIndex] !== 'would') {
-        console.log('Ожидалось "would" на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось "would" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
         return false;
       }
       wordIndex++;
 
       // Проверяем "like"
       if (!words[wordIndex] || words[wordIndex] !== 'like') {
-        console.log('Ожидалось "like" на позиции', wordIndex, ', получено', words[wordIndex]);
-        return false;
-      }
-      wordIndex++;
-
-      // Проверяем объект
-      return validateWouldLikeObject();
-    } else if (structure.id === "id-like-object") {
-      // Проверяем "i" (после замены "I'd" на "I would")
-      if (!words[wordIndex] || words[wordIndex] !== 'i') {
-        console.log('Ожидалось "i" на позиции', wordIndex, ', получено', words[wordIndex]);
-        return false;
-      }
-      wordIndex++;
-
-      // Проверяем "would"
-      if (!words[wordIndex] || words[wordIndex] !== 'would') {
-        console.log('Ожидалось "would" на позиции', wordIndex, ', получено', words[wordIndex]);
-        return false;
-      }
-      wordIndex++;
-
-      // Проверяем "like"
-      if (!words[wordIndex] || words[wordIndex] !== 'like') {
-        console.log('Ожидалось "like" на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось "like" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
         return false;
       }
       wordIndex++;
@@ -405,31 +362,14 @@ addLesson({
     } else if (structure.id === "there-is-noun-prep-place") {
       // Проверяем "there"
       if (!words[wordIndex] || words[wordIndex] !== 'there') {
-        console.log('Ожидалось "there" на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось "there" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
         return false;
       }
       wordIndex++;
 
       // Проверяем "is"
       if (!words[wordIndex] || words[wordIndex] !== 'is') {
-        console.log('Ожидалось "is" на позиции', wordIndex, ', получено', words[wordIndex]);
-        return false;
-      }
-      wordIndex++;
-
-      // Проверяем существительное и место
-      return validateThereIsObject();
-    } else if (structure.id === "theres-noun-prep-place") {
-      // Проверяем "there"
-      if (!words[wordIndex] || words[wordIndex] !== 'there') {
-        console.log('Ожидалось "there" на позиции', wordIndex, ', получено', words[wordIndex]);
-        return false;
-      }
-      wordIndex++;
-
-      // Проверяем "is" (после замены "There's" на "There is")
-      if (!words[wordIndex] || words[wordIndex] !== 'is') {
-        console.log('Ожидалось "is" на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось "is" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
         return false;
       }
       wordIndex++;
