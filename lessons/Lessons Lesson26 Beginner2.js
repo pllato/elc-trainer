@@ -27,7 +27,7 @@ addLesson({
         "She ate an apple. (Она съела яблоко.)",
         "They played football. (Они играли в футбол.)",
         "He ran home. (Он побежал домой.)",
-        "I cooked because I was hungry. (Я готовил, потому что был голоден.)"
+        "She cooked at home. (Она готовила дома.)"
       ], 
       id: "pronoun-verbed-object", 
       hasVerb: true,
@@ -181,7 +181,7 @@ addLesson({
     "write": "wrote"
   },
   validateStructure: function(text, structure) {
-    console.log('Raw input:', text);
+    console.log('ValidateStructure called with text:', text, 'structure:', structure.id);
     // Заменяем сокращение "didn't" на "did not" для совместимости
     let processedText = text.replace(/didn't/gi, 'did not');
     // Удаляем пунктуацию и приводим к нижнему регистру
@@ -199,6 +199,7 @@ addLesson({
     // Инициализация spokenHistory при старте урока
     if (!window.spokenHistory) {
       window.spokenHistory = [];
+      console.log('Инициализирован spokenHistory');
     }
 
     // Проверяем, не является ли фраза повтором
@@ -209,11 +210,9 @@ addLesson({
 
     let wordIndex = 0;
 
-    // Список исключённых слов, которые нельзя использовать в дополнении
+    // Список исключённых слов для дополнения
     const excludedWords = [
-      'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-      'going', 'doing', 'saying', 'running', 'swimming', 'singing', // Примеры с -ing
-      'likes', 'runs', 'swims', 'works', 'calls', 'plays', 'watches', 'studies' // Примеры с -s или -es
+      'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought'
     ];
 
     // Список всех местоимений
@@ -222,35 +221,36 @@ addLesson({
     // Проверяем в зависимости от структуры
     if (structure.id === "wh-did-pronoun-verb") {
       // Структура "Where/What/When/Why did I/you/he/she/it/we/they _______?"
+      console.log('Проверка структуры wh-did-pronoun-verb');
       // Проверяем wh-слово
       if (!words[wordIndex] || !['where', 'what', 'when', 'why'].includes(words[wordIndex])) {
-        console.log('Ожидалось wh-слово (where/what/when/why) на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось wh-слово (where/what/when/why) на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
       // Проверяем "did"
       if (!words[wordIndex] || words[wordIndex] !== 'did') {
-        console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
       // Проверяем местоимение
       if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
-        console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
       // Проверяем глагол
       if (!words[wordIndex]) {
-        console.log('Нет глагола после местоимения');
+        console.log('Нет глагола после местоимения на позиции', wordIndex);
         return false;
       }
       const verb = words[wordIndex];
       // Проверяем, что глагол в базовой форме
-      if (verb.endsWith('ing') || verb.endsWith('s') || verb.endsWith('es') || verb.endsWith('ed')) {
+      if (verb.endsWith('ing') || verb.endsWith('es') || verb.endsWith('ed') || (verb.endsWith('s') && verb !== 'pass')) {
         console.log('Недопустимая форма глагола (должна быть базовая):', verb);
         return false;
       }
@@ -273,16 +273,17 @@ addLesson({
       }
     } else if (structure.id === "pronoun-verbed-object") {
       // Структура "I/you/he/she/it/we/they _______ed _______."
+      console.log('Проверка структуры pronoun-verbed-object');
       // Проверяем местоимение
       if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
-        console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex]);
+        console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
       // Проверяем глагол
       if (!words[wordIndex]) {
-        console.log('Нет глагола после местоимения');
+        console.log('Нет глагола после местоимения на позиции', wordIndex);
         return false;
       }
       const verb = words[wordIndex];
@@ -320,7 +321,7 @@ addLesson({
         console.log('Нет дополнения после глагола');
         return false;
       }
-      // Дополнение может быть любым, но исключаем модальные глаголы и формы с -ing, -s
+      // Дополнение может быть любым, но исключаем модальные глаголы
       const remainingWords = words.slice(wordIndex);
       for (const word of remainingWords) {
         if (excludedWords.includes(word)) {
@@ -328,13 +329,16 @@ addLesson({
           return false;
         }
       }
+    } else {
+      console.log('Неизвестная структура:', structure.id);
+      return false;
     }
 
     // Если фраза прошла валидацию, добавляем её в spokenHistory
     window.spokenHistory.push(cleanedText);
     console.log('Фраза добавлена в историю:', cleanedText);
 
-    console.log('Валидация пройдена для:', text);
+    console.log('Валидация пройдена для:', text, 'структура:', structure.id);
     return true;
   }
 });
