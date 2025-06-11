@@ -3,342 +3,201 @@ addLesson({
   lesson: "lesson26",
   name: "Урок 26: Wh-вопросы и ответы в Past Simple",
   structures: [
-    { 
-      structure: "Where/What/When/Why did I/you/he/she/it/we/they _______?", 
-      pattern: [], // Проверяем wh-слова отдельно
-      translations: ["Где/Что/Когда/Почему я/ты/мы/вы/он/она/оно _______?"], 
+    {
+      structure: "Where/What/When/Why did I/you/he/she/it/we/they _______?",
+      pattern: [],
+      translations: ["Где/Что/Когда/Почему я/ты/мы/вы/он/она/оно _______?"],
       examples: [
         "Where did you go? (Куда ты ходил?)",
         "What did she eat? (Что она ела?)",
         "When did they play? (Когда они играли?)",
         "Why did he run? (Почему он бежал?)",
         "What did you do? (Что ты делал?)"
-      ], 
-      id: "wh-did-pronoun-verb", 
+      ],
+      id: "wh-did-pronoun-verb",
       hasVerb: true,
       hasName: false
     },
-    { 
-      structure: "I/you/he/she/it/we/they _______ed _______.", 
-      pattern: [], // Проверяем местоимения отдельно
-      translations: ["Я/ты/мы/вы/он/она/оно _______ _______."], 
+    {
+      structure: "I/you/he/she/it/we/they _______ed _______.",
+      pattern: [],
+      translations: ["Я/ты/мы/вы/он/она/оно _______ _______."],
       examples: [
         "I went to school. (Я ходил в школу.)",
         "She ate an apple. (Она съела яблоко.)",
         "They played football. (Они играли в футбол.)",
-        "He ran home. (Он побежал домой.)",
-        "She cooked at home. (Она готовила дома.)"
-      ], 
-      id: "pronoun-verbed-object", 
+        "I ate at home. (Я ел дома.)",
+        "She cooked yesterday. (Она готовила вчера.)"
+      ],
+      id: "pronoun-verbed-object",
       hasVerb: true,
       hasName: false
     }
   ],
   requiredCorrect: 10,
-  // Полный список неправильных глаголов (base → past)
   irregularVerbs: {
-    "arise": "arose",
-    "awake": "awoke",
-    "be": "was",
-    "bear": "bore",
-    "beat": "beat",
-    "become": "became",
-    "begin": "began",
-    "bend": "bent",
-    "bet": "bet",
-    "bind": "bound",
-    "bite": "bit",
-    "bleed": "bled",
-    "blow": "blew",
-    "break": "broke",
-    "bring": "brought",
-    "build": "built",
-    "burn": "burnt",
-    "burst": "burst",
-    "buy": "bought",
-    "catch": "caught",
-    "choose": "chose",
-    "cling": "clung",
-    "come": "came",
-    "cost": "cost",
-    "creep": "crept",
-    "cut": "cut",
-    "deal": "dealt",
-    "dig": "dug",
-    "dive": "dove",
-    "do": "did",
-    "draw": "drew",
-    "dream": "dreamt",
-    "drink": "drank",
-    "drive": "drove",
-    "eat": "ate",
-    "fall": "fell",
-    "feed": "fed",
-    "feel": "felt",
-    "fight": "fought",
-    "find": "found",
-    "flee": "fled",
-    "fly": "flew",
-    "forbid": "forbade",
-    "forget": "forgot",
-    "forgive": "forgave",
-    "freeze": "froze",
-    "get": "got",
-    "give": "gave",
-    "go": "went",
-    "grind": "ground",
-    "grow": "grew",
-    "hang": "hung",
-    "have": "had",
-    "hear": "heard",
-    "hide": "hid",
-    "hit": "hit",
-    "hold": "held",
-    "hurt": "hurt",
-    "keep": "kept",
-    "kneel": "knelt",
-    "know": "knew",
-    "lay": "laid",
-    "lead": "led",
-    "lean": "leant",
-    "leap": "leapt",
-    "learn": "learnt",
-    "leave": "left",
-    "lend": "lent",
-    "let": "let",
-    "lie": "lay",
-    "light": "lit",
-    "lose": "lost",
-    "make": "made",
-    "mean": "meant",
-    "meet": "met",
-    "mow": "mowed",
-    "pay": "paid",
-    "put": "put",
-    "quit": "quit",
-    "read": "read",
-    "ride": "rode",
-    "ring": "rang",
-    "rise": "rose",
-    "run": "ran",
-    "say": "said",
-    "see": "saw",
-    "seek": "sought",
-    "sell": "sold",
-    "send": "sent",
-    "set": "set",
-    "shake": "shook",
-    "shine": "shone",
-    "shoot": "shot",
-    "show": "showed",
-    "shrink": "shrank",
-    "shut": "shut",
-    "sing": "sang",
-    "sink": "sank",
-    "sit": "sat",
-    "sleep": "slept",
-    "slide": "slid",
-    "smell": "smelt",
-    "speak": "spoke",
-    "speed": "sped",
-    "spell": "spelt",
-    "spend": "spent",
-    "spill": "spilt",
-    "spin": "spun",
-    "spit": "spat",
-    "split": "split",
-    "spoil": "spoilt",
-    "spread": "spread",
-    "spring": "sprang",
-    "stand": "stood",
-    "steal": "stole",
-    "stick": "stuck",
-    "sting": "stung",
-    "stink": "stank",
-    "strike": "struck",
-    "strive": "strove",
-    "swear": "swore",
-    "sweep": "swept",
-    "swim": "swam",
-    "swing": "swung",
-    "take": "took",
-    "teach": "taught",
-    "tear": "tore",
-    "tell": "told",
-    "think": "thought",
-    "throw": "threw",
-    "tread": "trod",
-    "understand": "understood",
-    "undo": "undid",
-    "upset": "upset",
-    "wake": "woke",
-    "wear": "wore",
-    "weave": "wove",
-    "weep": "wept",
-    "win": "won",
-    "wind": "wound",
-    "withdraw": "withdrew",
-    "write": "wrote"
+    "arise": "arose", "awake": "awoke", "be": "was", "bear": "bore", "beat": "beat",
+    "become": "became", "begin": "began", "bend": "bent", "bet": "bet", "bind": "bound",
+    "bite": "bit", "bleed": "bled", "blow": "blew", "break": "broke", "bring": "brought",
+    "build": "built", "burn": "burnt", "burst": "burst", "buy": "bought", "catch": "caught",
+    "choose": "chose", "cling": "clung", "come": "came", "cost": "cost", "creep": "crept",
+    "cut": "cut", "deal": "dealt", "dig": "dug", "dive": "dove", "do": "did",
+    "draw": "drew", "dream": "dreamt", "drink": "drank", "drive": "drove", "eat": "ate",
+    "fall": "fell", "feed": "fed", "feel": "felt", "fight": "fought", "find": "found",
+    "flee": "fled", "fly": "flew", "forbid": "forbade", "forget": "forgot", "forgive": "forgave",
+    "freeze": "froze", "get": "got", "give": "gave", "go": "went", "grind": "ground",
+    "grow": "grew", "hang": "hung", "have": "had", "hear": "heard", "hide": "hid",
+    "hit": "hit", "hold": "held", "hurt": "hurt", "keep": "kept", "kneel": "knelt",
+    "know": "knew", "lay": "laid", "lead": "led", "lean": "leant", "leap": "leapt",
+    "learn": "learnt", "leave": "left", "lend": "lent", "let": "let", "lie": "lay",
+    "light": "lit", "lose": "lost", "make": "made", "mean": "meant", "meet": "met",
+    "mow": "mowed", "pay": "paid", "put": "put", "quit": "quit", "read": "read",
+    "ride": "rode", "ring": "rang", "rise": "rose", "run": "ran", "say": "said",
+    "see": "saw", "seek": "sought", "sell": "sold", "send": "sent", "set": "set",
+    "shake": "shook", "shine": "shone", "shoot": "shot", "show": "showed", "shrink": "shrank",
+    "shut": "shut", "sing": "sang", "sink": "sank", "sit": "sat", "sleep": "slept",
+    "slide": "slid", "smell": "smelt", "speak": "spoke", "speed": "sped", "spell": "spelt",
+    "spend": "spent", "spill": "spilt", "spin": "spun", "spit": "spat", "split": "split",
+    "spoil": "spoilt", "spread": "spread", "spring": "sprang", "stand": "stood", "steal": "stole",
+    "stick": "stuck", "sting": "stung", "stink": "stank", "strike": "struck", "strive": "strove",
+    "swear": "swore", "sweep": "swept", "swim": "swam", "swing": "swung", "take": "took",
+    "teach": "taught", "tear": "tore", "tell": "told", "think": "thought", "throw": "threw",
+    "tread": "trod", "understand": "understood", "undo": "undid", "upset": "upset", "wake": "woke",
+    "wear": "wore", "weave": "wove", "weep": "wept", "win": "won", "wind": "wound",
+    "withdraw": "withdrew", "write": "wrote"
   },
   validateStructure: function(text, structure) {
     console.log('ValidateStructure called with text:', text, 'structure:', structure.id);
-    // Заменяем сокращение "didn't" на "did not" для совместимости
-    let processedText = text.replace(/didn't/gi, 'did not');
-    // Удаляем пунктуацию и приводим к нижнему регистру
-    const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
+    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
 
     const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
     console.log('Split words:', words);
 
     if (words.length === 0) {
-      console.log('Пустая строка');
+      console.log('Empty input');
       return false;
     }
 
-    // Инициализация spokenHistory при старте урока
+    // Initialize spokenHistory
     if (!window.spokenHistory) {
       window.spokenHistory = [];
-      console.log('Инициализирован spokenHistory');
+      console.log('Initialized spokenHistory');
     }
 
-    // Проверяем, не является ли фраза повтором
+    // Check for duplicates
     if (window.spokenHistory.includes(cleanedText)) {
-      console.log('Фраза уже использовалась:', cleanedText);
+      console.log('Duplicate phrase:', cleanedText);
       return false;
     }
 
     let wordIndex = 0;
-
-    // Список исключённых слов для дополнения
-    const excludedWords = [
-      'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought'
-    ];
-
-    // Список всех местоимений
     const validPronouns = ['i', 'you', 'he', 'she', 'it', 'we', 'they'];
+    const forbiddenWords = ['will', 'can', 'should', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought'];
 
-    // Проверяем в зависимости от структуры
     if (structure.id === "wh-did-pronoun-verb") {
-      // Структура "Where/What/When/Why did I/you/he/she/it/we/they _______?"
-      console.log('Проверка структуры wh-did-pronoun-verb');
-      // Проверяем wh-слово
-      if (!words[wordIndex] || !['where', 'what', 'when', 'why'].includes(words[wordIndex])) {
-        console.log('Ожидалось wh-слово (where/what/when/why) на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
+      console.log('Checking wh-did-pronoun-verb structure');
+      // Check wh-word
+      if (!['where', 'what', 'when', 'why'].includes(words[wordIndex])) {
+        console.log('Expected wh-word at index', wordIndex, 'got', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
-      // Проверяем "did"
-      if (!words[wordIndex] || words[wordIndex] !== 'did') {
-        console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
+      // Check "did"
+      if (words[wordIndex] !== 'did') {
+        console.log('Expected "did" at index', wordIndex, 'got', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
-      // Проверяем местоимение
-      if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
-        console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
+      // Check pronoun
+      if (!validPronouns.includes(words[wordIndex])) {
+        console.log('Expected pronoun at index', wordIndex, 'got', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
-      // Проверяем глагол
+      // Check verb
       if (!words[wordIndex]) {
-        console.log('Нет глагола после местоимения на позиции', wordIndex);
+        console.log('No verb at index', wordIndex);
         return false;
       }
       const verb = words[wordIndex];
-      // Проверяем, что глагол в базовой форме
       if (verb.endsWith('ing') || verb.endsWith('es') || verb.endsWith('ed') || (verb.endsWith('s') && verb !== 'pass')) {
-        console.log('Недопустимая форма глагола (должна быть базовая):', verb);
+        console.log('Invalid verb form:', verb);
         return false;
       }
-      // Проверяем, что глагол не является неправильной формой Past Simple
       if (Object.values(this.irregularVerbs).includes(verb)) {
-        console.log('Недопустимо использовать форму Past Simple в вопросе:', verb);
+        console.log('Past Simple form not allowed in question:', verb);
         return false;
       }
-      // Исключаем вспомогательные глаголы, кроме "do"
-      if (['am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did'].includes(verb)) {
-        console.log('Запрещённый вспомогательный глагол:', verb);
+      if (['be', 'have', 'do'].includes(verb)) {
+        console.log('Auxiliary verb not allowed:', verb);
         return false;
       }
       wordIndex++;
 
-      // Проверяем, что нет лишних слов
+      // No extra words
       if (wordIndex < words.length) {
-        console.log('Лишные слова:', words.slice(wordIndex));
+        console.log('Extra words:', words.slice(wordIndex));
         return false;
       }
     } else if (structure.id === "pronoun-verbed-object") {
-      // Структура "I/you/he/she/it/we/they _______ed _______."
-      console.log('Проверка структуры pronoun-verbed-object');
-      // Проверяем местоимение
-      if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
-        console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex] || 'undefined');
+      console.log('Checking pronoun-verbed-object structure');
+      // Check pronoun
+      if (!validPronouns.includes(words[wordIndex])) {
+        console.log('Expected pronoun at index', wordIndex, 'got', words[wordIndex] || 'undefined');
         return false;
       }
       wordIndex++;
 
-      // Проверяем глагол
+      // Check verb
       if (!words[wordIndex]) {
-        console.log('Нет глагола после местоимения на позиции', wordIndex);
+        console.log('No verb at index', wordIndex);
         return false;
       }
       const verb = words[wordIndex];
-      // Проверяем, является ли глагол регулярным (заканчивается на -ed) или неправильным
       const isRegular = verb.endsWith('ed');
       const isIrregular = Object.values(this.irregularVerbs).includes(verb);
       if (!isRegular && !isIrregular) {
-        console.log('Глагол не в форме Past Simple:', verb);
+        console.log('Verb not in Past Simple:', verb);
         return false;
       }
-      // Проверяем, что базовая форма глагола не является вспомогательным
       let baseVerb = verb;
       if (isRegular) {
-        // Для регулярных глаголов убираем -ed
         baseVerb = verb.replace(/ed$/, '');
-        if (baseVerb.endsWith('i')) baseVerb += 'y'; // Например, studied → study
-        else if (baseVerb.endsWith('pp')) baseVerb = baseVerb.slice(0, -1); // stopped → stop
-        else if (baseVerb.endsWith('rr')) baseVerb = baseVerb.slice(0, -1); // referred → refer
+        if (baseVerb.endsWith('i')) baseVerb += 'y';
+        else if (baseVerb.endsWith('pp') || baseVerb.endsWith('rr')) baseVerb = baseVerb.slice(0, -1);
       } else {
-        // Для неправильных глаголов ищем базовую форму
         baseVerb = Object.keys(this.irregularVerbs).find(key => this.irregularVerbs[key] === verb);
       }
-      if (!baseVerb) {
-        console.log('Не удалось определить базовую форму глагола:', verb);
-        return false;
-      }
-      if (['am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'].includes(baseVerb)) {
-        console.log('Запрещённый вспомогательный глагол (базовая форма):', baseVerb);
+      if (!baseVerb || ['be', 'have', 'do'].includes(baseVerb)) {
+        console.log('Invalid base verb:', baseVerb || verb);
         return false;
       }
       wordIndex++;
 
-      // Проверяем наличие дополнения (хотя бы одно слово)
+      // Check complement
       if (wordIndex >= words.length) {
-        console.log('Нет дополнения после глагола');
+        console.log('No complement after verb');
         return false;
       }
-      // Дополнение может быть любым, но исключаем модальные глаголы
-      const remainingWords = words.slice(wordIndex);
-      for (const word of remainingWords) {
-        if (excludedWords.includes(word)) {
-          console.log('Запрещённое слово в дополнении:', word);
+      const complement = words.slice(wordIndex);
+      for (const word of complement) {
+        if (forbiddenWords.includes(word)) {
+          console.log('Forbidden word in complement:', word);
           return false;
         }
       }
     } else {
-      console.log('Неизвестная структура:', structure.id);
+      console.log('Unknown structure:', structure.id);
       return false;
     }
 
-    // Если фраза прошла валидацию, добавляем её в spokenHistory
     window.spokenHistory.push(cleanedText);
-    console.log('Фраза добавлена в историю:', cleanedText);
-
-    console.log('Валидация пройдена для:', text, 'структура:', structure.id);
+    console.log('Phrase added to history:', cleanedText);
+    console.log('Validation passed for:', text, 'structure:', structure.id);
     return true;
   }
 });
