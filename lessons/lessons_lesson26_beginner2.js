@@ -26,7 +26,9 @@ addLesson({
         "She did homework. (Она делала домашнюю работу.)",
         "They played football. (Они играли в футбол.)",
         "He cried loudly. (Он плакал громко.)",
-        "I ate because I was hungry. (Я ел, потому что был голоден.)"
+        "I ate because I was hungry. (Я ел, потому что был голоден.)",
+        "I drank it. (Я это выпил.)",
+        "I did it right. (Я сделал это правильно.)"
       ],
       id: "pronoun-verbed-adverb",
       hasVerb: true,
@@ -301,8 +303,10 @@ addLesson({
         // Обычная проверка для ответов без "because"
         while (wordIndex < words.length) {
           const extraWord = words[wordIndex];
-          if (validPronouns.includes(extraWord) || excludedWords.includes(extraWord) || 
-              Object.keys(this.irregularVerbs).includes(extraWord) || Object.values(this.irregularVerbs).includes(extraWord)) {
+          // Запрещаем глаголы (базовые или Past Simple) и исключённые слова, но разрешаем местоимения
+          if (excludedWords.includes(extraWord) || 
+              Object.keys(this.irregularVerbs).includes(extraWord) || 
+              Object.values(this.irregularVerbs).includes(extraWord)) {
             console.log('Недопустимое дополнительное слово:', extraWord);
             return false;
           }
