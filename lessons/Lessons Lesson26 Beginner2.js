@@ -68,7 +68,7 @@ addLesson({
   },
   validateStructure: function(text, structure) {
     console.log('ValidateStructure called with text:', text, 'structure:', structure.id);
-    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
+    const cleanedText = text.toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
 
     const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
@@ -93,7 +93,6 @@ addLesson({
 
     let wordIndex = 0;
     const validPronouns = ['i', 'you', 'he', 'she', 'it', 'we', 'they'];
-    const forbiddenWords = ['will', 'can', 'should', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought'];
 
     if (structure.id === "wh-did-pronoun-verb") {
       console.log('Checking wh-did-pronoun-verb structure');
@@ -124,14 +123,6 @@ addLesson({
         return false;
       }
       const verb = words[wordIndex];
-      if (verb.endsWith('ing') || verb.endsWith('es') || verb.endsWith('ed') || (verb.endsWith('s') && verb !== 'pass')) {
-        console.log('Invalid verb form:', verb);
-        return false;
-      }
-      if (Object.values(this.irregularVerbs).includes(verb)) {
-        console.log('Past Simple form not allowed in question:', verb);
-        return false;
-      }
       if (['be', 'have', 'do'].includes(verb)) {
         console.log('Auxiliary verb not allowed:', verb);
         return false;
@@ -182,13 +173,6 @@ addLesson({
       if (wordIndex >= words.length) {
         console.log('No complement after verb');
         return false;
-      }
-      const complement = words.slice(wordIndex);
-      for (const word of complement) {
-        if (forbiddenWords.includes(word)) {
-          console.log('Forbidden word in complement:', word);
-          return false;
-        }
       }
     } else {
       console.log('Unknown structure:', structure.id);
