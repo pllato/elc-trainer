@@ -21,7 +21,7 @@ addLesson({
       hasName: false
     }
   ],
-  requiredCorrect: 10,
+  requiredCorrect: 20,
   irregularVerbs: {
     "arise": "arose",
     "awake": "awoke",
