@@ -25,22 +25,10 @@ addLesson({
         "I went home. (Я ходил домой.)",
         "She did homework. (Она делала домашнюю работу.)",
         "They played football. (Они играли в футбол.)",
-        "He cried loudly. (Он плакал громко.)"
+        "He cried loudly. (Он плакал громко.)",
+        "I ate because I was hungry. (Я ел, потому что был голоден.)"
       ],
       id: "pronoun-verbed-adverb",
-      hasVerb: true,
-      hasName: false
-    },
-    {
-      structure: "I/you/he/she/it/we/they ______ed because _______.",
-      pattern: ["pronoun-verbed-because"],
-      translations: ["Я/ты/он/она/оно/мы/вы _______ потому что _______."],
-      examples: [
-        "I ate because I was hungry. (Я ел, потому что был голоден.)",
-        "She jumped because she was excited. (Она прыгала, потому что была взволнована.)",
-        "They ran because it was fun. (Они бежали, потому что это было весело.)"
-      ],
-      id: "pronoun-verbed-because",
       hasVerb: true,
       hasName: false
     }
@@ -299,64 +287,28 @@ addLesson({
         console.log('Нет дополнительного слова после глагола');
         return false;
       }
-      while (wordIndex < words.length) {
-        const extraWord = words[wordIndex];
-        if (validPronouns.includes(extraWord) || excludedWords.includes(extraWord) || 
-            Object.keys(this.irregularVerbs).includes(extraWord) || Object.values(this.irregularVerbs).includes(extraWord)) {
-          console.log('Недопустимое дополнительное слово:', extraWord);
+
+      // Проверяем, начинается ли дополнительная часть с "because"
+      if (words[wordIndex] === 'because') {
+        wordIndex++;
+        if (!words[wordIndex]) {
+          console.log('Нет слов после "because"');
           return false;
         }
-        wordIndex++;
-      }
-    } else if (structure.id === "pronoun-verbed-because") {
-      if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
-        console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex]);
-        return false;
-      }
-      wordIndex++;
-
-      if (!words[wordIndex]) {
-        console.log('Нет глагола после местоимения');
-        return false;
-      }
-      const verb = words[wordIndex];
-      const isRegular = verb.endsWith('ed');
-      const isIrregular = Object.values(this.irregularVerbs).includes(verb);
-      if (!isRegular && !isIrregular) {
-        console.log('Глагол не в форме Past Simple:', verb);
-        return false;
-      }
-      let baseVerb = verb;
-      if (isRegular) {
-        baseVerb = verb.replace(/ed$/, '');
-        if (baseVerb.endsWith('i')) baseVerb += 'y';
-        else if (baseVerb.endsWith('pp')) baseVerb = baseVerb.slice(0, -1);
-        else if (baseVerb.endsWith('rr')) baseVerb = baseVerb.slice(0, -1);
+        // Разрешаем любое количество слов после "because", включая местоимения и глаголы
+        wordIndex = words.length; // Пропускаем проверку оставшихся слов
       } else {
-        baseVerb = Object.keys(this.irregularVerbs).find(key => this.irregularVerbs[key] === verb);
+        // Обычная проверка для ответов без "because"
+        while (wordIndex < words.length) {
+          const extraWord = words[wordIndex];
+          if (validPronouns.includes(extraWord) || excludedWords.includes(extraWord) || 
+              Object.keys(this.irregularVerbs).includes(extraWord) || Object.values(this.irregularVerbs).includes(extraWord)) {
+            console.log('Недопустимое дополнительное слово:', extraWord);
+            return false;
+          }
+          wordIndex++;
+        }
       }
-      if (!baseVerb) {
-        console.log('Не удалось определить базовую форму глагола:', verb);
-        return false;
-      }
-      if (excludedWords.includes(baseVerb)) {
-        console.log('Запрещённый глагол (базовая форма):', baseVerb);
-        return false;
-      }
-      wordIndex++;
-
-      if (!words[wordIndex] || words[wordIndex] !== 'because') {
-        console.log('Ожидалось "because" на позиции', wordIndex, ', получено', words[wordIndex]);
-        return false;
-      }
-      wordIndex++;
-
-      if (!words[wordIndex]) {
-        console.log('Нет слов после "because"');
-        return false;
-      }
-      // Разрешаем любое количество слов после "because", включая местоимения и глаголы
-      wordIndex = words.length; // Пропускаем проверку оставшихся слов
     }
 
     console.log('Валидация пройдена для:', text);
