@@ -33,7 +33,6 @@ addLesson({
     }
   ],
   requiredCorrect: 10,
-  // Полный список неправильных глаголов (base → past)
   irregularVerbs: {
     "arise": "arose",
     "awake": "awoke",
@@ -180,9 +179,7 @@ addLesson({
   },
   validateStructure: function(text, structure) {
     console.log('Raw input:', text);
-    // Заменяем сокращение "didn't" на "did not" (хотя оно не ожидается в этом уроке)
     let processedText = text.replace(/didn't/gi, 'did not');
-    // Удаляем пунктуацию и приводим к нижнему регистру
     const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
     console.log('Cleaned text:', cleanedText);
 
@@ -199,97 +196,81 @@ addLesson({
     // Список исключённых глаголов и модальных глаголов
     const excludedWords = [
       'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-      'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
-      'going', 'doing', 'saying', 'running', 'swimming', 'singing', // Примеры с -ing
-      'likes', 'runs', 'swims', 'works', 'calls', 'plays', 'watches', 'studies' // Примеры с -s или -es
+      'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
+      'going', 'doing', 'saying', 'running', 'swimming', 'singing',
+      'likes', 'runs', 'swims', 'works', 'calls', 'plays', 'watches', 'studies'
     ];
 
-    // Список всех местоимений
     const validPronouns = ['i', 'you', 'he', 'she', 'it', 'we', 'they'];
 
-    // Проверяем в зависимости от структуры
     if (structure.id === "wh-did-pronoun-verb") {
-      // Структура "Where/What/When/Why did I/you/he/she/it/we/they _______?"
-      // Проверяем вопросительное слово
       if (!words[wordIndex] || !['where', 'what', 'when', 'why'].includes(words[wordIndex])) {
         console.log('Ожидалось "where/what/when/why" на позиции', wordIndex, ', получено', words[wordIndex]);
         return false;
       }
       wordIndex++;
 
-      // Проверяем "did"
       if (!words[wordIndex] || words[wordIndex] !== 'did') {
         console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex]);
         return false;
       }
       wordIndex++;
 
-      // Проверяем местоимение
       if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
         console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex]);
         return false;
       }
       wordIndex++;
 
-      // Проверяем глагол
       if (!words[wordIndex]) {
         console.log('Нет глагола после местоимения');
         return false;
       }
       const verb = words[wordIndex];
-      // Проверяем, что глагол в базовой форме
       if (verb.endsWith('ing') || verb.endsWith('s') || verb.endsWith('es') || verb.endsWith('ed')) {
         console.log('Недопустимая форма глагола (должна быть базовая):', verb);
         return false;
       }
-      // Проверяем, что глагол не является неправильной формой Past Simple
       if (Object.values(this.irregularVerbs).includes(verb)) {
         console.log('Недопустимо использовать форму Past Simple в вопросе:', verb);
         return false;
       }
-      if (excludedWords.includes(verb)) {
+      // Разрешаем 'do' как основной глагол
+      if (excludedWords.includes(verb) && verb !== 'do') {
         console.log('Запрещённый глагол:', verb);
         return false;
       }
       wordIndex++;
 
-      // Проверяем, что нет лишних слов
       if (wordIndex < words.length) {
         console.log('Лишние слова:', words.slice(wordIndex));
         return false;
       }
     } else if (structure.id === "pronoun-verbed-adverb") {
-      // Структура "I/you/he/she/it/we/they ______ed _______."
-      // Проверяем местоимение
       if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
         console.log('Ожидалось местоимение на позиции', wordIndex, ', получено', words[wordIndex]);
         return false;
       }
       wordIndex++;
 
-      // Проверяем глагол
       if (!words[wordIndex]) {
         console.log('Нет глагола после местоимения');
         return false;
       }
       const verb = words[wordIndex];
-      // Проверяем, является ли глагол регулярным (заканчивается на -ed) или неправильным
       const isRegular = verb.endsWith('ed');
       const isIrregular = Object.values(this.irregularVerbs).includes(verb);
       if (!isRegular && !isIrregular) {
         console.log('Глагол не в форме Past Simple:', verb);
         return false;
       }
-      // Проверяем, что базовая форма глагола не в списке исключённых
       let baseVerb = verb;
       if (isRegular) {
-        // Для регулярных глаголов убираем -ed
         baseVerb = verb.replace(/ed$/, '');
-        if (baseVerb.endsWith('i')) baseVerb += 'y'; // Например, studied → study
-        else if (baseVerb.endsWith('pp')) baseVerb = baseVerb.slice(0, -1); // stopped → stop
-        else if (baseVerb.endsWith('rr')) baseVerb = baseVerb.slice(0, -1); // referred → refer
+        if (baseVerb.endsWith('i')) baseVerb += 'y';
+        else if (baseVerb.endsWith('pp')) baseVerb = baseVerb.slice(0, -1);
+        else if (baseVerb.endsWith('rr')) baseVerb = baseVerb.slice(0, -1);
       } else {
-        // Для неправильных глаголов ищем базовую форму
         baseVerb = Object.keys(this.irregularVerbs).find(key => this.irregularVerbs[key] === verb);
       }
       if (!baseVerb) {
@@ -302,24 +283,32 @@ addLesson({
       }
       wordIndex++;
 
-      // Проверяем наличие дополнительного слова (например, наречия или существительного)
+      // Проверяем наличие хотя бы одного дополнительного слова
       if (!words[wordIndex]) {
         console.log('Нет дополнительного слова после глагола');
         return false;
       }
-      const extraWord = words[wordIndex];
-      // Проверяем, что дополнительное слово не является глаголом или местоимением
-      if (validPronouns.includes(extraWord) || excludedWords.includes(extraWord) || Object.keys(this.irregularVerbs).includes(extraWord) || Object.values(this.irregularVerbs).includes(extraWord)) {
-        console.log('Недопустимое дополнительное слово:', extraWord);
-        return false;
+      // Разрешаем несколько слов, исключая недопустимые
+      while (wordIndex < words.length) {
+        const extraWord = words[wordIndex];
+        // Разрешаем артикли, прилагательные, наречия, существительные, но не глаголы и не местоимения
+        if (validPronouns.includes(extraWord) || excludedWords.includes(extraWord) || 
+            Object.keys(this.irregularVerbs).includes(extraWord) || Object.values(this.irregularVerbs).includes(extraWord)) {
+          console.log('Недопустимое дополнительное слово:', extraWord);
+          return false;
+        }
+        wordIndex++;
       }
-      wordIndex++;
 
-      // Проверяем, что нет лишних слов
-      if (wordIndex < words.length) {
-        console.log('Лишние слова:', words.slice(wordIndex));
+      /*
+      // Опционально: проверка артиклей для существительных (раскомментировать, если требуется)
+      const nouns = ['sandwich', 'ball', 'car', 'football', 'homework']; // Пример списка существительных
+      const lastWord = words[words.length - 1];
+      if (nouns.includes(lastWord) && !['a', 'an', 'the'].includes(words[words.length - 2])) {
+        console.log('Отсутствует артикль перед существительным:', lastWord);
         return false;
       }
+      */
     }
 
     console.log('Валидация пройдена для:', text);
