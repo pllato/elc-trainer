@@ -123,8 +123,9 @@ addLesson({
         return false;
       }
       const verb = words[wordIndex];
-      if (['be', 'have', 'do'].includes(verb)) {
-        console.log('Auxiliary verb not allowed:', verb);
+      // Allow any verb in base form, excluding Past Simple
+      if (Object.values(this.irregularVerbs).includes(verb)) {
+        console.log('Past Simple form not allowed in question:', verb);
         return false;
       }
       wordIndex++;
@@ -153,18 +154,6 @@ addLesson({
       const isIrregular = Object.values(this.irregularVerbs).includes(verb);
       if (!isRegular && !isIrregular) {
         console.log('Verb not in Past Simple:', verb);
-        return false;
-      }
-      let baseVerb = verb;
-      if (isRegular) {
-        baseVerb = verb.replace(/ed$/, '');
-        if (baseVerb.endsWith('i')) baseVerb += 'y';
-        else if (baseVerb.endsWith('pp') || baseVerb.endsWith('rr')) baseVerb = baseVerb.slice(0, -1);
-      } else {
-        baseVerb = Object.keys(this.irregularVerbs).find(key => this.irregularVerbs[key] === verb);
-      }
-      if (!baseVerb || ['be', 'have', 'do'].includes(baseVerb)) {
-        console.log('Invalid base verb:', baseVerb || verb);
         return false;
       }
       wordIndex++;
