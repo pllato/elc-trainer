@@ -11,7 +11,10 @@ addLesson({
         "Where did you go? (Куда ты ходил?)",
         "What did she do? (Что она делала?)",
         "When did they play? (Когда они играли?)",
-        "Why did he cry? (Почему он плакал?)"
+        "Why did he cry? (Почему он плакал?)",
+        "Where did you go yesterday? (Куда ты ходил вчера?)",
+        "Why did you do that? (Почему ты это сделал?)",
+        "When did you do it? (Когда ты это сделал?)"
       ],
       id: "wh-did-pronoun-verb",
       hasVerb: true,
@@ -244,9 +247,16 @@ addLesson({
       }
       wordIndex++;
 
-      if (wordIndex < words.length) {
-        console.log('Лишние слова:', words.slice(wordIndex));
-        return false;
+      // Разрешаем дополнительные слова, но проверяем, что они не являются глаголами или исключёнными словами
+      while (wordIndex < words.length) {
+        const extraWord = words[wordIndex];
+        if (excludedWords.includes(extraWord) || 
+            Object.keys(this.irregularVerbs).includes(extraWord) || 
+            Object.values(this.irregularVerbs).includes(extraWord)) {
+          console.log('Недопустимое дополнительное слово:', extraWord);
+          return false;
+        }
+        wordIndex++;
       }
     } else if (structure.id === "pronoun-verbed-adverb") {
       if (!words[wordIndex] || !validPronouns.includes(words[wordIndex])) {
@@ -303,7 +313,6 @@ addLesson({
         // Обычная проверка для ответов без "because"
         while (wordIndex < words.length) {
           const extraWord = words[wordIndex];
-          // Запрещаем глаголы (базовые или Past Simple) и исключённые слова, но разрешаем местоимения
           if (excludedWords.includes(extraWord) || 
               Object.keys(this.irregularVerbs).includes(extraWord) || 
               Object.values(this.irregularVerbs).includes(extraWord)) {
