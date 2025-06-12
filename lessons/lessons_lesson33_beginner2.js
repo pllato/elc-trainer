@@ -4,45 +4,45 @@
   addLesson({
     level: "beginner2",
     lesson: "lesson33",
-    name: "Урок 33: I am ______ing / You/We/They are _____ing / He/She/It is ______ing",
+    name: "Урок 33: I am ____ing / You/We/They are ____ing / He/She/It is ____ing",
     structures: [
       {
-        structure: "I am ______ing.",
+        structure: "I am ____ing.",
         pattern: ["am"],
         translations: ["Я ______ю."],
         examples: [
           "I am reading. (Я читаю.)",
           "I am sitting. (Я сижу.)",
-          "I am standing. (Я стою.)",
-          "I'm playing. (Я играю.)"
+          "I'm doing. (Я делаю.)",
+          "I am standing. (Я стою.)"
         ],
         id: "i-am-verbing",
         hasVerb: true,
         hasName: false
       },
       {
-        structure: "You/We/They are _____ing.",
+        structure: "You/We/They are ____ing.",
         pattern: ["are"],
         translations: ["Ты/Мы/Вы ______ете/ем."],
         examples: [
           "You are reading. (Ты читаешь.)",
-          "We are sitting. (Мы сидим.)",
-          "They are standing. (Они стоят.)",
-          "You are playing. (Вы играете.)"
+          "We are dancing. (Мы танцуем.)",
+          "They are working. (Они работают.)",
+          "You are sitting. (Вы сидите.)"
         ],
         id: "you-we-they-verbing",
         hasVerb: true,
         hasName: false
       },
       {
-        structure: "He/She/It is ______ing.",
+        structure: "He/She/It is ____ing.",
         pattern: ["is"],
         translations: ["Он/Она/Оно ______ет."],
         examples: [
           "He is reading. (Он читает.)",
-          "She is sitting. (Она сидит.)",
+          "She is working. (Она работает.)",
           "It is standing. (Оно стоит.)",
-          "He is playing. (Он играет.)"
+          "She is doing. (Она делает.)"
         ],
         id: "he-she-it-verbing",
         hasVerb: true,
@@ -225,7 +225,7 @@
       // Список исключённых глаголов и модальных глаголов
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
         // Stative verbs not typically used in continuous form
         'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
@@ -257,7 +257,7 @@
 
         wordIndex++;
 
-        // Разрешаем дополнительные слова (например, "reading a book")
+        // Разрешаем дополнительные слова (например, "working on a project")
         while (wordIndex < words.length) {
           const extraWord = words[wordIndex];
           if (excludedWords.includes(extraWord)) {
