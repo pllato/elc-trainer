@@ -12,9 +12,9 @@
         translations: ["Я ______ю."],
         examples: [
           "I am reading. (Я читаю.)",
-          "I am playing. (Я играю.)",
           "I am sitting. (Я сижу.)",
-          "I am standing. (Я стою.)"
+          "I am standing. (Я стою.)",
+          "I'm playing. (Я играю.)"
         ],
         id: "i-am-verbing",
         hasVerb: true,
@@ -26,9 +26,9 @@
         translations: ["Ты/Мы/Вы ______ете/ем."],
         examples: [
           "You are reading. (Ты читаешь.)",
-          "We are playing. (Мы играем.)",
-          "They are sitting. (Они сидят.)",
-          "You are standing. (Вы стоите.)"
+          "We are sitting. (Мы сидим.)",
+          "They are standing. (Они стоят.)",
+          "You are playing. (Вы играете.)"
         ],
         id: "you-we-they-verbing",
         hasVerb: true,
@@ -40,9 +40,9 @@
         translations: ["Он/Она/Оно ______ет."],
         examples: [
           "He is reading. (Он читает.)",
-          "She is playing. (Она играет.)",
-          "It is sitting. (Оно сидит.)",
-          "He is standing. (Он стоит.)"
+          "She is sitting. (Она сидит.)",
+          "It is standing. (Оно стоит.)",
+          "He is playing. (Он играет.)"
         ],
         id: "he-she-it-verbing",
         hasVerb: true,
@@ -197,8 +197,13 @@
     validateStructure: function(text, structure) {
       console.log('Validating structure:', structure.id);
       console.log('Raw input:', text);
+      // Заменяем сокращение "I'm" на "I am"
+      let processedText = text.replace(/I'm/gi, 'I am');
+      if (processedText !== text) {
+        console.log('Expanded contractions:', processedText);
+      }
       // Удаляем пунктуацию и приводим к нижнему регистру
-      const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
+      const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
       console.log('Cleaned text:', cleanedText);
 
       // Проверяем на повторный ввод
@@ -220,7 +225,9 @@
       // Список исключённых глаголов и модальных глаголов
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
+        // Stative verbs not typically used in continuous form
+        'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
 
       // Список всех местоимений
