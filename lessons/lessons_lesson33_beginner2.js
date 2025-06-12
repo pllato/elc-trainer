@@ -206,12 +206,6 @@
       const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase().trim();
       console.log('Cleaned text:', cleanedText);
 
-      // Проверяем на повторный ввод
-      if (cleanedText === lastValidatedText) {
-        console.log('Повторный ввод пропущен:', cleanedText);
-        return false;
-      }
-
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
       console.log('Split words:', words);
 
@@ -257,7 +251,7 @@
 
         wordIndex++;
 
-        // Разрешаем дополнительные слова (например, "working on a project")
+        // Разрешаем дополнительные слова (например, "reading a book")
         while (wordIndex < words.length) {
           const extraWord = words[wordIndex];
           if (excludedWords.includes(extraWord)) {
@@ -269,6 +263,12 @@
 
         return true;
       };
+
+      // Проверяем на повторный ввод только для первой попытки валидации
+      if (cleanedText === lastValidatedText) {
+        console.log('Повторный ввод пропущен:', cleanedText);
+        return false;
+      }
 
       if (structure.id === "i-am-verbing") {
         // Проверяем "i"
@@ -289,6 +289,7 @@
         const isValid = validateVerbIng();
         if (isValid) {
           lastValidatedText = cleanedText; // Update only on successful validation
+          console.log('Валидация пройдена для:', text);
         }
         return isValid;
       } else if (structure.id === "you-we-they-verbing") {
@@ -310,6 +311,7 @@
         const isValid = validateVerbIng();
         if (isValid) {
           lastValidatedText = cleanedText; // Update only on successful validation
+          console.log('Валидация пройдена для:', text);
         }
         return isValid;
       } else if (structure.id === "he-she-it-verbing") {
@@ -331,12 +333,12 @@
         const isValid = validateVerbIng();
         if (isValid) {
           lastValidatedText = cleanedText; // Update only on successful validation
+          console.log('Валидация пройдена для:', text);
         }
         return isValid;
       }
 
-      console.log('Валидация пройдена для:', text);
-      return true;
+      return false;
     }
   });
 })();
