@@ -3,7 +3,6 @@ let isFetchingLessons = false;
 let lastValidatedText = null;
 let lastValidatedTime = 0;
 
-// Function to add lesson data
 function addLesson(lesson) {
   if (!lessonsData.some(existing => existing.lesson === lesson.lesson && existing.level === lesson.level)) {
     lessonsData.push(lesson);
@@ -13,7 +12,6 @@ function addLesson(lesson) {
   }
 }
 
-// Function to populate lesson select dropdown
 function populateLessonSelect(attempt = 1, maxAttempts = 20) {
   const levelLessonScreen = document.getElementById('level-lesson-screen');
   if (levelLessonScreen && levelLessonScreen.style.display === 'none') {
@@ -52,14 +50,13 @@ function populateLessonSelect(attempt = 1, maxAttempts = 20) {
   console.log('Lesson select populated with', lessonsData.length, 'lessons');
 }
 
-// Fetch lessons from GitHub API
 async function fetchLessons() {
   if (isFetchingLessons) {
     console.log('fetchLessons already running, skipping');
     return;
   }
   isFetchingLessons = true;
-  const url = 'https://api.github.com/repos/pllato/elc-trainer/contents/lessons';
+  const url = 'https://api.github.com/repos/pllato/elc-trainer/contents/lessons?t=' + new Date().getTime();
   console.log('Starting to fetch lessons from:', url);
   try {
     const response = await fetch(url, {
@@ -89,7 +86,7 @@ async function fetchLessons() {
     }
 
     console.log('Lessons loaded from GitHub:', lessonsData.length, 'lessons');
-    setTimeout(() => populateLessonSelect(), 180000); // Increased delay to 180 seconds
+    setTimeout(() => populateLessonSelect(), 180000);
   } catch (error) {
     console.error('Error loading lessons:', error);
     if (lessonsData.length > 0) {
@@ -100,7 +97,6 @@ async function fetchLessons() {
   }
 }
 
-// Reset lesson state
 function resetLessonState() {
   window.lessonStarted = false;
   window.usedVerbs = [];
@@ -108,7 +104,6 @@ function resetLessonState() {
   lastValidatedText = null;
   lastValidatedTime = 0;
   console.log('Lesson state reset');
-  // Reset overall progress bar
   const overallProgress = document.getElementById('overall-progress');
   const overallProgressText = document.getElementById('overall-progress-text');
   if (overallProgress) {
@@ -117,14 +112,12 @@ function resetLessonState() {
   if (overallProgressText) {
     overallProgressText.textContent = '0/0';
   }
-  // Reset individual progress bars
   const progressBars = document.getElementById('progress-bars');
   if (progressBars) {
     progressBars.innerHTML = '';
   }
 }
 
-// Update overall progress bar
 function updateOverallProgress(lessonId) {
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   if (!lesson || !lesson.structures) {
@@ -135,7 +128,6 @@ function updateOverallProgress(lessonId) {
   const totalRequired = lesson.structures.length * lesson.requiredCorrect;
   let totalCorrect = 0;
 
-  // Calculate total progress based on capped contributions
   lesson.structures.forEach(structure => {
     if (!structure.id) {
       console.warn('Structure ID is undefined:', structure);
@@ -162,7 +154,6 @@ function updateOverallProgress(lessonId) {
   }
 }
 
-// Update individual progress bars
 function updateProgressBars(lessonId) {
   if (!lessonId) {
     console.log('lessonId is undefined, cannot update progress bars');
@@ -185,7 +176,6 @@ function updateProgressBars(lessonId) {
   lesson.structures.forEach((struct, index) => {
     if (!struct.id) {
       console.warn(`Structure ID is undefined at index ${index}:`, struct);
-      // Присваиваем временный ID, если он отсутствует
       struct.id = `struct-${index}`;
     }
     const totalCorrect = window.userProgress[struct.id] || 0;
@@ -216,7 +206,6 @@ function updateProgressBars(lessonId) {
   updateOverallProgress(lessonId);
 }
 
-// Update progress for a specific structure
 function updateProgress(structureId, isCorrect, lessonId) {
   if (!window.userProgress) window.userProgress = {};
   if (!window.userProgress[structureId]) window.userProgress[structureId] = 0;
@@ -235,7 +224,6 @@ function updateProgress(structureId, isCorrect, lessonId) {
   }
 }
 
-// Handle lesson selection
 function selectLesson(lessonId) {
   resetLessonState();
   const lesson = lessonsData.find(l => l.lesson === lessonId);
@@ -244,7 +232,6 @@ function selectLesson(lessonId) {
   }
 }
 
-// SpeechRecognition handler
 function startRecognition() {
   if (window.recognition && window.recognition.state === 'listening') {
     console.log('Распознавание уже активно');
@@ -252,9 +239,9 @@ function startRecognition() {
   }
 
   window.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  window.recognition.lang = 'en'; // Убрали региональную привязку для большей гибкости
-  window.recognition.continuous = true; // Включаем непрерывное распознавание
-  window.recognition.interimResults = false; // Только финальные результаты
+  window.recognition.lang = 'en';
+  window.recognition.continuous = true;
+  window.recognition.interimResults = false;
 
   const micIndicator = document.getElementById('mic-indicator');
   if (micIndicator) {
@@ -264,16 +251,9 @@ function startRecognition() {
 
   window.recognition.onresult = function(event) {
     const text = event.results[event.results.length - 1][0].transcript;
-    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
     console.log('Распознанный текст:', cleanedText);
-    const now = Date.now();
-    if (cleanedText !== lastValidatedText || now - lastValidatedTime > 15000) {
-      validateInput(cleanedText);
-      lastValidatedText = cleanedText;
-      lastValidatedTime = now;
-    } else {
-      console.log('Повторный ввод пропущен:', cleanedText);
-    }
+    validateInput(cleanedText);
   };
 
   window.recognition.onerror = function(event) {
@@ -292,7 +272,7 @@ function startRecognition() {
       console.log('Проблема с сетью, пытаемся перезапустить через 5 секунд');
     } else if (event.error === 'no-speech') {
       console.log('Речь не обнаружена, продолжаем слушать');
-      return; // Не останавливаем для no-speech
+      return;
     } else if (event.error === 'aborted') {
       console.log('Распознавание прервано, перезапускаем');
     }
@@ -307,11 +287,9 @@ function startRecognition() {
       micIndicator.className = 'text-red-600';
     }
     window.recognition = null;
-    // Показываем кнопку перезапуска
     const restartButton = document.getElementById('restart-listening-btn');
     if (restartButton) restartButton.classList.remove('hidden');
 
-    // Перезапускаем через 5 секунд, если не активно
     setTimeout(() => {
       if (!window.recognition || window.recognition.state !== 'listening') {
         console.log('Перезапуск SpeechRecognition');
@@ -327,7 +305,6 @@ function startRecognition() {
       micIndicator.textContent = 'Микрофон: Слушает...';
       micIndicator.className = 'text-green-600';
     }
-    // Скрываем кнопку перезапуска при старте
     const restartButton = document.getElementById('restart-listening-btn');
     if (restartButton) restartButton.classList.add('hidden');
   } catch (error) {
@@ -344,17 +321,19 @@ function startRecognition() {
   }
 }
 
-// Validate input
-function validateInput(text, lessonId = 'lesson13') {
+function validateInput(text, lessonId = 'lesson33') {
+  console.log(`Валидация ввода: урок ${lessonId}, текст "${text}"`);
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   if (!lesson) {
-    console.log(`Lesson ${lessonId} not found`);
+    console.log(`Урок ${lessonId} не найден`);
     return;
   }
 
   let isCorrect = false;
-  let currentStructure;
+  let currentStructure = null;
+
   for (const structure of lesson.structures) {
+    console.log(`Проверка структуры: ${structure.id}`);
     if (lesson.validateStructure(text, structure)) {
       isCorrect = true;
       currentStructure = structure;
@@ -362,14 +341,13 @@ function validateInput(text, lessonId = 'lesson13') {
     }
   }
 
-  console.log(`Validation result for "${text}": ${isCorrect ? 'Correct' : 'Incorrect'}`);
-  if (isCorrect) {
+  console.log(`Результат валидации для "${text}": ${isCorrect ? 'Корректно' : 'Некорректно'}`);
+  if (isCorrect && currentStructure) {
     updateProgress(currentStructure.id, true, lessonId);
   }
 }
 
-// Start fetching lessons
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, starting fetchLessons');
+  console.log('DOM загружен, запускаем fetchLessons');
   fetchLessons();
 }, { once: true });
