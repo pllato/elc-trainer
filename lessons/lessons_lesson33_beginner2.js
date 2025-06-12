@@ -1,5 +1,5 @@
 (function() {
-  let lastValidatedText = null; // Track last validated input within lesson scope
+  let lastValidatedText = null; // Последний валидированный ввод
 
   addLesson({
     level: "beginner2",
@@ -51,71 +51,65 @@
     ],
     requiredCorrect: 10,
     validateStructure: function(text, structure) {
-      console.log('Validating structure:', structure.id);
-      console.log('Raw input:', text);
-      // Заменяем сокращение "I'm" на "I am"
+      console.log('Валидация структуры:', structure.id);
+      console.log('Входной текст:', text);
+      // Обрабатываем сокращение "I'm" → "I am"
       let processedText = text.replace(/I'm/gi, 'I am');
       if (processedText !== text) {
-        console.log('Expanded contractions:', processedText);
+        console.log('Обработаны сокращения:', processedText);
       }
       // Удаляем пунктуацию, нормализуем пробелы и приводим к нижнему регистру
       const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
-      console.log('Cleaned text:', cleanedText);
+      console.log('Очищенный текст:', cleanedText);
 
-      // Проверяем на повторный ввод
+      // Проверяем на дубликат
       if (cleanedText === lastValidatedText) {
         console.log('Повторный ввод пропущен:', cleanedText);
         return false;
       }
 
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
-      console.log('Split words:', words);
+      console.log('Разделённые слова:', words);
 
-      if (words.length === 0) {
-        console.log('Пустая строка');
+      if (words.length < 3) {
+        console.log('Недостаточно слов (минимум 3):', words.length);
         return false;
       }
 
       let wordIndex = 0;
 
-      // Список исключённых глаголов (модальные и стативные глаголы)
+      // Исключённые глаголы (модальные и стативные)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
         'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
 
-      // Список всех местоимений
-      const validPronouns = ['i', 'you', 'he', 'she', 'it', 'we', 'they'];
-
       // Проверяем глагол в форме -ing
       const validateVerbIng = () => {
-        console.log('Validating verb at index', wordIndex);
+        console.log('Валидация глагола на позиции', wordIndex);
         if (!words[wordIndex]) {
           console.log('Нет глагола');
           return false;
         }
 
         const verb = words[wordIndex];
-        // Проверяем, что глагол заканчивается на -ing
-        if (!verb.match(/ing$/)) {
+        if (!verb.endsWith('ing')) {
           console.log('Глагол должен заканчиваться на -ing:', verb);
           return false;
         }
 
-        // Проверяем, что сам глагол не является исключённым словом
         if (excludedWords.includes(verb)) {
-          console.log('Недопустимый глагол:', verb);
+          console.log('Исключённый глагол:', verb);
           return false;
         }
 
         wordIndex++;
-
-        // Разрешаем дополнительные слова (например, "working on a project")
+        // Разрешаем дополнительные слова
         while (wordIndex < words.length) {
           const extraWord = words[wordIndex];
           if (excludedWords.includes(extraWord)) {
-            console.log('Недопустимое дополнительное слово:', extraWord);
+            console.log('Исключённое дополнительное слово:', extraWord);
             return false;
           }
           wordIndex++;
@@ -127,60 +121,51 @@
       let isValid = false;
 
       if (structure.id === "i-am-verbing") {
-        // Проверяем "i"
-        if (!words[wordIndex] || words[wordIndex] !== 'i') {
+        if (words[wordIndex] !== 'i') {
           console.log('Ожидалось "i" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        // Проверяем "am"
-        if (!words[wordIndex] || words[wordIndex] !== 'am') {
+        if (words[wordIndex] !== 'am') {
           console.log('Ожидалось "am" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        // Проверяем глагол
         isValid = validateVerbIng();
       } else if (structure.id === "you-we-they-verbing") {
-        // Проверяем местоимение
-        if (!words[wordIndex] || !['you', 'we', 'they'].includes(words[wordIndex])) {
+        if (!['you', 'we', 'they'].includes(words[wordIndex])) {
           console.log('Ожидалось "you/we/they" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        // Проверяем "are"
-        if (!words[wordIndex] || words[wordIndex] !== 'are') {
+        if (words[wordIndex] !== 'are') {
           console.log('Ожидалось "are" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        // Проверяем глагол
         isValid = validateVerbIng();
       } else if (structure.id === "he-she-it-verbing") {
-        // Проверяем местоимение
-        if (!words[wordIndex] || !['he', 'she', 'it'].includes(words[wordIndex])) {
+        if (!['he', 'she', 'it'].includes(words[wordIndex])) {
           console.log('Ожидалось "he/she/it" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        // Проверяем "is"
-        if (!words[wordIndex] || words[wordIndex] !== 'is') {
+        if (words[wordIndex] !== 'is') {
           console.log('Ожидалось "is" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        // Проверяем глагол
         isValid = validateVerbIng();
       }
 
       if (isValid) {
-        lastValidatedText = cleanedText; // Update only on successful validation
+        lastValidatedText = cleanedText;
         console.log('Валидация пройдена для:', text);
       }
       return isValid;
