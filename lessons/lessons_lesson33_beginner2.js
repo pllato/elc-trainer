@@ -1,6 +1,4 @@
 (function() {
-  let lastValidatedText = null; // Последний валидированный ввод
-
   addLesson({
     level: "beginner2",
     lesson: "lesson33",
@@ -62,12 +60,6 @@
       const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
       console.log('Очищенный текст:', cleanedText);
 
-      // Проверяем на дубликат
-      if (cleanedText === lastValidatedText) {
-        console.log('Повторный ввод пропущен:', cleanedText);
-        return false;
-      }
-
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
       console.log('Разделённые слова:', words);
 
@@ -118,8 +110,6 @@
         return true;
       };
 
-      let isValid = false;
-
       if (structure.id === "i-am-verbing") {
         if (words[wordIndex] !== 'i') {
           console.log('Ожидалось "i" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
@@ -133,7 +123,7 @@
         }
         wordIndex++;
 
-        isValid = validateVerbIng();
+        return validateVerbIng();
       } else if (structure.id === "you-we-they-verbing") {
         if (!['you', 'we', 'they'].includes(words[wordIndex])) {
           console.log('Ожидалось "you/we/they" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
@@ -147,7 +137,7 @@
         }
         wordIndex++;
 
-        isValid = validateVerbIng();
+        return validateVerbIng();
       } else if (structure.id === "he-she-it-verbing") {
         if (!['he', 'she', 'it'].includes(words[wordIndex])) {
           console.log('Ожидалось "he/she/it" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
@@ -161,14 +151,10 @@
         }
         wordIndex++;
 
-        isValid = validateVerbIng();
+        return validateVerbIng();
       }
 
-      if (isValid) {
-        lastValidatedText = cleanedText;
-        console.log('Валидация пройдена для:', text);
-      }
-      return isValid;
+      return false;
     }
   });
 })();
