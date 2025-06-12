@@ -4,7 +4,7 @@
   addLesson({
     level: "beginner2",
     lesson: "lesson33",
-    name: "Урок 33: I am ______ing / You/We/They _____ing / He/She/It ______ing",
+    name: "Урок 33: I am ______ing / You/We/They are _____ing / He/She/It is ______ing",
     structures: [
       {
         structure: "I am ______ing.",
@@ -13,36 +13,36 @@
         examples: [
           "I am reading. (Я читаю.)",
           "I am playing. (Я играю.)",
-          "I am singing. (Я пою.)",
-          "I am writing. (Я пишу.)"
+          "I am sitting. (Я сижу.)",
+          "I am standing. (Я стою.)"
         ],
         id: "i-am-verbing",
         hasVerb: true,
         hasName: false
       },
       {
-        structure: "You/We/They _____ing.",
+        structure: "You/We/They are _____ing.",
         pattern: ["are"],
         translations: ["Ты/Мы/Вы ______ете/ем."],
         examples: [
           "You are reading. (Ты читаешь.)",
           "We are playing. (Мы играем.)",
-          "They are singing. (Они поют.)",
-          "You are writing. (Вы пишете.)"
+          "They are sitting. (Они сидят.)",
+          "You are standing. (Вы стоите.)"
         ],
         id: "you-we-they-verbing",
         hasVerb: true,
         hasName: false
       },
       {
-        structure: "He/She/It ______ing.",
+        structure: "He/She/It is ______ing.",
         pattern: ["is"],
         translations: ["Он/Она/Оно ______ет."],
         examples: [
           "He is reading. (Он читает.)",
           "She is playing. (Она играет.)",
-          "It is singing. (Оно поет.)",
-          "He is writing. (Он пишет.)"
+          "It is sitting. (Оно сидит.)",
+          "He is standing. (Он стоит.)"
         ],
         id: "he-she-it-verbing",
         hasVerb: true,
@@ -220,8 +220,7 @@
       // Список исключённых глаголов и модальных глаголов
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
-        'going', 'doing', 'saying'
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
       ];
 
       // Список всех местоимений
@@ -244,17 +243,21 @@
 
         // Проверяем базовую форму глагола (удаляем -ing)
         const baseVerb = verb.replace(/ing$/, '');
-        if (excludedWords.includes(baseVerb) || Object.values(this.irregularVerbs).includes(baseVerb)) {
+        if (excludedWords.includes(baseVerb)) {
           console.log('Недопустимый глагол:', baseVerb);
           return false;
         }
 
         wordIndex++;
 
-        // Проверяем, что нет лишних слов после глагола
-        if (wordIndex < words.length) {
-          console.log('Лишние слова после глагола:', words.slice(wordIndex));
-          return false;
+        // Разрешаем дополнительные слова (например, "reading a book")
+        while (wordIndex < words.length) {
+          const extraWord = words[wordIndex];
+          if (excludedWords.includes(extraWord)) {
+            console.log('Недопустимое дополнительное слово:', extraWord);
+            return false;
+          }
+          wordIndex++;
         }
 
         return true;
