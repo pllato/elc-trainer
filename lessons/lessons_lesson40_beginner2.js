@@ -10,9 +10,9 @@
         translations: ["Где/Что ты собираешься ______?"],
         examples: [
           "Where are you going to read? (Где ты собираешься читать?)",
-          "What are you going to work? (Что ты собираешься работать?)",
+          "What are you going to buy? (Что ты собираешься купить?)",
           "Where are you going to dance? (Где ты собираешься танцевать?)",
-          "What are you going to eat? (Что ты собираешься есть?)"
+          "What are you going to do? (Что ты собираешься делать?)"
         ],
         id: "where-what-are-you-going-to-verb",
         hasVerb: true,
@@ -24,9 +24,9 @@
         translations: ["Я собираюсь ______ ________."],
         examples: [
           "I am going to read a book. (Я собираюсь читать книгу.)",
-          "I'm going to work late. (Я собираюсь работать допоздна.)",
+          "I'm going to buy a car. (Я собираюсь купить машину.)",
           "I am going to dance tonight. (Я собираюсь танцевать сегодня вечером.)",
-          "I am going to eat dinner. (Я собираюсь есть ужин.)"
+          "I am going to work everyday. (Я собираюсь работать каждый день.)"
         ],
         id: "i-am-going-to-verb-object",
         hasVerb: true,
@@ -61,11 +61,39 @@
       // Исключённые глаголы (модальные, стативные и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
         'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe', 'going'
       ];
 
-      // Проверяем глагол в базовой форме и дополнение
+      // Проверяем глагол в базовой форме (для вопросов)
+      const validateBaseVerb = () => {
+        console.log('Валидация глагола на позиции', wordIndex);
+        if (!words[wordIndex]) {
+          console.log('Нет глагола');
+          return false;
+        }
+
+        const verb = words[wordIndex];
+        if (excludedWords.includes(verb)) {
+          console.log('Исключённый глагол:', verb);
+          return false;
+        }
+
+        wordIndex++;
+        // Разрешаем дополнительные слова
+        while (wordIndex < words.length) {
+          const extraWord = words[wordIndex];
+          if (excludedWords.includes(extraWord)) {
+            console.log('Исключённое дополнительное слово:', extraWord);
+            return false;
+          }
+          wordIndex++;
+        }
+
+        return true;
+      };
+
+      // Проверяем глагол в базовой форме и дополнение (для ответов)
       const validateBaseVerbAndObject = () => {
         console.log('Валидация глагола на позиции', wordIndex);
         if (!words[wordIndex]) {
@@ -130,7 +158,7 @@
         }
         wordIndex++;
 
-        const isValid = validateBaseVerbAndObject();
+        const isValid = validateBaseVerb();
         if (isValid) {
           console.log('Валидация пройдена для:', text);
         }
