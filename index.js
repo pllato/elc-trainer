@@ -253,7 +253,14 @@ function startRecognition() {
     const text = event.results[event.results.length - 1][0].transcript;
     const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
     console.log('Распознанный текст:', cleanedText);
+    const now = Date.now();
+    if (cleanedText === lastValidatedText && now - lastValidatedTime < 30000) {
+      console.log('Повторный ввод пропущен:', cleanedText);
+      return;
+    }
     validateInput(cleanedText);
+    lastValidatedText = cleanedText;
+    lastValidatedTime = now;
   };
 
   window.recognition.onerror = function(event) {
@@ -321,7 +328,7 @@ function startRecognition() {
   }
 }
 
-function validateInput(text, lessonId = 'lesson33') {
+function validateInput(text, lessonId = 'lesson35') {
   console.log(`Валидация ввода: урок ${lessonId}, текст "${text}"`);
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   if (!lesson) {
