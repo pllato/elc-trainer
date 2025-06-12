@@ -66,8 +66,10 @@
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
       console.log('Разделённые слова:', words);
 
-      if (words.length < 3) {
-        console.log('Недостаточно слов (минимум 3):', words.length);
+      // Минимальное количество слов для каждой структуры
+      const minWords = structure.id === "no-i-am-not-verbing" ? 4 : 3;
+      if (words.length < minWords) {
+        console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
         return false;
       }
 
@@ -126,7 +128,11 @@
         }
         wordIndex++;
 
-        return validateVerbIng();
+        const isValid = validateVerbIng();
+        if (isValid) {
+          console.log('Валидация пройдена для:', text);
+        }
+        return isValid;
       } else if (structure.id === "yes-i-am-verbing") {
         if (words[wordIndex] !== 'yes') {
           console.log('Ожидалось "yes" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
@@ -146,8 +152,12 @@
         }
         wordIndex++;
 
-        return validateVerbIng();
-      } else if (structure.id === "no-i-am-not-verbin") {
+        const isValid = validateVerbIng();
+        if (isValid) {
+          console.log('Валидация пройдена для:', text);
+        }
+        return isValid;
+      } else if (structure.id === "no-i-am-not-verbing") {
         if (words[wordIndex] !== 'no') {
           console.log('Ожидалось "no" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
@@ -172,9 +182,14 @@
         }
         wordIndex++;
 
-        return validateVerbIng();
+        const isValid = validateVerbIng();
+        if (isValid) {
+          console.log('Валидация пройдена для:', text);
+        }
+        return isValid;
       }
 
+      console.log('Структура не соответствует:', structure.id);
       return false;
     }
   });
