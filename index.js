@@ -328,7 +328,7 @@ function startRecognition() {
   }
 }
 
-function validateInput(text, lessonId = 'lesson3') {
+function validateInput(text, lessonId = 'lesson5') {
   console.log(`Валидация ввода: урок ${lessonId}, текст "${text}"`);
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   if (!lesson) {
