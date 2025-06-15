@@ -21,8 +21,9 @@
         translations: ["Сегодня ___ число ___."],
         examples: [
           "Today is the 15th of May. (Сегодня 15-е мая.)",
-          "Today is the first of January. (Сегодня первое января.)",
-          "Today is the 31st of December. (Сегодня 31-е декабря.)"
+          "Today is the 15th of June. (Сегодня 15-е июня.)",
+          "Today is the 31st of December. (Сегодня 31-е декабря.)",
+          "Today is the first of January. (Сегодня первое января.)"
         ],
         id: "today-is-the-day-of-month",
         hasVerb: false,
@@ -73,12 +74,11 @@
         }
 
         let day = words[wordIndex];
-        // Удаляем суффиксы (th, st, nd, rd) для проверки числа
+        // Проверяем суффиксы (th, st, nd, rd)
+        let hasSuffix = false;
         if (day.endsWith('th') || day.endsWith('st') || day.endsWith('nd') || day.endsWith('rd')) {
           day = day.slice(0, -2);
-          wordIndex++;
-        } else {
-          wordIndex++;
+          hasSuffix = true;
         }
 
         // Проверяем числовой формат (1–31)
@@ -103,6 +103,11 @@
           }
         }
 
+        wordIndex++;
+        if (hasSuffix) {
+          // Суффикс уже учтён, не увеличиваем wordIndex повторно
+        }
+
         return true;
       };
 
@@ -116,8 +121,8 @@
 
         const month = words[wordIndex];
         const validMonths = [
-          'january', 'february', 'march', 'april', 'may', 'june',
-          'july', 'august', 'september', 'october', 'november', 'december'
+          'january', 'jan', 'february', 'feb', 'march', 'mar', 'april', 'apr', 'may', 'june', 'jun',
+          'july', 'jul', 'august', 'aug', 'september', 'sep', 'october', 'oct', 'november', 'nov', 'december', 'dec'
         ];
         if (!validMonths.includes(month)) {
           console.log('Недопустимый месяц:', month);
@@ -165,6 +170,12 @@
         wordIndex++;
 
         if (!validateDay()) return false;
+
+        if (words[wordIndex] !== 'of') {
+          console.log('Ожидалось "of" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+          return false;
+        }
+        wordIndex++;
 
         if (!validateMonth()) return false;
 
