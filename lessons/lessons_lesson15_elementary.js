@@ -12,7 +12,9 @@
           "When did you go? (Когда ты ходил?)",
           "Where did she go? (Куда она ходила?)",
           "When did they play? (Когда они играли?)",
-          "Where did you sleep? (Где ты спал?)"
+          "Where did you sleep? (Где ты спал?)",
+          "When did you do your homework? (Когда ты делал домашнюю работу?)",
+          "When did you eat fish? (Когда ты ел рыбу?)"
         ],
         id: "when-where-did-subject-verb",
         hasVerb: true,
@@ -29,7 +31,8 @@
           "I slept at home. (Я спал дома.)",
           "I came yesterday. (Я пришел вчера.)",
           "She had breakfast. (Она завтракала.)",
-          "They knew the answer. (Они знали ответ.)"
+          "They knew the answer. (Они знали ответ.)",
+          "You did your homework. (Ты сделал домашнюю работу.)"
         ],
         id: "subject-past-verb-object",
         hasVerb: true,
@@ -81,15 +84,14 @@
 
         const verb = words[wordIndex];
         // Проверяем, что глагол не в прошедшем времени
-        const pastForms = [
-          'drank', 'drove', 'ate', 'played', 'visited', 'went', 'saw', 'ran', 'swam', 'wrote',
-          'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'met', 'stood',
-          'slept', 'had', 'knew', 'thought', 'broke', 'fell'
-        ];
-        if ((verb.endsWith('ed') || pastForms.includes(verb)) && verb !== 'do') {
-          console.log('Глагол должен быть в базовой форме, а не в прошедшем времени:', verb);
-          return false;
+        if (verb.endsWith('ed')) {
+          const baseVerb = verb.slice(0, -2);
+          if (excludedWords.includes(baseVerb) && baseVerb !== 'do') {
+            console.log('Глагол должен быть в базовой форме, а не в прошедшем времени:', verb);
+            return false;
+          }
         }
+        // Разрешаем распространённые глаголы, включая "do" и "eat"
         if (excludedWords.includes(verb) && verb !== 'do') {
           console.log('Исключённый глагол:', verb);
           return false;
