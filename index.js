@@ -328,7 +328,7 @@ function startRecognition() {
   }
 }
 
-function validateInput(text, lessonId = 'lesson35') {
+function validateInput(text, lessonId = 'lesson3') {
   console.log(`Валидация ввода: урок ${lessonId}, текст "${text}"`);
   const lesson = lessonsData.find(l => l.lesson === lessonId);
   if (!lesson) {
@@ -339,12 +339,13 @@ function validateInput(text, lessonId = 'lesson35') {
   let isCorrect = false;
   let currentStructure = null;
 
+  // Проверяем каждую структуру только один раз
   for (const structure of lesson.structures) {
     console.log(`Проверка структуры: ${structure.id}`);
     if (lesson.validateStructure(text, structure)) {
       isCorrect = true;
       currentStructure = structure;
-      break;
+      break; // Прерываем цикл после первого совпадения
     }
   }
 
