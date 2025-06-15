@@ -11,8 +11,8 @@
         examples: [
           "Did you drink tea yesterday? (Ты пил чай вчера?)",
           "Did you drive your car yesterday? (Ты водил машину вчера?)",
-          "Did you cook fish yesterday? (Ты готовил рыбу вчера?)",
-          "Did you do your homework? (Ты делал домашнюю работу?)"
+          "Did you play football yesterday? (Ты играл в футбол вчера?)",
+          "Did you do your homework yesterday? (Ты делал домашнюю работу вчера?)"
         ],
         id: "did-you-verb-object",
         hasVerb: true,
@@ -25,8 +25,9 @@
         examples: [
           "Yes, I drank tea yesterday. (Да, я пил чай вчера.)",
           "Yes, I drove my car yesterday. (Да, я водил машину вчера.)",
-          "Yes, I cooked fish yesterday. (Да, я готовил рыбу вчера.)",
-          "Yes, I did my homework. (Да, я сделал домашнюю работу.)"
+          "Yes, I played football yesterday. (Да, я играл в футбол вчера.)",
+          "Yes, I did my homework. (Да, я сделал домашнюю работу.)",
+          "Yes, I visited Paris last week. (Да, я посещал Париж на прошлой неделе.)"
         ],
         id: "yes-i-past-verb-object",
         hasVerb: true,
@@ -39,8 +40,9 @@
         examples: [
           "No, I didn’t drink tea yesterday. (Нет, я не пил чай вчера.)",
           "No, I didn’t drive my car yesterday. (Нет, я не водил машину вчера.)",
-          "No, I didn’t cook fish yesterday. (Нет, я не готовил рыбу вчера.)",
-          "No, I didn’t do my homework. (Нет, я не делал домашнюю работу.)"
+          "No, I didn’t play football yesterday. (Нет, я не играл в футбол вчера.)",
+          "No, I didn’t do my homework. (Нет, я не делал домашнюю работу.)",
+          "No, I didn’t visit Paris. (Нет, я не посещал Париж.)"
         ],
         id: "no-i-did-not-verb-object",
         hasVerb: true,
@@ -66,9 +68,11 @@
       console.log('Разделённые слова:', words);
 
       // Минимальное количество слов
-      let minWords = structure.id === "did-you-verb-object" ? 4 : 4; // Уменьшено для "Yes, I ate yesterday"
-      if (structure.id === "no-i-did-not-verb-object") {
-        minWords = 5; // Уменьшено для "No, I didn’t drink yesterday"
+      let minWords = 3; // Подлежащее + глагол + (опциональное дополнение)
+      if (structure.id === "did-you-verb-object") {
+        minWords = 3; // Did + you + глагол
+      } else if (structure.id === "no-i-did-not-verb-object") {
+        minWords = 4; // No + I + did + not
       }
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
@@ -93,6 +97,15 @@
         }
 
         const verb = words[wordIndex];
+        // Разрешаем "do" и проверяем, что глагол не заканчивается на -ed или не является неправильной формой
+        const irregularPast = [
+          'drank', 'drove', 'ate', 'played', 'visited', 'went', 'saw', 'ran', 'swam', 'wrote',
+          'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'swam', 'met'
+        ];
+        if ((verb.endsWith('ed') || irregularPast.includes(verb)) && verb !== 'do') {
+          console.log('Глагол должен быть в базовой форме, а не в прошедшем времени:', verb);
+          return false;
+        }
         if (excludedWords.includes(verb) && verb !== 'do') {
           console.log('Исключённый глагол:', verb);
           return false;
@@ -111,7 +124,7 @@
         }
 
         const verb = words[wordIndex];
-        // Расширенный список неправильных глаголов
+        // Расширенный список неправильных глаголов, включая "did"
         const irregularPast = [
           'drank', 'drove', 'ate', 'played', 'visited', 'went', 'saw', 'ran', 'swam', 'wrote',
           'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'swam', 'met'
@@ -131,12 +144,13 @@
         return true;
       };
 
-      // Проверяем дополнение
+      // Проверяем дополнение (опционально)
       const validateObject = () => {
         console.log('Валидация дополнения на позиции', wordIndex);
+        // Дополнение опционально
         if (!words[wordIndex]) {
-          console.log('Нет дополнения');
-          return false;
+          console.log('Дополнение отсутствует, допустимо');
+          return true;
         }
 
         // Разрешаем любые слова, кроме исключённых
