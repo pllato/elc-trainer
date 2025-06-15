@@ -2,7 +2,7 @@
   addLesson({
     level: "elementary",
     lesson: "lesson19",
-    name: "Урок 19: Talking About Favourite Things and Food Preferences",
+    name: "Урок 19: Talking About Favourite Things and Preferences",
     structures: [
       {
         structure: "What’s your favourite ______________?",
@@ -37,9 +37,9 @@
         examples: [
           "Would you like some cheese? (Хочешь немного сыра?)",
           "Would you like some juice? (Хочешь немного сока?)",
-          "Would you like some bread? (Хочешь немного хлеба?)"
+          "Would you like some chairs? (Хочешь несколько стульев?)"
         ],
-        id: "would-you-like-some-food",
+        id: "would-you-like-some-item",
         hasVerb: false,
         hasName: false
       },
@@ -50,9 +50,9 @@
         examples: [
           "Yes, I would like some cheese. (Да, я хочу немного сыра.)",
           "Yes, I would like some juice. (Да, я хочу немного сока.)",
-          "Yes, I would like some bread. (Да, я хочу немного хлеба.)"
+          "Yes, I would like some chairs. (Да, я хочу несколько стульев.)"
         ],
-        id: "yes-i-would-like-some-food",
+        id: "yes-i-would-like-some-item",
         hasVerb: false,
         hasName: false
       },
@@ -63,9 +63,9 @@
         examples: [
           "I would like some cheese. (Я хочу немного сыра.)",
           "I would like some juice. (Я хочу немного сока.)",
-          "I would like some bread. (Я хочу немного хлеба.)"
+          "I would like some chairs. (Я хочу несколько стульев.)"
         ],
-        id: "i-would-like-some-food",
+        id: "i-would-like-some-item",
         hasVerb: false,
         hasName: false
       },
@@ -76,9 +76,9 @@
         examples: [
           "No, I wouldn’t like any cheese. (Нет, я не хочу сыра.)",
           "No, I wouldn’t like any juice. (Нет, я не хочу сока.)",
-          "No, I wouldn’t like any bread. (Нет, я не хочу хлеба.)"
+          "No, I wouldn’t like any chairs. (Нет, я не хочу стульев.)"
         ],
-        id: "no-i-would-not-like-any-food",
+        id: "no-i-would-not-like-any-item",
         hasVerb: false,
         hasName: false
       }
@@ -107,13 +107,13 @@
       let minWords = 4; // По умолчанию для вопроса "What’s your favourite"
       if (structure.id === "my-favourite-category-is-item") {
         minWords = 5; // My + favourite + категория + is + минимум 1 слово
-      } else if (structure.id === "would-you-like-some-food") {
+      } else if (structure.id === "would-you-like-some-item") {
         minWords = 5; // Would + you + like + some + минимум 1 слово
-      } else if (structure.id === "yes-i-would-like-some-food") {
+      } else if (structure.id === "yes-i-would-like-some-item") {
         minWords = 6; // Yes + I + would + like + some + минимум 1 слово
-      } else if (structure.id === "i-would-like-some-food") {
+      } else if (structure.id === "i-would-like-some-item") {
         minWords = 5; // I + would + like + some + минимум 1 слово
-      } else if (structure.id === "no-i-would-not-like-any-food") {
+      } else if (structure.id === "no-i-would-not-like-any-item") {
         minWords = 7; // No + I + would + not + like + any + минимум 1 слово
       }
       if (words.length < minWords) {
@@ -128,12 +128,6 @@
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
         'am', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
-      ];
-
-      // Допустимые элементы для еды и напитков
-      const validFoodDrinkItems = [
-        'pasta', 'pizza', 'burger', 'ice cream', 'cheese', 'bread', 'cake',
-        'cola', 'juice', 'water', 'tea', 'coffee', 'milk'
       ];
 
       // Проверяем категорию (любое слово, кроме исключённых)
@@ -155,8 +149,8 @@
         return true;
       };
 
-      // Проверяем элемент (для еды/напитков — строгий список, иначе — любое слово)
-      const validateItem = (restrictToFoodDrink = false) => {
+      // Проверяем элемент (любое слово, кроме исключённых)
+      const validateItem = () => {
         console.log('Валидация элемента на позиции', wordIndex);
         if (!words[wordIndex]) {
           console.log('Нет элемента');
@@ -173,17 +167,10 @@
         }
         item = itemWords.join(' ');
 
-        if (restrictToFoodDrink) {
-          if (!validFoodDrinkItems.includes(item)) {
-            console.log('Недопустимый элемент для еды/напитка:', item);
-            return false;
-          }
-        } else {
-          // Для других категорий разрешаем любой элемент, кроме исключённых слов
-          if (excludedWords.includes(item.split(' ')[0])) {
-            console.log('Исключённый элемент:', item);
-            return false;
-          }
+        // Проверяем, что элемент не является исключённым словом
+        if (excludedWords.includes(item.split(' ')[0])) {
+          console.log('Исключённый элемент:', item);
+          return false;
         }
 
         return true;
@@ -235,7 +222,7 @@
 
         console.log('Валидация пройдена для:', text);
         return true;
-      } else if (structure.id === "would-you-like-some-food") {
+      } else if (structure.id === "would-you-like-some-item") {
         const expected = ['would', 'you', 'like', 'some'];
         for (let i = 0; i < expected.length; i++) {
           if (words[wordIndex] !== expected[i]) {
@@ -245,7 +232,7 @@
           wordIndex++;
         }
 
-        if (!validateItem(true)) return false;
+        if (!validateItem()) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
@@ -254,7 +241,7 @@
 
         console.log('Валидация пройдена для:', text);
         return true;
-      } else if (structure.id === "yes-i-would-like-some-food") {
+      } else if (structure.id === "yes-i-would-like-some-item") {
         const expected = ['yes', 'i', 'would', 'like', 'some'];
         for (let i = 0; i < expected.length; i++) {
           if (words[wordIndex] !== expected[i]) {
@@ -264,7 +251,7 @@
           wordIndex++;
         }
 
-        if (!validateItem(true)) return false;
+        if (!validateItem()) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
@@ -273,7 +260,7 @@
 
         console.log('Валидация пройдена для:', text);
         return true;
-      } else if (structure.id === "i-would-like-some-food") {
+      } else if (structure.id === "i-would-like-some-item") {
         const expected = ['i', 'would', 'like', 'some'];
         for (let i = 0; i < expected.length; i++) {
           if (words[wordIndex] !== expected[i]) {
@@ -283,7 +270,7 @@
           wordIndex++;
         }
 
-        if (!validateItem(true)) return false;
+        if (!validateItem()) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
@@ -292,7 +279,7 @@
 
         console.log('Валидация пройдена для:', text);
         return true;
-      } else if (structure.id === "no-i-would-not-like-any-food") {
+      } else if (structure.id === "no-i-would-not-like-any-item") {
         const expected = ['no', 'i', 'would', 'not', 'like', 'any'];
         for (let i = 0; i < expected.length; i++) {
           if (words[wordIndex] !== expected[i]) {
@@ -302,7 +289,7 @@
           wordIndex++;
         }
 
-        if (!validateItem(true)) return false;
+        if (!validateItem()) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
