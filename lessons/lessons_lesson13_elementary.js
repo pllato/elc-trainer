@@ -25,9 +25,11 @@
         examples: [
           "Yes, I drank tea yesterday. (Да, я пил чай вчера.)",
           "Yes, I drove my car yesterday. (Да, я водил машину вчера.)",
+          "Yes, I drove my car. (Да, я водил машину.)",
           "Yes, I played football yesterday. (Да, я играл в футбол вчера.)",
           "Yes, I did my homework. (Да, я сделал домашнюю работу.)",
-          "Yes, I visited Paris last week. (Да, я посещал Париж на прошлой неделе.)"
+          "Yes, I visited Paris last week. (Да, я посещал Париж на прошлой неделе.)",
+          "Yes, I visited. (Да, я посещал.)"
         ],
         id: "yes-i-past-verb-object",
         hasVerb: true,
@@ -84,7 +86,7 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие, кроме "do")
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does',
         'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
 
@@ -97,11 +99,12 @@
         }
 
         const verb = words[wordIndex];
-        // Разрешаем "do" и проверяем, что глагол не заканчивается на -ed или не является неправильной формой
+        // Список неправильных глаголов в прошедшем времени для исключения
         const irregularPast = [
           'drank', 'drove', 'ate', 'played', 'visited', 'went', 'saw', 'ran', 'swam', 'wrote',
           'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'swam', 'met'
         ];
+        // Отклоняем глаголы в прошедшем времени, кроме "do"
         if ((verb.endsWith('ed') || irregularPast.includes(verb)) && verb !== 'do') {
           console.log('Глагол должен быть в базовой форме, а не в прошедшем времени:', verb);
           return false;
