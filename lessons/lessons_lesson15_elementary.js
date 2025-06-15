@@ -12,7 +12,7 @@
           "When did you go? (Когда ты ходил?)",
           "Where did she go? (Куда она ходила?)",
           "When did they play? (Когда они играли?)",
-          "Where did he visit? (Куда он ездил?)"
+          "Where did you sleep? (Где ты спал?)"
         ],
         id: "when-where-did-subject-verb",
         hasVerb: true,
@@ -23,10 +23,13 @@
         pattern: [],
         translations: ["Я/Ты/Он/Она/Оно/Мы/Они ______ ______."],
         examples: [
-          "I went to the park. (Я ходил в парк.)",
-          "She went yesterday. (Она ходила вчера.)",
-          "They played football last week. (Они играли в футбол на прошлой неделе.)",
-          "He visited Paris. (Он посетил Париж.)"
+          "I went home. (Я ходил домой.)",
+          "I ate yesterday. (Я ел вчера.)",
+          "I stood on the sofa. (Я стоял на диване.)",
+          "I slept at home. (Я спал дома.)",
+          "I came yesterday. (Я пришел вчера.)",
+          "She had breakfast. (Она завтракала.)",
+          "They knew the answer. (Они знали ответ.)"
         ],
         id: "subject-past-verb-object",
         hasVerb: true,
@@ -64,7 +67,7 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие, кроме "do")
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does',
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'does',
         'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
 
@@ -77,13 +80,13 @@
         }
 
         const verb = words[wordIndex];
-        // Список неправильных глаголов в прошедшем времени для исключения
-        const irregularPast = [
+        // Проверяем, что глагол не в прошедшем времени
+        const pastForms = [
           'drank', 'drove', 'ate', 'played', 'visited', 'went', 'saw', 'ran', 'swam', 'wrote',
-          'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'met'
+          'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'met', 'stood',
+          'slept', 'had', 'knew', 'thought', 'broke', 'fell'
         ];
-        // Отклоняем глаголы в прошедшем времени, кроме "do"
-        if ((verb.endsWith('ed') || irregularPast.includes(verb)) && verb !== 'do') {
+        if ((verb.endsWith('ed') || pastForms.includes(verb)) && verb !== 'do') {
           console.log('Глагол должен быть в базовой форме, а не в прошедшем времени:', verb);
           return false;
         }
@@ -105,20 +108,20 @@
         }
 
         const verb = words[wordIndex];
-        // Расширенный список неправильных глаголов, включая "did"
-        const irregularPast = [
-          'drank', 'drove', 'ate', 'played', 'visited', 'went', 'saw', 'ran', 'swam', 'wrote',
-          'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'met'
-        ];
-        if (!verb.endsWith('ed') && !irregularPast.includes(verb)) {
-          console.log('Глагол должен быть в прошедшем времени (ожидалось -ed или неправильная форма):', verb);
-          return false;
-        }
-
-        const baseVerb = verb.endsWith('ed') ? verb.slice(0, -2) : verb;
-        if (excludedWords.includes(baseVerb) && baseVerb !== 'do') {
-          console.log('Исключённый глагол:', baseVerb);
-          return false;
+        // Принимаем глаголы, заканчивающиеся на -ed, или любые слова, не являющиеся базовой формой исключённых глаголов
+        if (verb.endsWith('ed')) {
+          const baseVerb = verb.slice(0, -2);
+          if (excludedWords.includes(baseVerb) && baseVerb !== 'do') {
+            console.log('Исключённый глагол:', baseVerb);
+            return false;
+          }
+        } else {
+          // Для неправильных глаголов проверяем, что это не базовая форма исключённых слов
+          const allowedIrregular = ['had', 'did'];
+          if (excludedWords.includes(verb) && !allowedIrregular.includes(verb)) {
+            console.log('Исключённый глагол:', verb);
+            return false;
+          }
         }
 
         wordIndex++;
