@@ -10,8 +10,9 @@
         translations: ["Ты ______ ______?"],
         examples: [
           "Did you drink tea yesterday? (Ты пил чай вчера?)",
-          "Did you play football last week? (Ты играл в футбол на прошлой неделе?)",
-          "Did you visit Paris last year? (Ты посещал Париж в прошлом году?)"
+          "Did you drive your car yesterday? (Ты водил машину вчера?)",
+          "Did you cook fish yesterday? (Ты готовил рыбу вчера?)",
+          "Did you do your homework? (Ты делал домашнюю работу?)"
         ],
         id: "did-you-verb-object",
         hasVerb: true,
@@ -23,8 +24,9 @@
         translations: ["Да, я ______ ______."],
         examples: [
           "Yes, I drank tea yesterday. (Да, я пил чай вчера.)",
-          "Yes, I played football last week. (Да, я играл в футбол на прошлой неделе.)",
-          "Yes, I visited Paris last year. (Да, я посещал Париж в прошлом году.)"
+          "Yes, I drove my car yesterday. (Да, я водил машину вчера.)",
+          "Yes, I cooked fish yesterday. (Да, я готовил рыбу вчера.)",
+          "Yes, I did my homework. (Да, я сделал домашнюю работу.)"
         ],
         id: "yes-i-past-verb-object",
         hasVerb: true,
@@ -36,8 +38,9 @@
         translations: ["Нет, я не ______ ______."],
         examples: [
           "No, I didn’t drink tea yesterday. (Нет, я не пил чай вчера.)",
-          "No, I did not play football last week. (Нет, я не играл в футбол на прошлой неделе.)",
-          "No, I did not visit Paris last year. (Нет, я не посещал Париж в прошлом году.)"
+          "No, I didn’t drive my car yesterday. (Нет, я не водил машину вчера.)",
+          "No, I didn’t cook fish yesterday. (Нет, я не готовил рыбу вчера.)",
+          "No, I didn’t do my homework. (Нет, я не делал домашнюю работу.)"
         ],
         id: "no-i-did-not-verb-object",
         hasVerb: true,
@@ -63,9 +66,9 @@
       console.log('Разделённые слова:', words);
 
       // Минимальное количество слов
-      let minWords = structure.id === "did-you-verb-object" ? 4 : 5;
+      let minWords = structure.id === "did-you-verb-object" ? 4 : 4; // Уменьшено для "Yes, I ate yesterday"
       if (structure.id === "no-i-did-not-verb-object") {
-        minWords = 6;
+        minWords = 5; // Уменьшено для "No, I didn’t drink yesterday"
       }
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
@@ -74,10 +77,10 @@
 
       let wordIndex = 0;
 
-      // Исключённые слова (модальные, стативные глаголы и неподходящие)
+      // Исключённые слова (модальные, стативные глаголы и неподходящие, кроме "do")
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
         'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
 
@@ -90,7 +93,7 @@
         }
 
         const verb = words[wordIndex];
-        if (excludedWords.includes(verb)) {
+        if (excludedWords.includes(verb) && verb !== 'do') {
           console.log('Исключённый глагол:', verb);
           return false;
         }
@@ -108,15 +111,18 @@
         }
 
         const verb = words[wordIndex];
-        // Грубая проверка на прошедшее время: заканчивается на -ed или известный неправильный глагол
-        const irregularPast = ['drank', 'played', 'visited', 'went', 'saw', 'ate', 'ran', 'swam', 'wrote', 'read'];
+        // Расширенный список неправильных глаголов
+        const irregularPast = [
+          'drank', 'drove', 'ate', 'played', 'visited', 'went', 'saw', 'ran', 'swam', 'wrote',
+          'read', 'bought', 'came', 'made', 'took', 'gave', 'did', 'cooked', 'swam', 'met'
+        ];
         if (!verb.endsWith('ed') && !irregularPast.includes(verb)) {
           console.log('Глагол должен быть в прошедшем времени (ожидалось -ed или неправильная форма):', verb);
           return false;
         }
 
         const baseVerb = verb.endsWith('ed') ? verb.slice(0, -2) : verb;
-        if (excludedWords.includes(baseVerb)) {
+        if (excludedWords.includes(baseVerb) && baseVerb !== 'do') {
           console.log('Исключённый глагол:', baseVerb);
           return false;
         }
