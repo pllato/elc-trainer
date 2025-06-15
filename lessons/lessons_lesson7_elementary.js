@@ -22,8 +22,8 @@
         examples: [
           "Yes, of course. It’s just after six o’clock. (Да, конечно. Сейчас чуть позже шести часов.)",
           "Yes, of course. It’s half past seven. (Да, конечно. Сейчас полвосьмого.)",
-          "Yes, of course. It’s quarter to nine. (Да, конечно. Сейчас без четверти девять.)",
-          "Yes, of course. It’s seven thirty. (Да, конечно. Сейчас семь тридцать.)"
+          "Yes, of course. It’s 7:00. (Да, конечно. Сейчас семь часов.)",
+          "Yes, of course. It’s 4:45. (Да, конечно. Сейчас без пятнадцати пять.)"
         ],
         id: "yes-of-course-its-time",
         hasVerb: false,
@@ -34,13 +34,15 @@
     validateStructure: function(text, structure) {
       console.log('Валидация структуры:', structure.id);
       console.log('Входной текст:', text);
-      // Нормализуем "everyday" для консистентности
-      let processedText = text.replace(/\beveryday\b/gi, 'every day');
+      // Нормализуем "it is" и "everyday"
+      let processedText = text
+        .replace(/it is/gi, 'its')
+        .replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
-        console.log('Обработан everyday:', processedText);
+        console.log('Обработаны it is и everyday:', processedText);
       }
-      // Удаляем пунктуацию, нормализуем пробелы и приводим к нижнему регистру
-      const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
+      // Удаляем пунктуацию (кроме двоеточия для времени), нормализуем пробелы и приводим к нижнему регистру
+      const cleanedText = processedText.replace(/[^a-zA-Z0-9\s:]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
       console.log('Очищенный текст:', cleanedText);
 
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
@@ -70,14 +72,19 @@
           return false;
         }
 
-        // Разрешаем любые слова, кроме исключённых
-        while (wordIndex < words.length) {
-          const word = words[wordIndex];
-          if (excludedWords.includes(word)) {
-            console.log('Исключённое слово:', word);
-            return false;
-          }
+        // Проверяем числовой формат (например, "7:00", "4:45")
+        if (words[wordIndex].match(/^\d{1,2}:\d{2}$/)) {
           wordIndex++;
+        } else {
+          // Разрешаем любые слова, кроме исключённых
+          while (wordIndex < words.length) {
+            const word = words[wordIndex];
+            if (excludedWords.includes(word)) {
+              console.log('Исключённое слово:', word);
+              return false;
+            }
+            wordIndex++;
+          }
         }
 
         return true;
