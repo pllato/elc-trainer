@@ -2,20 +2,21 @@
   addLesson({
     level: "elementary",
     lesson: "lesson3",
-    name: "Урок 3: What is her/his ________? / Where is/are ____________ from? / Who is _________?",
+    name: "Урок 3: What is your/his/her/their/its/our ________? / Where is/are ____________ from? / Who is _________?",
     structures: [
       {
-        structure: "What is her/his ________?",
+        structure: "What is your/his/her/their/its/our ________?",
         pattern: ["what", "is"],
-        translations: ["Что такое его/её ______?"],
+        translations: ["Что такое твой/его/её/их/его/наш ______?"],
         examples: [
-          "What is her surname? (Как её фамилия?) Example answer: Jefferson",
+          "What is your surname? (Как твоя фамилия?) Example answer: Jefferson",
           "What is his job? (Какая у него работа?) Example answer: He’s a policeman",
           "What is her address? (Какой у неё адрес?) Example answer: 34, Church Street",
-          "What is his name? (Как его зовут?) Example answer: John",
-          "What is her position? (Какая у неё должность?) Example answer: Manager"
+          "What is their name? (Как их зовут?) Example answer: Smith",
+          "What is its position? (Какая его должность?) Example answer: Manager",
+          "What is our hobby? (Какое у нас хобби?) Example answer: Reading"
         ],
-        id: "what-is-her-his-noun",
+        id: "what-is-your-his-her-their-its-our-noun",
         hasVerb: false,
         hasName: false
       },
@@ -68,7 +69,7 @@
 
       let wordIndex = 0;
 
-      if (structure.id === "what-is-her-his-noun") {
+      if (structure.id === "what-is-your-his-her-their-its-our-noun") {
         if (words[wordIndex] !== 'what') {
           console.log('Ожидалось "what" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
@@ -81,8 +82,8 @@
         }
         wordIndex++;
 
-        if (!['her', 'his'].includes(words[wordIndex])) {
-          console.log('Ожидалось "her/his" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+        if (!['your', 'his', 'her', 'their', 'its', 'our'].includes(words[wordIndex])) {
+          console.log('Ожидалось "your/his/her/their/its/our" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
