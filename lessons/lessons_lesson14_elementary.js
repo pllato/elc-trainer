@@ -20,9 +20,10 @@
         pattern: ["i", "was", "born", "on", "the"],
         translations: ["Я родился ___ числа ___."],
         examples: [
-          "I was born on the 12th of July. (Я родился 12-го июля.)",
+          "I was born on the 7th of June. (Я родился 7-го июня.)",
+          "I was born on the 31st of December. (Я родился 31-го декабря.)",
           "I was born on the first of January. (Я родился первого января.)",
-          "I was born on the 25 of December. (Я родился 25-го декабря.)"
+          "I was born on the 12th of July 1990. (Я родился 12-го июля 1990.)"
         ],
         id: "i-was-born-on-day-of-month",
         hasVerb: false,
@@ -45,9 +46,10 @@
         pattern: ["was", "born", "on", "the"],
         translations: ["Она/он родился ___ числа ___."],
         examples: [
-          "She was born on the 12th of July. (Она родилась 12-го июля.)",
-          "He was born on the second of March. (Он родился второго марта.)",
-          "She was born on the 30 of August. (Она родилась 30-го августа.)"
+          "She was born on the 7th of June. (Она родилась 7-го июня.)",
+          "He was born on the 31st of December. (Он родился 31-го декабря.)",
+          "She was born on the second of March. (Она родилась второго марта.)",
+          "He was born on the 12th of July 1988. (Он родился 12-го июля 1988.)"
         ],
         id: "she-he-was-born-on-day-of-month",
         hasVerb: false,
@@ -97,7 +99,15 @@
           return false;
         }
 
-        const day = words[wordIndex];
+        let day = words[wordIndex];
+        // Удаляем суффиксы (th, st, nd, rd) для проверки числа
+        if (day.endsWith('th') || day.endsWith('st') || day.endsWith('nd') || day.endsWith('rd')) {
+          day = day.slice(0, -2);
+          wordIndex++;
+        } else {
+          wordIndex++;
+        }
+
         // Проверяем числовой формат (1–31)
         if (day.match(/^\d{1,2}$/)) {
           const dayNum = parseInt(day);
@@ -105,7 +115,6 @@
             console.log('Недопустимый день:', day);
             return false;
           }
-          wordIndex++;
         } else {
           // Проверяем текстовый формат (например, "first", "twelve")
           const validDays = [
@@ -119,12 +128,6 @@
             console.log('Недопустимый день:', day);
             return false;
           }
-          wordIndex++;
-        }
-
-        // Проверяем опциональный суффикс (th, st, nd, rd)
-        if (words[wordIndex] && ['th', 'st', 'nd', 'rd'].includes(words[wordIndex])) {
-          wordIndex++;
         }
 
         return true;
@@ -149,6 +152,29 @@
         }
 
         wordIndex++;
+        return true;
+      };
+
+      // Проверяем опциональный год
+      const validateYear = () => {
+        console.log('Валидация года на позиции', wordIndex);
+        if (!words[wordIndex]) {
+          console.log('Год отсутствует, допустимо');
+          return true;
+        }
+
+        const year = words[wordIndex];
+        if (!year.match(/^\d{4}$/)) {
+          console.log('Недопустимый год:', year);
+          return false;
+        }
+        wordIndex++;
+
+        if (wordIndex < words.length) {
+          console.log('Лишние слова после года:', words.slice(wordIndex));
+          return false;
+        }
+
         return true;
       };
 
@@ -210,10 +236,7 @@
 
         if (!validateMonth()) return false;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
+        if (!validateYear()) return false;
 
         console.log('Валидация пройдена для:', text);
         return true;
@@ -290,10 +313,7 @@
 
         if (!validateMonth()) return false;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
+        if (!validateYear()) return false;
 
         console.log('Валидация пройдена для:', text);
         return true;
