@@ -10,7 +10,7 @@
         translations: ["Я/Ты/Мы/Они ______ каждый день."],
         examples: [
           "I work every day. (Я работаю каждый день.)",
-          "You study every day. (Ты учишься каждый день.)",
+          "You jump everyday. (Ты прыгаешь каждый день.)",
           "We play every day. (Мы играем каждый день.)",
           "They read every day. (Они читают каждый день.)"
         ],
@@ -24,7 +24,7 @@
         translations: ["Он/Она/Оно ______ каждый день."],
         examples: [
           "She works every day. (Она работает каждый день.)",
-          "He studies every day. (Он учится каждый день.)",
+          "He jumps everyday. (Он прыгает каждый день.)",
           "It runs every day. (Оно бегает каждый день.)"
         ],
         id: "he-she-it-verbs-every-day",
@@ -37,8 +37,9 @@
         translations: ["Я/Ты/Мы/Они не ______ каждый день."],
         examples: [
           "I don’t work every day. (Я не работаю каждый день.)",
-          "You do not study every day. (Ты не учишься каждый день.)",
-          "We don’t play every day. (Мы не играем каждый день.)"
+          "You do not jump everyday. (Ты не прыгаешь каждый день.)",
+          "We don’t play every day. (Мы не играем каждый день.)",
+          "They do not work everyday. (Они не работают каждый день.)"
         ],
         id: "i-you-we-they-do-not-verb-every-day",
         hasVerb: true,
@@ -50,7 +51,7 @@
         translations: ["Он/Она/Оно не ______ каждый день."],
         examples: [
           "She doesn’t work every day. (Она не работает каждый день.)",
-          "He does not study every day. (Он не учится каждый день.)",
+          "He does not jump everyday. (Он не прыгает каждый день.)",
           "It doesn’t run every day. (Оно не бегает каждый день.)"
         ],
         id: "he-she-it-does-not-verb-every-day",
@@ -63,7 +64,7 @@
         translations: ["______ ли я/ты/мы/они каждый день?"],
         examples: [
           "Do I work every day? (Работаю ли я каждый день?)",
-          "Do you study every day? (Учишься ли ты каждый день?)",
+          "Do you jump everyday? (Прыгаешь ли ты каждый день?)",
           "Do we play every day? (Играем ли мы каждый день?)"
         ],
         id: "do-i-you-we-they-verb-every-day",
@@ -76,7 +77,7 @@
         translations: ["______ ли он/она/оно каждый день?"],
         examples: [
           "Does she work every day? (Работает ли она каждый день?)",
-          "Does he study every day? (Учится ли он каждый день?)",
+          "Does he jump everyday? (Прыгает ли он каждый день?)",
           "Does it run every day? (Бегает ли оно каждый день?)"
         ],
         id: "does-he-she-it-verb-every-day",
@@ -88,12 +89,13 @@
     validateStructure: function(text, structure) {
       console.log('Валидация структуры:', structure.id);
       console.log('Входной текст:', text);
-      // Обрабатываем сокращения
+      // Обрабатываем сокращения и нормализуем "everyday"
       let processedText = text
         .replace(/don't/gi, 'do not')
-        .replace(/doesn't/gi, 'does not');
+        .replace(/doesn't/gi, 'does not')
+        .replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
-        console.log('Обработаны сокращения:', processedText);
+        console.log('Обработаны сокращения и everyday:', processedText);
       }
       // Удаляем пунктуацию, нормализуем пробелы и приводим к нижнему регистру
       const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
@@ -103,11 +105,11 @@
       console.log('Разделённые слова:', words);
 
       // Минимальное количество слов
-      let minWords = 4; // Местоимение + глагол + every + day
+      let minWords = 3; // Местоимение + глагол + everyday/every day
       if (structure.id.includes('do-not') || structure.id.includes('does-not')) {
-        minWords = 5; // Местоимение + do/does + not + глагол + every + day
+        minWords = 4; // Местоимение + do/does + not + глагол + everyday/every day
       } else if (structure.id.includes('do-') || structure.id.includes('does-')) {
-        minWords = 5; // Do/Does + местоимение + глагол + every + day
+        minWords = 4; // Do/Does + местоимение + глагол + everyday/every day
       }
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
@@ -165,13 +167,16 @@
         return true;
       };
 
-      // Проверяем "every day" в конце
+      // Проверяем "every day" или "everyday" в конце
       const validateEveryDay = () => {
-        if (words[wordIndex] !== 'every' || words[wordIndex + 1] !== 'day') {
-          console.log('Ожидалось "every day" на позициях', wordIndex, wordIndex + 1, ', получено', words[wordIndex] || 'ничего', words[wordIndex + 1] || 'ничего');
+        if (words[wordIndex] === 'every' && words[wordIndex + 1] === 'day') {
+          wordIndex += 2;
+        } else if (words[wordIndex] === 'everyday') {
+          wordIndex++;
+        } else {
+          console.log('Ожидалось "every day" или "everyday" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
-        wordIndex += 2;
 
         // Разрешаем дополнительные слова
         while (wordIndex < words.length) {
