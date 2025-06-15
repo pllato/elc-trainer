@@ -2,7 +2,7 @@
   addLesson({
     level: "elementary",
     lesson: "lesson11",
-    name: "Урок 11: Expressing Ability with Can",
+    name: "Урок 11: Expressing Ability with Can and Could",
     structures: [
       {
         structure: "I / You / He/she/it / We / They can __________.",
@@ -16,6 +16,21 @@
           "They can run. (Они могут бегать.)"
         ],
         id: "subject-can-verb",
+        hasVerb: true,
+        hasName: false
+      },
+      {
+        structure: "I / You / He/she/it / We / They could __________.",
+        pattern: ["could"],
+        translations: ["Я/Ты/Он/Она/Оно/Мы/Они мог/могла/могли ______."],
+        examples: [
+          "I could dance. (Я мог танцевать.)",
+          "You could sing. (Ты мог петь.)",
+          "She could swim. (Она могла плавать.)",
+          "We could play. (Мы могли играть.)",
+          "They could run. (Они могли бегать.)"
+        ],
+        id: "subject-could-verb",
         hasVerb: true,
         hasName: false
       }
@@ -37,7 +52,7 @@
       console.log('Разделённые слова:', words);
 
       // Минимальное количество слов
-      const minWords = 3; // Подлежащее + can + глагол
+      const minWords = 3; // Подлежащее + can/could + глагол
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
         return false;
@@ -81,6 +96,36 @@
         // Проверяем "can"
         if (words[wordIndex] !== 'can') {
           console.log('Ожидалось "can" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+          return false;
+        }
+        wordIndex++;
+
+        // Проверяем глагол
+        if (!validateBaseVerb()) return false;
+
+        // Разрешаем дополнительные слова, кроме исключённых
+        while (wordIndex < words.length) {
+          const word = words[wordIndex];
+          if (excludedWords.includes(word)) {
+            console.log('Исключённое дополнительное слово:', word);
+            return false;
+          }
+          wordIndex++;
+        }
+
+        console.log('Валидация пройдена для:', text);
+        return true;
+      } else if (structure.id === "subject-could-verb") {
+        // Проверяем подлежащее
+        if (!['i', 'you', 'he', 'she', 'it', 'we', 'they'].includes(words[wordIndex])) {
+          console.log('Ожидалось "i/you/he/she/it/we/they" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+          return false;
+        }
+        wordIndex++;
+
+        // Проверяем "could"
+        if (words[wordIndex] !== 'could') {
+          console.log('Ожидалось "could" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
