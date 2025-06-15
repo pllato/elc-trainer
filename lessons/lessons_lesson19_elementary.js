@@ -109,12 +109,21 @@
       }
 
       let wordIndex = 0;
+      let currentCategory = null;
 
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
         'am', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
       ];
+
+      // Допустимые элементы для каждой категории
+      const validItems = {
+        food: ['pasta', 'pizza', 'burger', 'ice cream', 'cheese', 'bread', 'cake'],
+        drink: ['cola', 'juice', 'water', 'tea', 'coffee', 'milk'],
+        vegetable: ['tomato', 'carrot', 'cucumber', 'potato', 'onion'],
+        color: ['black', 'blue', 'red', 'green', 'yellow', 'white', 'purple', 'orange']
+      };
 
       // Проверяем категорию (food, drink, vegetable, color)
       const validateCategory = () => {
@@ -131,29 +140,46 @@
           return false;
         }
 
+        currentCategory = category; // Сохраняем категорию для проверки элемента
         wordIndex++;
         return true;
       };
 
       // Проверяем элемент (еда, напиток, овощ, цвет)
-      const validateItem = () => {
+      const validateItem = (restrictToFoodDrink = false) => {
         console.log('Валидация элемента на позиции', wordIndex);
         if (!words[wordIndex]) {
           console.log('Нет элемента');
           return false;
         }
 
-        const item = words[wordIndex];
-        // Разрешаем любые слова, кроме исключённых, для гибкости
-        if (excludedWords.includes(item)) {
-          console.log('Исключённый элемент:', item);
-          return false;
-        }
-
+        let item = words[wordIndex];
+        let itemWords = [item];
         wordIndex++;
         // Разрешаем составные названия (например, "ice cream", "dark blue")
         while (wordIndex < words.length && !excludedWords.includes(words[wordIndex])) {
+          itemWords.push(words[wordIndex]);
           wordIndex++;
+        }
+        item = itemWords.join(' ');
+
+        // Для структур, связанных с едой/напитками, ограничиваем список
+        if (restrictToFoodDrink) {
+          const allowedItems = [...validItems.food, ...validItems.drink];
+          if (!allowedItems.includes(item)) {
+            console.log('Недопустимый элемент для еды/напитка:', item);
+            return false;
+          }
+        } else {
+          // Для "my favourite", проверяем соответствие категории
+          if (!currentCategory) {
+            console.log('Категория не определена');
+            return false;
+          }
+          if (!validItems[currentCategory].includes(item)) {
+            console.log(`Недопустимый элемент для категории ${currentCategory}:`, item);
+            return false;
+          }
         }
 
         return true;
@@ -215,7 +241,7 @@
           wordIndex++;
         }
 
-        if (!validateItem()) return false;
+        if (!validateItem(true)) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
@@ -234,7 +260,7 @@
           wordIndex++;
         }
 
-        if (!validateItem()) return false;
+        if (!validateItem(true)) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
@@ -253,7 +279,7 @@
           wordIndex++;
         }
 
-        if (!validateItem()) return false;
+        if (!validateItem(true)) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
