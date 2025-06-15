@@ -2,7 +2,7 @@
   addLesson({
     level: "elementary",
     lesson: "lesson19",
-    name: "Урок 19: Talking About Favourite Foods, Drinks, Vegetables, Colors, and More",
+    name: "Урок 19: Talking About Favourite Things and Food Preferences",
     structures: [
       {
         structure: "What’s your favourite ______________?",
@@ -10,31 +10,21 @@
         translations: ["Какой твой любимый ______?"],
         examples: [
           "What’s your favourite food? (Какая твоя любимая еда?)",
-          "What’s your favourite drink? (Какой твой любимый напиток?)",
-          "What’s your favourite vegetable? (Какой твой любимый овощ?)",
           "What’s your favourite color? (Какой твой любимый цвет?)",
-          "What’s your favourite car? (Какая твоя любимая машина?)",
-          "What’s your favourite pen? (Какая твоя любимая ручка?)",
-          "What’s your favourite box? (Какая твоя любимая коробка?)"
+          "What’s your favourite car? (Какая твоя любимая машина?)"
         ],
         id: "whats-your-favourite-category",
         hasVerb: false,
         hasName: false
       },
       {
-        structure: "My favourite _______________ is ________.",
+        structure: "My favourite _______________ is ____________.",
         pattern: ["my", "favourite"],
         translations: ["Мой любимый ______ — это ______."],
         examples: [
           "My favourite food is pasta. (Моя любимая еда — паста.)",
-          "My favourite drink is Cola. (Мой любимый напиток — Кола.)",
-          "My favourite vegetable is tomato. (Мой любимый овощ — помидор.)",
-          "My favourite color is black. (Мой любимый цвет — чёрный.)",
-          "My favourite car is BMW. (Моя любимая машина — БМВ.)",
-          "My favourite car is blue. (Моя любимая машина — синяя.)",
-          "My favourite pen is ballpoint. (Моя любимая ручка — шариковая.)",
-          "My favourite box is wooden. (Моя любимая коробка — деревянная.)",
-          "My favourite box is square. (Моя любимая коробка — квадратная.)"
+          "My favourite color is blue. (Мой любимый цвет — синий.)",
+          "My favourite car is BMW. (Моя любимая машина — БМВ.)"
         ],
         id: "my-favourite-category-is-item",
         hasVerb: false,
@@ -47,7 +37,6 @@
         examples: [
           "Would you like some cheese? (Хочешь немного сыра?)",
           "Would you like some juice? (Хочешь немного сока?)",
-          "Would you like some coffee? (Хочешь немного кофе?)",
           "Would you like some bread? (Хочешь немного хлеба?)"
         ],
         id: "would-you-like-some-food",
@@ -61,7 +50,6 @@
         examples: [
           "Yes, I would like some cheese. (Да, я хочу немного сыра.)",
           "Yes, I would like some juice. (Да, я хочу немного сока.)",
-          "Yes, I would like some coffee. (Да, я хочу немного кофе.)",
           "Yes, I would like some bread. (Да, я хочу немного хлеба.)"
         ],
         id: "yes-i-would-like-some-food",
@@ -75,7 +63,6 @@
         examples: [
           "I would like some cheese. (Я хочу немного сыра.)",
           "I would like some juice. (Я хочу немного сока.)",
-          "I would like some coffee. (Я хочу немного кофе.)",
           "I would like some bread. (Я хочу немного хлеба.)"
         ],
         id: "i-would-like-some-food",
@@ -89,7 +76,6 @@
         examples: [
           "No, I wouldn’t like any cheese. (Нет, я не хочу сыра.)",
           "No, I wouldn’t like any juice. (Нет, я не хочу сока.)",
-          "No, I wouldn’t like any coffee. (Нет, я не хочу кофе.)",
           "No, I wouldn’t like any bread. (Нет, я не хочу хлеба.)"
         ],
         id: "no-i-would-not-like-any-food",
@@ -144,18 +130,13 @@
         'am', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
       ];
 
-      // Допустимые элементы для каждой категории
-      const validItems = {
-        food: ['pasta', 'pizza', 'burger', 'ice cream', 'cheese', 'bread', 'cake'],
-        drink: ['cola', 'juice', 'water', 'tea', 'coffee', 'milk'],
-        vegetable: ['tomato', 'carrot', 'cucumber', 'potato', 'onion'],
-        color: ['black', 'blue', 'red', 'green', 'yellow', 'white', 'purple', 'orange'],
-        car: ['bmw', 'toyota', 'ford', 'mercedes', 'tesla', 'black', 'blue', 'red', 'green', 'yellow', 'white'],
-        pen: ['ballpoint', 'fountain', 'gel', 'marker', 'black', 'blue', 'red'],
-        box: ['wooden', 'cardboard', 'metal', 'plastic', 'square', 'black', 'blue', 'red']
-      };
+      // Допустимые элементы для еды и напитков
+      const validFoodDrinkItems = [
+        'pasta', 'pizza', 'burger', 'ice cream', 'cheese', 'bread', 'cake',
+        'cola', 'juice', 'water', 'tea', 'coffee', 'milk'
+      ];
 
-      // Проверяем категорию (food, drink, vegetable, color, car, pen, box)
+      // Проверяем категорию (любое слово, кроме исключённых)
       const validateCategory = () => {
         console.log('Валидация категории на позиции', wordIndex);
         if (!words[wordIndex]) {
@@ -164,9 +145,8 @@
         }
 
         const category = words[wordIndex];
-        const validCategories = ['food', 'drink', 'vegetable', 'color', 'car', 'pen', 'box'];
-        if (!validCategories.includes(category)) {
-          console.log('Недопустимая категория:', category);
+        if (excludedWords.includes(category)) {
+          console.log('Исключённая категория:', category);
           return false;
         }
 
@@ -175,7 +155,7 @@
         return true;
       };
 
-      // Проверяем элемент (еда, напиток, овощ, цвет, машина, ручка, коробка)
+      // Проверяем элемент (для еды/напитков — строгий список, иначе — любое слово)
       const validateItem = (restrictToFoodDrink = false) => {
         console.log('Валидация элемента на позиции', wordIndex);
         if (!words[wordIndex]) {
@@ -193,21 +173,15 @@
         }
         item = itemWords.join(' ');
 
-        // Для структур, связанных с едой/напитками, ограничиваем список
         if (restrictToFoodDrink) {
-          const allowedItems = [...validItems.food, ...validItems.drink];
-          if (!allowedItems.includes(item)) {
+          if (!validFoodDrinkItems.includes(item)) {
             console.log('Недопустимый элемент для еды/напитка:', item);
             return false;
           }
         } else {
-          // Для "my favourite", проверяем соответствие категории
-          if (!currentCategory) {
-            console.log('Категория не определена');
-            return false;
-          }
-          if (!validItems[currentCategory].includes(item)) {
-            console.log(`Недопустимый элемент для категории ${currentCategory}:`, item);
+          // Для других категорий разрешаем любой элемент, кроме исключённых слов
+          if (excludedWords.includes(item.split(' ')[0])) {
+            console.log('Исключённый элемент:', item);
             return false;
           }
         }
