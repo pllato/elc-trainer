@@ -2,7 +2,7 @@
   addLesson({
     level: "elementary",
     lesson: "lesson19",
-    name: "Урок 19: Talking About Favourite Foods, Drinks, Vegetables, and Colors",
+    name: "Урок 19: Talking About Favourite Foods, Drinks, Vegetables, Colors, and More",
     structures: [
       {
         structure: "What’s your favourite ______________?",
@@ -12,7 +12,10 @@
           "What’s your favourite food? (Какая твоя любимая еда?)",
           "What’s your favourite drink? (Какой твой любимый напиток?)",
           "What’s your favourite vegetable? (Какой твой любимый овощ?)",
-          "What’s your favourite color? (Какой твой любимый цвет?)"
+          "What’s your favourite color? (Какой твой любимый цвет?)",
+          "What’s your favourite car? (Какая твоя любимая машина?)",
+          "What’s your favourite pen? (Какая твоя любимая ручка?)",
+          "What’s your favourite box? (Какая твоя любимая коробка?)"
         ],
         id: "whats-your-favourite-category",
         hasVerb: false,
@@ -26,7 +29,10 @@
           "My favourite food is pasta. (Моя любимая еда — паста.)",
           "My favourite drink is Cola. (Мой любимый напиток — Кола.)",
           "My favourite vegetable is tomato. (Мой любимый овощ — помидор.)",
-          "My favourite color is black. (Мой любимый цвет — чёрный.)"
+          "My favourite color is black. (Мой любимый цвет — чёрный.)",
+          "My favourite car is BMW. (Моя любимая машина — БМВ.)",
+          "My favourite pen is ballpoint. (Моя любимая ручка — шариковая.)",
+          "My favourite box is wooden. (Моя любимая коробка — деревянная.)"
         ],
         id: "my-favourite-category-is-item",
         hasVerb: false,
@@ -122,10 +128,13 @@
         food: ['pasta', 'pizza', 'burger', 'ice cream', 'cheese', 'bread', 'cake'],
         drink: ['cola', 'juice', 'water', 'tea', 'coffee', 'milk'],
         vegetable: ['tomato', 'carrot', 'cucumber', 'potato', 'onion'],
-        color: ['black', 'blue', 'red', 'green', 'yellow', 'white', 'purple', 'orange']
+        color: ['black', 'blue', 'red', 'green', 'yellow', 'white', 'purple', 'orange'],
+        car: ['bmw', 'toyota', 'ford', 'mercedes', 'tesla'],
+        pen: ['ballpoint', 'fountain', 'gel', 'marker'],
+        box: ['wooden', 'cardboard', 'metal', 'plastic']
       };
 
-      // Проверяем категорию (food, drink, vegetable, color)
+      // Проверяем категорию (food, drink, vegetable, color, car, pen, box)
       const validateCategory = () => {
         console.log('Валидация категории на позиции', wordIndex);
         if (!words[wordIndex]) {
@@ -134,7 +143,7 @@
         }
 
         const category = words[wordIndex];
-        const validCategories = ['food', 'drink', 'vegetable', 'color'];
+        const validCategories = ['food', 'drink', 'vegetable', 'color', 'car', 'pen', 'box'];
         if (!validCategories.includes(category)) {
           console.log('Недопустимая категория:', category);
           return false;
@@ -145,7 +154,7 @@
         return true;
       };
 
-      // Проверяем элемент (еда, напиток, овощ, цвет)
+      // Проверяем элемент (еда, напиток, овощ, цвет, машина, ручка, коробка)
       const validateItem = (restrictToFoodDrink = false) => {
         console.log('Валидация элемента на позиции', wordIndex);
         if (!words[wordIndex]) {
