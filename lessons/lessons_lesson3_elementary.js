@@ -13,8 +13,10 @@
           "What is his job? (Какая у него работа?) Example answer: He’s a policeman",
           "What is her address? (Какой у неё адрес?) Example answer: 34, Church Street",
           "What is their name? (Как их зовут?) Example answer: Smith",
-          "What is its position? (Какая его должность?) Example answer: Manager",
-          "What is our hobby? (Какое у нас хобби?) Example answer: Reading"
+          "What is its color? (Какой его цвет?) Example answer: Blue",
+          "What is our business? (Какой у нас бизнес?) Example answer: A café",
+          "What is your favorite color? (Какой твой любимый цвет?) Example answer: Red",
+          "What is his car? (Какая у него машина?) Example answer: A Tesla"
         ],
         id: "what-is-your-his-her-their-its-our-noun",
         hasVerb: false,
@@ -69,6 +71,13 @@
 
       let wordIndex = 0;
 
+      // Исключённые слова (модальные, стативные глаголы и неподходящие)
+      const excludedWords = [
+        'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
+        'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe', 'going'
+      ];
+
       if (structure.id === "what-is-your-his-her-their-its-our-noun") {
         if (words[wordIndex] !== 'what') {
           console.log('Ожидалось "what" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
@@ -88,15 +97,22 @@
         }
         wordIndex++;
 
-        // Расширенный список допустимых слов
-        const validNouns = ['surname', 'job', 'address', 'name', 'position', 'age', 'hobby', 'nationality'];
-        if (!validNouns.includes(words[wordIndex])) {
-          console.log('Ожидалось одно из "surname/job/address/name/position/age/hobby/nationality" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+        // Разрешаем любое слово или фразу, исключая неподходящие
+        if (!words[wordIndex]) {
+          console.log('Ожидалось существительное или фраза на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
-        wordIndex++;
 
-        // Разрешаем дополнительные слова
+        // Проверяем все оставшиеся слова
+        while (wordIndex < words.length) {
+          const word = words[wordIndex];
+          if (excludedWords.includes(word)) {
+            console.log('Исключённое слово:', word);
+            return false;
+          }
+          wordIndex++;
+        }
+
         console.log('Валидация пройдена для:', text);
         return true;
       } else if (structure.id === "where-is-are-pronoun-from") {
