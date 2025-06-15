@@ -11,7 +11,9 @@
         examples: [
           "What is her surname? (Как её фамилия?) Example answer: Jefferson",
           "What is his job? (Какая у него работа?) Example answer: He’s a policeman",
-          "What is her address? (Какой у неё адрес?) Example answer: 34, Church Street"
+          "What is her address? (Какой у неё адрес?) Example answer: 34, Church Street",
+          "What is his name? (Как его зовут?) Example answer: John",
+          "What is her position? (Какая у неё должность?) Example answer: Manager"
         ],
         id: "what-is-her-his-noun",
         hasVerb: false,
@@ -24,7 +26,8 @@
         examples: [
           "Where is she from? (Откуда она?) Example answer: Mexico",
           "Where are you from? (Откуда ты?) Example answer: Mexico",
-          "Where are they from? (Откуда они?) Example answer: Mexico"
+          "Where are they from? (Откуда они?) Example answer: Mexico",
+          "Where is he from? (Откуда он?) Example answer: Brazil"
         ],
         id: "where-is-are-pronoun-from",
         hasVerb: false,
@@ -36,7 +39,9 @@
         translations: ["Кто ______?"],
         examples: [
           "Who is Lara? (Кто такая Лара?) Example answer: She is Patrick’s daughter",
-          "Who is she? (Кто она?) Example answer: She is Patrick’s daughter"
+          "Who is she? (Кто она?) Example answer: She is Patrick’s daughter",
+          "Who is Peter? (Кто такой Питер?) Example answer: He is my brother",
+          "Who is Natalie? (Кто такая Натали?) Example answer: She is my friend"
         ],
         id: "who-is-name-pronoun",
         hasVerb: false,
@@ -82,17 +87,15 @@
         }
         wordIndex++;
 
-        if (!['surname', 'job', 'address'].includes(words[wordIndex])) {
-          console.log('Ожидалось "surname/job/address" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+        // Расширенный список допустимых слов
+        const validNouns = ['surname', 'job', 'address', 'name', 'position', 'age', 'hobby', 'nationality'];
+        if (!validNouns.includes(words[wordIndex])) {
+          console.log('Ожидалось одно из "surname/job/address/name/position/age/hobby/nationality" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова после заполнения:', words.slice(wordIndex));
-          return false;
-        }
-
+        // Разрешаем дополнительные слова
         console.log('Валидация пройдена для:', text);
         return true;
       } else if (structure.id === "where-is-are-pronoun-from") {
@@ -125,11 +128,7 @@
         }
         wordIndex++;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова после "from":', words.slice(wordIndex));
-          return false;
-        }
-
+        // Разрешаем дополнительные слова
         console.log('Валидация пройдена для:', text);
         return true;
       } else if (structure.id === "who-is-name-pronoun") {
@@ -145,17 +144,14 @@
         }
         wordIndex++;
 
-        if (!['lara', 'she', 'he'].includes(words[wordIndex])) {
-          console.log('Ожидалось "lara/she/he" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+        // Разрешаем любое слово (имя или местоимение)
+        if (!words[wordIndex]) {
+          console.log('Ожидалось имя или местоимение на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова после заполнения:', words.slice(wordIndex));
-          return false;
-        }
-
+        // Разрешаем дополнительные слова
         console.log('Валидация пройдена для:', text);
         return true;
       }
