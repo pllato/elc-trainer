@@ -12,7 +12,7 @@
           "I work every day. (Я работаю каждый день.)",
           "You jump everyday. (Ты прыгаешь каждый день.)",
           "We play every day. (Мы играем каждый день.)",
-          "They read every day. (Они читают каждый день.)"
+          "You cook eggs everyday. (Ты готовишь яйца каждый день.)"
         ],
         id: "i-you-we-they-verb-every-day",
         hasVerb: true,
@@ -25,7 +25,8 @@
         examples: [
           "She works every day. (Она работает каждый день.)",
           "He jumps everyday. (Он прыгает каждый день.)",
-          "It runs every day. (Оно бегает каждый день.)"
+          "It runs every day. (Оно бегает каждый день.)",
+          "She cooks eggs everyday. (Она готовит яйца каждый день.)"
         ],
         id: "he-she-it-verbs-every-day",
         hasVerb: true,
@@ -37,9 +38,9 @@
         translations: ["Я/Ты/Мы/Они не ______ каждый день."],
         examples: [
           "I don’t work every day. (Я не работаю каждый день.)",
-          "You do not jump everyday. (Ты не прыгаешь каждый день.)",
+          "You don’t jump everyday. (Ты не прыгаешь каждый день.)",
           "We don’t play every day. (Мы не играем каждый день.)",
-          "They do not work everyday. (Они не работают каждый день.)"
+          "You don’t cook everyday. (Ты не готовишь каждый день.)"
         ],
         id: "i-you-we-they-do-not-verb-every-day",
         hasVerb: true,
@@ -51,8 +52,9 @@
         translations: ["Он/Она/Оно не ______ каждый день."],
         examples: [
           "She doesn’t work every day. (Она не работает каждый день.)",
-          "He does not jump everyday. (Он не прыгает каждый день.)",
-          "It doesn’t run every day. (Оно не бегает каждый день.)"
+          "He doesn’t jump everyday. (Он не прыгает каждый день.)",
+          "It doesn’t run every day. (Оно не бегает каждый день.)",
+          "She doesn’t cook everyday. (Она не готовит каждый день.)"
         ],
         id: "he-she-it-does-not-verb-every-day",
         hasVerb: true,
@@ -65,7 +67,8 @@
         examples: [
           "Do I work every day? (Работаю ли я каждый день?)",
           "Do you jump everyday? (Прыгаешь ли ты каждый день?)",
-          "Do we play every day? (Играем ли мы каждый день?)"
+          "Do we play every day? (Играем ли мы каждый день?)",
+          "Do you cook everyday? (Готовишь ли ты каждый день?)"
         ],
         id: "do-i-you-we-they-verb-every-day",
         hasVerb: true,
@@ -78,7 +81,8 @@
         examples: [
           "Does she work every day? (Работает ли она каждый день?)",
           "Does he jump everyday? (Прыгает ли он каждый день?)",
-          "Does it run every day? (Бегает ли оно каждый день?)"
+          "Does it run every day? (Бегает ли оно каждый день?)",
+          "Does he cook everyday? (Готовит ли он каждый день?)"
         ],
         id: "does-he-she-it-verb-every-day",
         hasVerb: true,
@@ -167,18 +171,32 @@
         return true;
       };
 
-      // Проверяем "every day" или "everyday" в конце
+      // Проверяем "every day" или "everyday" в конце, разрешая слова между глаголом и every day
       const validateEveryDay = () => {
-        if (words[wordIndex] === 'every' && words[wordIndex + 1] === 'day') {
-          wordIndex += 2;
-        } else if (words[wordIndex] === 'everyday') {
+        // Разрешаем дополнительные слова до "every day" или "everyday"
+        let foundEveryDay = false;
+        while (wordIndex < words.length) {
+          if (words[wordIndex] === 'every' && words[wordIndex + 1] === 'day') {
+            wordIndex += 2;
+            foundEveryDay = true;
+            break;
+          } else if (words[wordIndex] === 'everyday') {
+            wordIndex++;
+            foundEveryDay = true;
+            break;
+          } else if (excludedWords.includes(words[wordIndex])) {
+            console.log('Исключённое дополнительное слово:', words[wordIndex]);
+            return false;
+          }
           wordIndex++;
-        } else {
-          console.log('Ожидалось "every day" или "everyday" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+        }
+
+        if (!foundEveryDay) {
+          console.log('Ожидалось "every day" или "everyday" до конца ввода');
           return false;
         }
 
-        // Разрешаем дополнительные слова
+        // Разрешаем дополнительные слова после "every day"
         while (wordIndex < words.length) {
           const extraWord = words[wordIndex];
           if (excludedWords.includes(extraWord)) {
@@ -279,7 +297,7 @@
         }
         wordIndex++;
 
-        if (!validateBaseVerb()) return false;
+        if (!validateBaseVerb()) return false; // Используем базовую форму глагола
         return validateEveryDay();
       }
 
