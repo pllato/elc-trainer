@@ -36,7 +36,8 @@
         translations: ["Хочешь немного ______?"],
         examples: [
           "Would you like some cheese? (Хочешь немного сыра?)",
-          "Would you like some juice? (Хочешь немного сока?)"
+          "Would you like some juice? (Хочешь немного сока?)",
+          "Would you like some coffee? (Хочешь немного кофе?)"
         ],
         id: "would-you-like-some-food",
         hasVerb: false,
@@ -48,7 +49,8 @@
         translations: ["Да, я хочу немного ______."],
         examples: [
           "Yes, I would like some cheese. (Да, я хочу немного сыра.)",
-          "Yes, I would like some juice. (Да, я хочу немного сока.)"
+          "Yes, I would like some juice. (Да, я хочу немного сока.)",
+          "Yes, I would like some coffee. (Да, я хочу немного кофе.)"
         ],
         id: "yes-i-would-like-some-food",
         hasVerb: false,
@@ -60,7 +62,8 @@
         translations: ["Нет, я не хочу ______."],
         examples: [
           "No, I wouldn’t like any cheese. (Нет, я не хочу сыра.)",
-          "No, I wouldn’t like any juice. (Нет, я не хочу сока.)"
+          "No, I wouldn’t like any juice. (Нет, я не хочу сока.)",
+          "No, I wouldn’t like any coffee. (Нет, я не хочу кофе.)"
         ],
         id: "no-i-would-not-like-any-food",
         hasVerb: false,
@@ -75,6 +78,7 @@
       let processedText = text
         .replace(/wouldn't/gi, 'would not')
         .replace(/what's/gi, 'what is')
+        .replace(/favorite/gi, 'favourite')
         .replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
         console.log('Обработаны сокращения и everyday:', processedText);
