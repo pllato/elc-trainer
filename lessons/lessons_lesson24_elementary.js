@@ -63,12 +63,6 @@
         'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
 
-      // Список валидных глаголов в третьей форме (Past Participle)
-      const validPastParticiples = [
-        'done', 'seen', 'eaten', 'gone', 'written', 'read', 'spoken', 'taken', 'made', 'bought',
-        'thought', 'known', 'been', 'had', 'got', 'heard', 'found', 'lost', 'met', 'broken'
-      ];
-
       // Проверяем глагол в третьей форме
       const validatePastParticiple = () => {
         console.log('Валидация глагола на позиции', wordIndex);
@@ -78,9 +72,21 @@
         }
 
         const verb = words[wordIndex];
-        if (!validPastParticiples.includes(verb)) {
-          console.log('Недопустимый глагол в третьей форме:', verb);
-          return false;
+        // Проверяем регулярные глаголы (заканчивающиеся на -ed) или нерегулярные (без строгого списка)
+        if (!verb.endsWith('ed')) {
+          // Для нерегулярных глаголов проверяем, что базовая форма не в excludedWords
+          const baseVerb = verb; // Для упрощения, предполагаем, что verb уже в третьей форме
+          if (excludedWords.includes(baseVerb)) {
+            console.log('Исключённый глагол:', baseVerb);
+            return false;
+          }
+        } else {
+          // Для регулярных глаголов проверяем базовую форму (без -ed)
+          const baseVerb = verb.slice(0, -2);
+          if (excludedWords.includes(baseVerb)) {
+            console.log('Исключённый глагол:', baseVerb);
+            return false;
+          }
         }
 
         wordIndex++;
