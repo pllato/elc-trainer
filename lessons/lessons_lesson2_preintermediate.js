@@ -66,23 +66,27 @@
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
       ];
 
-      // Список нерегулярных глаголов для проверки (базовая форма → прошедшее время)
-      const irregularVerbs = {
-        'eat': 'ate',
-        'go': 'went',
-        'see': 'saw',
-        'run': 'ran',
-        'read': 'read',
-        'write': 'wrote',
-        'buy': 'bought',
-        'take': 'took',
-        'make': 'made',
-        'drink': 'drank'
+      // Проверяем глагол в вопросе (базовая форма)
+      const validateVerbBase = () => {
+        console.log('Валидация глагола (базовая форма) на позиции', wordIndex);
+        if (!words[wordIndex]) {
+          console.log('Нет глагола');
+          return false;
+        }
+
+        const verb = words[wordIndex];
+        if (excludedWords.includes(verb)) {
+          console.log('Исключённый глагол:', verb);
+          return false;
+        }
+
+        wordIndex++;
+        return true;
       };
 
-      // Проверяем глагол в прошедшем времени
+      // Проверяем глагол в прошедшем времени (для ответа)
       const validateVerbPast = () => {
-        console.log('Валидация глагола на позиции', wordIndex);
+        console.log('Валидация глагола (прошедшее время) на позиции', wordIndex);
         if (!words[wordIndex]) {
           console.log('Нет глагола');
           return false;
@@ -97,10 +101,10 @@
             return false;
           }
         } else {
-          // Проверяем нерегулярные глаголы
-          const isIrregular = Object.values(irregularVerbs).includes(verb);
-          if (!isIrregular) {
-            console.log('Глагол не является валидным в прошедшем времени:', verb);
+          // Для нерегулярных глаголов проверяем, что базовая форма не в excludedWords
+          // Предполагаем, что глагол уже в прошедшем времени
+          if (excludedWords.includes(verb)) {
+            console.log('Исключённый глагол:', verb);
             return false;
           }
         }
@@ -136,21 +140,21 @@
           const timeIndicators = ['morning', 'evening', 'night', 'yesterday', 'last', 'ago'];
           if (!timeIndicators.some(indicator => circumstance.includes(indicator))) {
             console.log('Обстоятельство не соответствует времени:', circumstance);
-            // Разрешаем, если нет явных ошибок, для гибкости
+            // Разрешаем для гибкости
           }
         } else if (expectedType === 'where') {
           // Ожидаем выражения места
           const placeIndicators = ['home', 'school', 'park', 'city', 'at', 'in', 'on'];
           if (!placeIndicators.some(indicator => circumstance.includes(indicator))) {
             console.log('Обстоятельство не соответствует месту:', circumstance);
-            // Разрешаем, если нет явных ошибок
+            // Разрешаем для гибкости
           }
         } else if (expectedType === 'what') {
           // Ожидаем объект
-          const objectIndicators = ['sandwich', 'book', 'movie', 'food', 'drink'];
+          const objectIndicators = ['sandwich', 'book', 'movie', 'food', 'drink', 'the'];
           if (!objectIndicators.some(indicator => circumstance.includes(indicator))) {
             console.log('Обстоятельство не соответствует объекту:', circumstance);
-            // Разрешаем, если нет явных ошибок
+            // Разрешаем для гибкости
           }
         } else if (expectedType === 'why') {
           // Ожидаем причину, начинающуюся с "because"
@@ -180,7 +184,7 @@
           wordIndex++;
         }
 
-        if (!validateVerbPast()) return false;
+        if (!validateVerbBase()) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
