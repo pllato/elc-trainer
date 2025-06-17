@@ -7,7 +7,7 @@
       {
         structure: "How much _______ do I/you/we/they ___________?",
         pattern: ["how", "much"],
-        translations: ["Сколько ______ нужно/хочу я/ты/мы/они?"],
+        translations: ["Сколько ______ я/ты/мы/они ______?"],
         examples: [
           "How much milk do you need? (Сколько молока тебе нужно?)",
           "How much water do we want? (Сколько воды мы хотим?)",
@@ -23,8 +23,8 @@
         translations: ["Я/ты/мы/они/мои друзья ______ ______."],
         examples: [
           "You need a bottle of milk. (Тебе нужна бутылка молока.)",
-          "We want some water. (Мы хотим немного воды.)",
-          "My friends have much sugar. (Мои друзья имеют много сахара.)"
+          "We want a lot of water. (Мы хотим много воды.)",
+          "My friends have a little sugar. (Мои друзья имеют немного сахара.)"
         ],
         id: "subject-verb-quantity-noun",
         hasVerb: false,
@@ -109,37 +109,54 @@
           return false;
         }
 
-        // Проверяем количество (число, числительное, "many", "much", "some", или фраза типа "a bottle of")
+        // Проверяем количество (число, числительное, "many", "much", "some", или составные фразы)
         let quantityWords = [];
-        while (wordIndex < words.length) {
+        let isComposite = false;
+
+        // Проверяем составные выражения (a lot of, lots of, a little, a bit of)
+        if (wordIndex + 2 < words.length && words[wordIndex] === 'a' && words[wordIndex + 1] === 'lot' && words[wordIndex + 2] === 'of') {
+          quantityWords.push('a', 'lot', 'of');
+          wordIndex += 3;
+          isComposite = true;
+        } else if (wordIndex + 1 < words.length && words[wordIndex] === 'lots' && words[wordIndex + 1] === 'of') {
+          quantityWords.push('lots', 'of');
+          wordIndex += 2;
+          isComposite = true;
+        } else if (wordIndex + 2 < words.length && words[wordIndex] === 'a' && words[wordIndex + 1] === 'little' && words[wordIndex + 2] === 'of') {
+          quantityWords.push('a', 'little', 'of');
+          wordIndex += 3;
+          isComposite = true;
+        } else if (wordIndex + 2 < words.length && words[wordIndex] === 'a' && words[wordIndex + 1] === 'bit' && words[wordIndex + 2] === 'of') {
+          quantityWords.push('a', 'bit', 'of');
+          wordIndex += 3;
+          isComposite = true;
+        } else if (wordIndex + 2 < words.length && words[wordIndex] === 'a' && ['bottle', 'cup', 'glass'].includes(words[wordIndex + 1]) && words[wordIndex + 2] === 'of') {
+          quantityWords.push('a', words[wordIndex + 1], 'of');
+          wordIndex += 3;
+          isComposite = true;
+        } else {
+          // Проверяем одиночные слова или числа
           const word = words[wordIndex];
           if (excludedWords.includes(word)) {
             console.log('Исключённое слово в количестве:', word);
             return false;
           }
-          quantityWords.push(word);
-          wordIndex++;
-          // Проверяем, является ли следующее слово началом существительного
-          if (word === 'of' && words[wordIndex] && !excludedWords.includes(words[wordIndex])) {
-            quantityWords.push(words[wordIndex]);
+          const validQuantities = ['many', 'much', 'some', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+          if (validQuantities.includes(word) || /^\d+$/.test(word)) {
+            quantityWords.push(word);
             wordIndex++;
-            break;
-          }
-          if (!['a', 'an', 'some', 'many', 'much'].includes(word) && !/^\d+$/.test(word)) {
-            break;
+          } else {
+            console.log('Недопустимое количество:', word);
+            return false;
           }
         }
 
-        if (quantityWords.length === 0) {
-          console.log('Количество отсутствует');
-          return false;
-        }
-
-        // Проверяем, что последним словом является существительное
-        const lastWord = quantityWords[quantityWords.length - 1];
-        if (excludedWords.includes(lastWord)) {
-          console.log('Исключённое существительное:', lastWord);
-          return false;
+        // Проверяем существительное после количества
+        if (isComposite) {
+          if (!validateNoun()) return false;
+        } else {
+          // Для одиночных количеств существительное уже проверено или является последним словом
+          if (wordIndex < words.length && !validateNoun()) return false;
         }
 
         return true;
