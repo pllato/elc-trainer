@@ -10,7 +10,7 @@
         translations: ["Сколько ______ я/ты/мы/они ______?"],
         examples: [
           "How many chairs do you need? (Сколько стульев тебе нужно?)",
-          "How many cookies do they eat? (Сколько печений они едят?)",
+          "How many exercises do they do? (Сколько упражнений они делают?)",
           "How many cars do we have? (Сколько машин у нас есть?)"
         ],
         id: "how-many-noun-do-subject-verb",
@@ -23,7 +23,7 @@
         translations: ["Я/ты/мы/они/мои друзья ______ ______."],
         examples: [
           "You need two chairs. (Тебе нужно два стула.)",
-          "We eat many cookies. (Мы едим много печений.)",
+          "We do many exercises. (Мы делаем много упражнений.)",
           "My friends have three cars. (Мои друзья имеют три машины.)"
         ],
         id: "subject-verb-quantity-noun",
@@ -62,7 +62,7 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'do', 'did'
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did'
       ];
 
       // Проверяем существительное
@@ -109,7 +109,7 @@
           return false;
         }
 
-        // Проверяем количество (число, числительное или "many")
+        // Проверяем количество (число, числительное или "many"/"mini")
         const quantity = words[wordIndex];
         const validQuantities = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'many', 'mini'];
         if (!validQuantities.includes(quantity)) {
