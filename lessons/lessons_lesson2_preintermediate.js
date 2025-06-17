@@ -194,8 +194,13 @@
 
         const verb = words[wordIndex];
         // Проверяем, является ли глагол базовой формой из irregularVerbs или допустимым регулярным глаголом
-        const isIrregular = Object.keys(irregularVerbs).includes(verb);
-        if (!isIrregular && excludedWords.includes(verb)) {
+        const isIrregularBase = Object.keys(irregularVerbs).includes(verb);
+        const isIrregularPast = Object.values(irregularVerbs).includes(verb);
+        if (isIrregularPast && !isIrregularBase) {
+          console.log('Глагол в прошедшем времени, ожидается базовая форма:', verb);
+          return false;
+        }
+        if (!isIrregularBase && excludedWords.includes(verb)) {
           console.log('Исключённый глагол:', verb);
           return false;
         }
