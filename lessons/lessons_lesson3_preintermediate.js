@@ -10,7 +10,7 @@
         translations: ["Что он/она/оно ______?"],
         examples: [
           "What is he drawing? (Что он рисует?)",
-          "What is she reading? (Что она читает?)",
+          "What is she sleeping? (Что она спит?)",
           "What is it doing? (Что оно делает?)"
         ],
         id: "what-is-he-she-it-verb-ing",
@@ -23,7 +23,7 @@
         translations: ["Он/она/оно (не) ______ ______."],
         examples: [
           "He is drawing a tree. (Он рисует дерево.)",
-          "She is not reading a book. (Она не читает книгу.)",
+          "She is not sleeping now. (Она сейчас не спит.)",
           "It is doing homework. (Оно делает домашнюю работу.)"
         ],
         id: "he-she-it-is-not-verb-ing-object",
@@ -50,7 +50,7 @@
         examples: [
           "You are eating a pizza. (Ты ешь пиццу.)",
           "We are not watching a movie. (Мы не смотрим фильм.)",
-          "They are doing exercises. (Они делают упражнения.)"
+          "They are sleeping now. (Они сейчас спят.)"
         ],
         id: "you-we-they-are-not-verb-ing-object",
         hasVerb: false,
@@ -80,9 +80,9 @@
       // Минимальное количество слов
       let minWords = 4; // Для вопроса: What + is/are + he/she/it/you/we/they + глагол
       if (structure.id === "he-she-it-is-not-verb-ing-object") {
-        minWords = 4; // He/she/it + is + not (опционально) + глагол + минимум 1 слово дополнения
+        minWords = 3; // He/she/it + is + not (опционально) + глагол
       } else if (structure.id === "you-we-they-are-not-verb-ing-object") {
-        minWords = 4; // You/we/they + are + not (опционально) + глагол + минимум 1 слово дополнения
+        minWords = 3; // You/we/they + are + not (опционально) + глагол
       }
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
@@ -95,7 +95,7 @@
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
-        'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe', 'stand', 'sleep'
+        'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe', 'stand'
       ];
 
       // Проверяем глагол в форме -ing
