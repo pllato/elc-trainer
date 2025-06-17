@@ -10,8 +10,8 @@
         translations: ["Сколько ______ я/ты/мы/они ______?"],
         examples: [
           "How many chairs do you need? (Сколько стульев тебе нужно?)",
-          "How many books do we want? (Сколько книг мы хотим?)",
-          "How many cars do they have? (Сколько машин у них есть?)"
+          "How many cookies do they eat? (Сколько печений они едят?)",
+          "How many cars do we have? (Сколько машин у нас есть?)"
         ],
         id: "how-many-noun-do-subject-verb",
         hasVerb: false,
@@ -23,8 +23,8 @@
         translations: ["Я/ты/мы/они/мои друзья ______ ______."],
         examples: [
           "You need two chairs. (Тебе нужно два стула.)",
-          "We want three books. (Мы хотим три книги.)",
-          "My friends need four apples. (Моим друзьям нужно четыре яблока.)"
+          "We eat many cookies. (Мы едим много печений.)",
+          "My friends have three cars. (Мои друзья имеют три машины.)"
         ],
         id: "subject-verb-quantity-noun",
         hasVerb: false,
@@ -50,7 +50,7 @@
       // Минимальное количество слов
       let minWords = 5; // Для вопроса: How + many + существительное + do + подлежащее + глагол
       if (structure.id === "subject-verb-quantity-noun") {
-        minWords = 4; // Подлежащее + глагол + количество + существительное
+        minWords = 3; // Подлежащее + глагол + количество/существительное
       }
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
@@ -64,9 +64,6 @@
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'do', 'did'
       ];
-
-      // Допустимые глаголы для ответов
-      const validVerbs = ['need', 'want'];
 
       // Проверяем существительное
       const validateNoun = () => {
@@ -86,8 +83,8 @@
         return true;
       };
 
-      // Проверяем глагол для вопросов (любой, кроме исключённых)
-      const validateVerbQuestion = () => {
+      // Проверяем глагол (любой, кроме исключённых)
+      const validateVerb = () => {
         console.log('Валидация глагола на позиции', wordIndex);
         if (!words[wordIndex]) {
           console.log('Нет глагола');
@@ -104,24 +101,6 @@
         return true;
       };
 
-      // Проверяем глагол для ответов (need или want)
-      const validateVerbAnswer = () => {
-        console.log('Валидация глагола на позиции', wordIndex);
-        if (!words[wordIndex]) {
-          console.log('Нет глагола');
-          return false;
-        }
-
-        const verb = words[wordIndex];
-        if (!validVerbs.includes(verb)) {
-          console.log('Недопустимый глагол:', verb);
-          return false;
-        }
-
-        wordIndex++;
-        return true;
-      };
-
       // Проверяем количество и существительное в ответе
       const validateQuantityNoun = () => {
         console.log('Валидация количества и существительного на позиции', wordIndex);
@@ -130,9 +109,9 @@
           return false;
         }
 
-        // Проверяем количество (число или числительное)
+        // Проверяем количество (число, числительное или "many")
         const quantity = words[wordIndex];
-        const validQuantities = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+        const validQuantities = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'many', 'mini'];
         if (!validQuantities.includes(quantity)) {
           console.log('Недопустимое количество:', quantity);
           return false;
@@ -169,7 +148,7 @@
         }
         wordIndex++;
 
-        if (!validateVerbQuestion()) return false;
+        if (!validateVerb()) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
@@ -189,7 +168,7 @@
           wordIndex++;
         }
 
-        if (!validateVerbAnswer()) return false;
+        if (!validateVerb()) return false;
 
         if (!validateQuantityNoun()) return false;
 
