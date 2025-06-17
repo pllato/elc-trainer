@@ -11,7 +11,7 @@
         examples: [
           "What is he drawing? (Что он рисует?)",
           "What is she reading? (Что она читает?)",
-          "What is it eating? (Что оно ест?)"
+          "What is it doing? (Что оно делает?)"
         ],
         id: "what-is-he-she-it-verb-ing",
         hasVerb: false,
@@ -24,7 +24,7 @@
         examples: [
           "He is drawing a tree. (Он рисует дерево.)",
           "She is not reading a book. (Она не читает книгу.)",
-          "It is eating a pizza. (Оно ест пиццу.)"
+          "It is doing homework. (Оно делает домашнюю работу.)"
         ],
         id: "he-she-it-is-not-verb-ing-object",
         hasVerb: false,
@@ -37,7 +37,7 @@
         examples: [
           "What are you eating? (Что ты ешь?)",
           "What are we watching? (Что мы смотрим?)",
-          "What are they playing? (Что они играют?)"
+          "What are they doing? (Что они делают?)"
         ],
         id: "what-are-you-we-they-verb-ing",
         hasVerb: false,
@@ -50,7 +50,7 @@
         examples: [
           "You are eating a pizza. (Ты ешь пиццу.)",
           "We are not watching a movie. (Мы не смотрим фильм.)",
-          "They are playing football. (Они играют в футбол.)"
+          "They are doing exercises. (Они делают упражнения.)"
         ],
         id: "you-we-they-are-not-verb-ing-object",
         hasVerb: false,
@@ -65,6 +65,7 @@
       let processedText = text
         .replace(/isn't/gi, 'is not')
         .replace(/aren't/gi, 'are not')
+        .replace(/we're/gi, 'we are')
         .replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
         console.log('Обработаны сокращения и everyday:', processedText);
@@ -93,8 +94,8 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
-        'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'did',
+        'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe', 'stand', 'sleep'
       ];
 
       // Проверяем глагол в форме -ing
@@ -112,7 +113,18 @@
         }
 
         // Базовая форма глагола (без -ing)
-        const baseVerb = verb.slice(0, -3);
+        let baseVerb = verb.slice(0, -3);
+        // Учитываем удвоение согласной (например, running → run)
+        if (baseVerb.endsWith('n') && verb.endsWith('nning')) {
+          baseVerb = baseVerb.slice(0, -1);
+        } else if (baseVerb.endsWith('t') && verb.endsWith('tting')) {
+          baseVerb = baseVerb.slice(0, -1);
+        }
+        // Учитываем изменение -ie на -y (например, lying → lie)
+        if (baseVerb.endsWith('y') && verb.endsWith('ying')) {
+          baseVerb = baseVerb.slice(0, -1) + 'ie';
+        }
+
         if (excludedWords.includes(baseVerb)) {
           console.log('Исключённый глагол:', baseVerb);
           return false;
