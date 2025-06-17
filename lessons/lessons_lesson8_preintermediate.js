@@ -7,11 +7,11 @@
       {
         structure: "How many _______ do I/you/we/they ___________?",
         pattern: ["how", "many"],
-        translations: ["Сколько ______ нужно/хочу я/ты/мы/они?"],
+        translations: ["Сколько ______ я/ты/мы/они ______?"],
         examples: [
           "How many chairs do you need? (Сколько стульев тебе нужно?)",
           "How many books do we want? (Сколько книг мы хотим?)",
-          "How many apples do they need? (Сколько яблок им нужно?)"
+          "How many cars do they have? (Сколько машин у них есть?)"
         ],
         id: "how-many-noun-do-subject-verb",
         hasVerb: false,
@@ -62,10 +62,10 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'do', 'did'
       ];
 
-      // Допустимые глаголы
+      // Допустимые глаголы для ответов
       const validVerbs = ['need', 'want'];
 
       // Проверяем существительное
@@ -86,8 +86,26 @@
         return true;
       };
 
-      // Проверяем глагол
-      const validateVerb = () => {
+      // Проверяем глагол для вопросов (любой, кроме исключённых)
+      const validateVerbQuestion = () => {
+        console.log('Валидация глагола на позиции', wordIndex);
+        if (!words[wordIndex]) {
+          console.log('Нет глагола');
+          return false;
+        }
+
+        const verb = words[wordIndex];
+        if (excludedWords.includes(verb)) {
+          console.log('Исключённый глагол:', verb);
+          return false;
+        }
+
+        wordIndex++;
+        return true;
+      };
+
+      // Проверяем глагол для ответов (need или want)
+      const validateVerbAnswer = () => {
         console.log('Валидация глагола на позиции', wordIndex);
         if (!words[wordIndex]) {
           console.log('Нет глагола');
@@ -151,7 +169,7 @@
         }
         wordIndex++;
 
-        if (!validateVerb()) return false;
+        if (!validateVerbQuestion()) return false;
 
         if (wordIndex < words.length) {
           console.log('Лишние слова:', words.slice(wordIndex));
@@ -171,7 +189,7 @@
           wordIndex++;
         }
 
-        if (!validateVerb()) return false;
+        if (!validateVerbAnswer()) return false;
 
         if (!validateQuantityNoun()) return false;
 
