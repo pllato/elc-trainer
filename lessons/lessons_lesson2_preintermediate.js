@@ -63,8 +63,126 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did'
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'have', 'had', 'does', 'do', 'did',
+        'like', 'love', 'hate', 'know', 'understand', 'want', 'need', 'believe'
       ];
+
+      // Полный список неправильных глаголов (базовая форма → прошедшее время)
+      const irregularVerbs = {
+        'arise': 'arose',
+        'awake': 'awoke',
+        'be': 'was',
+        'bear': 'bore',
+        'beat': 'beat',
+        'become': 'became',
+        'begin': 'began',
+        'bend': 'bent',
+        'bet': 'bet',
+        'bind': 'bound',
+        'bite': 'bit',
+        'bleed': 'bled',
+        'blow': 'blew',
+        'break': 'broke',
+        'breed': 'bred',
+        'bring': 'brought',
+        'build': 'built',
+        'burn': 'burnt',
+        'burst': 'burst',
+        'buy': 'bought',
+        'cast': 'cast',
+        'catch': 'caught',
+        'choose': 'chose',
+        'cling': 'clung',
+        'come': 'came',
+        'cost': 'cost',
+        'creep': 'crept',
+        'cut': 'cut',
+        'deal': 'dealt',
+        'dig': 'dug',
+        'do': 'did',
+        'draw': 'drew',
+        'drink': 'drank',
+        'drive': 'drove',
+        'eat': 'ate',
+        'fall': 'fell',
+        'feed': 'fed',
+        'feel': 'felt',
+        'fight': 'fought',
+        'find': 'found',
+        'flee': 'fled',
+        'fly': 'flew',
+        'forbid': 'forbade',
+        'forget': 'forgot',
+        'forgive': 'forgave',
+        'freeze': 'froze',
+        'get': 'got',
+        'give': 'gave',
+        'go': 'went',
+        'grow': 'grew',
+        'hang': 'hung',
+        'have': 'had',
+        'hear': 'heard',
+        'hide': 'hid',
+        'hit': 'hit',
+        'hold': 'held',
+        'hurt': 'hurt',
+        'keep': 'kept',
+        'know': 'knew',
+        'lay': 'laid',
+        'lead': 'led',
+        'leave': 'left',
+        'lend': 'lent',
+        'let': 'let',
+        'lie': 'lay',
+        'light': 'lit',
+        'lose': 'lost',
+        'make': 'made',
+        'mean': 'meant',
+        'meet': 'met',
+        'pay': 'paid',
+        'put': 'put',
+        'read': 'read',
+        'ride': 'rode',
+        'ring': 'rang',
+        'rise': 'rose',
+        'run': 'ran',
+        'say': 'said',
+        'see': 'saw',
+        'sell': 'sold',
+        'send': 'sent',
+        'set': 'set',
+        'shake': 'shook',
+        'shine': 'shone',
+        'shoot': 'shot',
+        'show': 'showed',
+        'shut': 'shut',
+        'sing': 'sang',
+        'sink': 'sank',
+        'sit': 'sat',
+        'sleep': 'slept',
+        'slide': 'slid',
+        'speak': 'spoke',
+        'spend': 'spent',
+        'stand': 'stood',
+        'steal': 'stole',
+        'stick': 'stuck',
+        'sting': 'stung',
+        'strike': 'struck',
+        'swear': 'swore',
+        'sweep': 'swept',
+        'swim': 'swam',
+        'take': 'took',
+        'teach': 'taught',
+        'tear': 'tore',
+        'tell': 'told',
+        'think': 'thought',
+        'throw': 'threw',
+        'understand': 'understood',
+        'wake': 'woke',
+        'wear': 'wore',
+        'win': 'won',
+        'write': 'wrote'
+      };
 
       // Проверяем глагол в вопросе (базовая форма)
       const validateVerbBase = () => {
@@ -75,7 +193,9 @@
         }
 
         const verb = words[wordIndex];
-        if (excludedWords.includes(verb)) {
+        // Проверяем, является ли глагол базовой формой из irregularVerbs или допустимым регулярным глаголом
+        const isIrregular = Object.keys(irregularVerbs).includes(verb);
+        if (!isIrregular && excludedWords.includes(verb)) {
           console.log('Исключённый глагол:', verb);
           return false;
         }
@@ -101,10 +221,10 @@
             return false;
           }
         } else {
-          // Для нерегулярных глаголов проверяем, что базовая форма не в excludedWords
-          // Предполагаем, что глагол уже в прошедшем времени
-          if (excludedWords.includes(verb)) {
-            console.log('Исключённый глагол:', verb);
+          // Проверяем нерегулярные глаголы
+          const isIrregular = Object.values(irregularVerbs).includes(verb);
+          if (!isIrregular) {
+            console.log('Глагол не является валидным в прошедшем времени:', verb);
             return false;
           }
         }
