@@ -5,15 +5,15 @@
     name: "Урок 14: Past Perfect and Past Simple with Before",
     structures: [
       {
-        structure: "I had ______________________(ed) before I ________________(ed)",
+        structure: "I had ______________________(ed) before I/you/he/she/it/we/they ________________(ed)",
         pattern: ["i", "had"],
         translations: ["Я ______ перед тем, как ______."],
         examples: [
           "I had brushed my teeth before I went to sleep. (Я почистил зубы перед тем, как лег спать.)",
-          "I had eaten dinner before I watched TV. (Я поел ужин перед тем, как смотрел телевизор.)",
-          "I had finished homework before I played games. (Я закончил домашнюю работу перед тем, как играл в игры.)"
+          "I had eaten dinner before you came home. (Я поел ужин перед тем, как ты пришел домой.)",
+          "I had finished homework before we played games. (Я закончил домашнюю работу перед тем, как мы играли в игры.)"
         ],
-        id: "i-had-past-participle-before-i-past-simple",
+        id: "i-had-past-participle-before-past-simple",
         hasVerb: false,
         hasName: false
       }
@@ -37,7 +37,7 @@
       console.log('Разделённые слова:', words);
 
       // Минимальное количество слов
-      const minWords = 6; // I + had + V3 + before + I + V2
+      const minWords = 6; // I + had + V3 + before + подлежащее + V2
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
         return false;
@@ -48,7 +48,7 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'being', 'has', 'had', 'does', 'did'
+        'am', 'is', 'are', 'was', 'were', 'being', 'has', 'does', 'did'
       ];
 
       // Полный список неправильных глаголов (базовая форма → {V2, V3})
@@ -85,6 +85,7 @@
         'dig': { v2: 'dug', v3: 'dug' },
         'do': { v2: 'did', v3: 'done' },
         'draw': { v2: 'drew', v3: 'drawn' },
+        'dream': { v2: 'dreamed/dreamt', v3: 'dreamed/dreamt' },
         'drink': { v2: 'drank', v3: 'drunk' },
         'drive': { v2: 'drove', v3: 'driven' },
         'eat': { v2: 'ate', v3: 'eaten' },
@@ -177,9 +178,10 @@
         }
 
         const verb = words[wordIndex];
-        // Проверяем регулярные глаголы (заканчивающиеся на -ed)
-        if (verb.endsWith('ed')) {
-          const baseVerb = verb.slice(0, -2);
+        console.log('Проверка глагола V3:', verb);
+        // Проверяем регулярные глаголы (заканчивающиеся на -ed) и "had"
+        if (verb.endsWith('ed') || verb === 'had') {
+          const baseVerb = verb === 'had' ? 'have' : verb.slice(0, -2);
           if (excludedWords.includes(baseVerb)) {
             console.log('Исключённый глагол:', baseVerb);
             return false;
@@ -205,13 +207,14 @@
         let actionWords = [];
         while (wordIndex < words.length && words[wordIndex] !== 'before') {
           const word = words[wordIndex];
-          if (excludedWords.includes(word)) {
-            console.log('Исключённое слово в дополнении:', word);
+          if (excludedWords.includes(word) || /^\d+$/.test(word)) {
+            console.log('Исключённое слово или число в дополнении:', word);
             return false;
           }
           actionWords.push(word);
           wordIndex++;
         }
+        console.log('Дополнение для V3:', actionWords);
 
         return true;
       };
@@ -225,6 +228,7 @@
         }
 
         const verb = words[wordIndex];
+        console.log('Проверка глагола V2:', verb);
         // Проверяем регулярные глаголы (заканчивающиеся на -ed)
         if (verb.endsWith('ed')) {
           const baseVerb = verb.slice(0, -2);
@@ -253,21 +257,43 @@
         let actionWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word)) {
-            console.log('Исключённое слово в дополнении:', word);
+          if (excludedWords.includes(word) || /^\d+$/.test(word)) {
+            console.log('Исключённое слово или число в дополнении:', word);
             return false;
           }
           actionWords.push(word);
           wordIndex++;
         }
+        console.log('Дополнение для V2:', actionWords);
 
         return true;
       };
 
-      if (structure.id === "i-had-past-participle-before-i-past-simple") {
+      // Проверяем подлежащее
+      const validateSubject = () => {
+        console.log('Валидация подлежащего на позиции', wordIndex);
+        if (!words[wordIndex]) {
+          console.log('Нет подлежащего');
+          return false;
+        }
+
+        const subject = words[wordIndex];
+        const validSubjects = ['i', 'you', 'he', 'she', 'it', 'we', 'they'];
+        if (!validSubjects.includes(subject)) {
+          console.log('Недопустимое подлежащее:', subject);
+          return false;
+        }
+
+        wordIndex++;
+        console.log('Подлежащее:', subject);
+        return true;
+      };
+
+      if (structure.id === "i-had-past-participle-before-past-simple") {
+        console.log('Начало проверки структуры');
         const expectedStart = ['i', 'had'];
         for (let i = 0; i < expectedStart.length; i++) {
-          if (words[wordIndex] !== expectedStart[i]) {
+          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
             console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
             return false;
           }
@@ -276,17 +302,13 @@
 
         if (!validatePastParticiple()) return false;
 
-        if (words[wordIndex] !== 'before') {
+        if (wordIndex >= words.length || words[wordIndex] !== 'before') {
           console.log('Ожидалось "before" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
         wordIndex++;
 
-        if (words[wordIndex] !== 'i') {
-          console.log('Ожидалось "i" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
-          return false;
-        }
-        wordIndex++;
+        if (!validateSubject()) return false;
 
         if (!validatePastSimple()) return false;
 
