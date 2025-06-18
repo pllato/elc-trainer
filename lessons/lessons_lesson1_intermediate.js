@@ -70,6 +70,9 @@
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did'
       ];
 
+      // Допустимые местоимения как дополнение
+      const validObjects = ['me', 'you', 'him', 'her', 'it', 'us', 'them'];
+
       // Проверяем глагол в Present Simple
       const validatePresentSimple = (expectS = false) => {
         console.log('Валидация глагола в Present Simple на позиции', wordIndex);
@@ -113,11 +116,10 @@
           return false;
         }
         let actionWords = [];
-        while (wordIndex < words.length && words[wordIndex] !== ',' && words[wordIndex] !== 'i' && words[wordIndex] !== 'you' && 
-               words[wordIndex] !== 'he' && words[wordIndex] !== 'she' && words[wordIndex] !== 'it' && 
-               words[wordIndex] !== 'we' && words[wordIndex] !== 'they') {
+        const validSubjects = ['i', 'you', 'he', 'she', 'it', 'we', 'they'];
+        while (wordIndex < words.length && words[wordIndex] !== ',' && !validSubjects.includes(words[wordIndex])) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word)) {
+          if (excludedWords.includes(word) && !validObjects.includes(word)) {
             console.log('Исключённое слово в дополнении:', word);
             return false;
           }
