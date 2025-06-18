@@ -37,7 +37,7 @@
       console.log('Разделённые слова:', words);
 
       // Минимальное количество слов
-      const minWords = 6; // If + I + V2 + , + I + would + V1
+      const minWords = 5; // If + I + V2 + I + would + V1 (запятая опциональна)
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
         return false;
@@ -50,6 +50,9 @@
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did'
       ];
+
+      // Допустимые наречия
+      const validAdverbs = ['hard', 'harder', 'fast', 'slowly', 'quickly', 'carefully'];
 
       // Полный список неправильных глаголов (базовая форма → {V2, V3})
       const irregularVerbs = {
@@ -203,12 +206,12 @@
 
         wordIndex++;
 
-        // Проверяем опциональное дополнение до запятой
+        // Проверяем опциональное дополнение до запятой или I
         let actionWords = [];
-        while (wordIndex < words.length && words[wordIndex] !== ',') {
+        while (wordIndex < words.length && words[wordIndex] !== ',' && words[wordIndex] !== 'i') {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) || /^\d+$/.test(word)) {
-            console.log('Исключённое слово или число в дополнении:', word);
+          if (excludedWords.includes(word) && !validAdverbs.includes(word)) {
+            console.log('Исключённое слово в дополнении:', word);
             return false;
           }
           actionWords.push(word);
@@ -256,7 +259,7 @@
         let actionWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) || /^\d+$/.test(word)) {
+          if (excludedWords.includes(word) && !validAdverbs.includes(word)) {
             console.log('Исключённое слово или число в дополнении:', word);
             return false;
           }
@@ -281,11 +284,13 @@
 
         if (!validatePastSimple()) return false;
 
-        if (wordIndex >= words.length || words[wordIndex] !== ',') {
-          console.log('Ожидалось "," на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
-          return false;
+        // Проверяем запятую (опционально)
+        let hasComma = false;
+        if (wordIndex < words.length && words[wordIndex] === ',') {
+          hasComma = true;
+          wordIndex++;
         }
-        wordIndex++;
+        console.log('Запятая обнаружена:', hasComma);
 
         if (wordIndex >= words.length || words[wordIndex] !== 'i') {
           console.log('Ожидалось "i" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
