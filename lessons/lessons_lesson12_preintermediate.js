@@ -10,7 +10,7 @@
         translations: ["Ты ______?"],
         examples: [
           "Have you watched the TV? (Ты смотрел телевизор?)",
-          "Have you eaten dinner? (Ты поел ужин?)",
+          "Have you ever eaten sushi? (Ты когда-нибудь ел суши?)",
           "Have you been to Paris? (Ты был в Париже?)"
         ],
         id: "have-you-past-participle",
@@ -23,7 +23,7 @@
         translations: ["Да, я ______."],
         examples: [
           "Yes, I have watched the TV. (Да, я смотрел телевизор.)",
-          "Yes, I have eaten dinner. (Да, я поел ужин.)",
+          "Yes, I have eaten sushi. (Да, я ел суши.)",
           "Yes, I have been to Paris. (Да, я был в Париже.)"
         ],
         id: "yes-i-have-past-participle",
@@ -36,7 +36,7 @@
         translations: ["Нет, я не ______."],
         examples: [
           "No, I haven’t watched the TV. (Нет, я не смотрел телевизор.)",
-          "No, I haven’t eaten dinner. (Нет, я не поел ужин.)",
+          "No, I haven’t eaten sushi. (Нет, я не ел суши.)",
           "No, I haven’t been to Paris. (Нет, я не был в Париже.)"
         ],
         id: "no-i-havent-past-participle",
@@ -203,6 +203,12 @@
       // Проверяем глагол в третьей форме (Past Participle)
       const validatePastParticiple = () => {
         console.log('Валидация глагола в третьей форме на позиции', wordIndex);
+        // Проверяем наличие "ever" (только для вопросов)
+        if (structure.id === "have-you-past-participle" && words[wordIndex] === 'ever') {
+          console.log('Обнаружено "ever", переходим к следующему слову');
+          wordIndex++;
+        }
+
         if (!words[wordIndex]) {
           console.log('Нет глагола');
           return false;
