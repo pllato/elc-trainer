@@ -9,9 +9,9 @@
         pattern: ["if"],
         translations: ["Если бы я/ты/он/она/оно/мы/они ______, я/ты/он/она/оно/мы/они ______."],
         examples: [
-          "If I had saved money, I would have bought a car. (Если бы я накопил деньги, я бы купил машину.)",
-          "If you had taken the chance, you would have won a car. (Если бы ты воспользовался возможностью, ты бы выиграл машину.)",
-          "If they had earned a prize, they would have purchased a car. (Если бы они заработали приз, они бы купили машину.)"
+          "If I had saved money, I would have bought a house. (Если бы я накопил деньги, я бы купил дом.)",
+          "If you had taken the chance, you would have gone on a trip. (Если бы ты воспользовался возможностью, ты бы отправился в путешествие.)",
+          "If they had earned a prize, they would have passed the exam. (Если бы они заработали приз, они бы сдали экзамен.)"
         ],
         id: "if-subject-had-past-participle-would-have-past-participle",
         hasVerb: false,
