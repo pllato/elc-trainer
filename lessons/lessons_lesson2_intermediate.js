@@ -50,7 +50,10 @@
       console.log('Разделённые слова:', words);
 
       // Минимальное количество слов
-      const minWords = 8; // If + подлежащее + had + V3 + дополнение + подлежащее + would + have + V3
+      let minWords = 8; // If + подлежащее + had + V3 + дополнение + подлежащее + would + have + V3
+      if (words[0] === 'even' && words[1] === 'if') {
+        minWords = 9; // Even + if + подлежащее + had + V3 + дополнение + подлежащее + would + have + V3
+      }
       if (words.length < minWords) {
         console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
         return false;
@@ -63,6 +66,9 @@
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did'
       ];
+
+      // Допустимые наречия для дополнений
+      const validAdverbs = ['hard', 'harder', 'well', 'better', 'fast', 'slowly', 'quickly', 'carefully'];
 
       // Полный список неправильных глаголов (базовая форма → {V2, V3})
       const irregularVerbs = {
@@ -226,7 +232,7 @@
           const validSubjects = ['i', 'you', 'he', 'she', 'it', 'we', 'they'];
           while (wordIndex < words.length && words[wordIndex] !== ',' && !validSubjects.includes(words[wordIndex])) {
             const word = words[wordIndex];
-            if (excludedWords.includes(word)) {
+            if (excludedWords.includes(word) && !validAdverbs.includes(word)) {
               console.log('Исключённое слово в дополнении:', word);
               return false;
             }
@@ -245,7 +251,13 @@
 
       if (structure.id === "if-subject-had-past-participle-would-have-past-participle") {
         console.log('Начало проверки структуры If subject had past participle, ... would have past participle');
-        // Проверяем if
+        // Проверяем начало: "if" или "even if"
+        let isEvenIf = false;
+        if (wordIndex < words.length && words[wordIndex] === 'even') {
+          isEvenIf = true;
+          wordIndex++;
+          console.log('Обнаружено "even if"');
+        }
         if (wordIndex >= words.length || words[wordIndex] !== 'if') {
           console.log('Ожидалось "if" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
