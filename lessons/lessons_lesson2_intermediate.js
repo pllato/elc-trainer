@@ -18,7 +18,7 @@
         hasName: false
       }
     ],
-    requiredCorrect: 10,
+    requiredCorrect: 20,
     validateStructure: function(text, structure) {
       console.log('Валидация структуры:', structure.id);
       console.log('Входной текст:', text);
