@@ -66,6 +66,16 @@
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
       console.log('Разделённые слова:', words);
 
+      // Инициализируем wordIndex
+      let wordIndex = 0;
+
+      // Минимальное количество слов
+      const minWords = structure.id === "would-you-mind-if-i-past-simple" ? 7 : 2; // 7 для a, 2 для b и c
+      if (words.length < minWords) {
+        console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
+        return false;
+      }
+
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'must', 'may', 'might', 'shall', 'ought',
