@@ -55,6 +55,8 @@
         .replace(/i'm/gi, 'i am')
         .replace(/can't/gi, 'cannot')
         .replace(/didn't/gi, 'did not')
+        .replace(/don't/gi, 'do not')
+        .replace(/dont/gi, 'do not')
         .replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
         console.log('Обработаны сокращения и everyday:', processedText);
@@ -289,7 +291,15 @@
           'no i do not mind',
           'i do not mind it a bit'
         ];
-        if (!validResponses.includes(cleanedText)) {
+        // Проверяем, содержит ли cleanedText один из допустимых ответов (игнорируем вводные слова, такие как "oh")
+        let isValid = false;
+        for (const response of validResponses) {
+          if (cleanedText.includes(response)) {
+            isValid = true;
+            break;
+          }
+        }
+        if (!isValid) {
           console.log('Ответ не соответствует допустимым положительным ответам:', cleanedText);
           return false;
         }
@@ -304,7 +314,15 @@
           'i am afraid you cannot',
           'i would rather you did not'
         ];
-        if (!validResponses.includes(cleanedText)) {
+        // Проверяем, содержит ли cleanedText один из допустимых ответов
+        let isValid = false;
+        for (const response of validResponses) {
+          if (cleanedText.includes(response)) {
+            isValid = true;
+            break;
+          }
+        }
+        if (!isValid) {
           console.log('Ответ не соответствует допустимым отрицательным ответам:', cleanedText);
           return false;
         }
