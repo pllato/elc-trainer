@@ -157,6 +157,13 @@
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did'
       ];
 
+      // Словарь для исправления ошибок распознавания речи
+      const correctionSuggestions = {
+        'keep': 'keen',
+        'found': 'fond',
+        'a door': 'adore'
+      };
+
       // Проверяем герундий или существительное
       const validateGerundOrNoun = (requireGerund = false) => {
         console.log('Валидация герундия/существительного на позиции', wordIndex);
@@ -169,6 +176,9 @@
         console.log('Проверка слова:', word);
         if (requireGerund && !word.endsWith('ing')) {
           console.log('Ожидался герундий (оканчивается на -ing):', word);
+          if (correctionSuggestions[word]) {
+            console.log(`Возможно, вы имели в виду: ${correctionSuggestions[word]}`);
+          }
           return false;
         }
         if (excludedWords.includes(word)) {
@@ -206,6 +216,9 @@
         for (let i = 0; i < expectedStart.length; i++) {
           if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
             console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
+            if (words[wordIndex] && correctionSuggestions[words[wordIndex]]) {
+              console.log(`Возможно, вы имели в виду: ${correctionSuggestions[words[wordIndex]]}`);
+            }
             return false;
           }
           wordIndex++;
@@ -241,6 +254,9 @@
         // Проверяем keen
         if (wordIndex >= words.length || words[wordIndex] !== 'keen') {
           console.log('Ожидалось "keen" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+          if (words[wordIndex] && correctionSuggestions[words[wordIndex]]) {
+            console.log(`Возможно, вы имели в виду: ${correctionSuggestions[words[wordIndex]]}`);
+          }
           return false;
         }
         wordIndex++;
@@ -307,6 +323,9 @@
         for (let i = 0; i < expectedStart.length; i++) {
           if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
             console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
+            if (words[wordIndex] && correctionSuggestions[words[wordIndex]]) {
+              console.log(`Возможно, вы имели в виду: ${correctionSuggestions[words[wordIndex]]}`);
+            }
             return false;
           }
           wordIndex++;
