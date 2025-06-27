@@ -1,9 +1,9 @@
 (function() {
-  console.log('Загружен Урок 16 Intermediate v4');
+  console.log('Загружен Урок 16 Intermediate v5');
   addLesson({
     level: "intermediate",
-    lesson: "lesson16",
-    name: "Урок 16: Questions and Speculations about Past Actions",
+    lesson: "lesson16_intermediate",
+    name: "Урок 16: Questions and Speculations about Past Actions (Intermediate)",
     structures: [
       {
         structure: "Why did you/he/she/it/we/they ___________?",
@@ -19,7 +19,7 @@
         hasName: false
       },
       {
-        structure: mammals guess this was probably because _________",
+        structure: "I guess this was probably because _________",
         pattern: ["i", "guess", "this", "was", "probably", "because"],
         translations: ["Я предполагаю, это, вероятно, потому что ______"],
         examples: [
@@ -239,29 +239,30 @@
         }
 
         let verb = words[wordIndex];
-        console.log('Проверка глагола V2:', verb);
-        
+        console.log('Проверка глагола:', verb);
+
         // Нормализуем возможные ошибки распознавания речи
         const verbCorrections = {
           'come': 'came',
           'go': 'went',
           'forget': 'forgot',
-          'cancel': 'canceled', // или 'cancelled'
+          'cancel': 'canceled',
           'leave': 'left',
           'miss': 'missed',
           'arrive': 'arrived',
           'take': 'took',
-          'write': 'wrote'
+          'write': 'wrote',
+          'cancelled': 'canceled' // Поддержка британского варианта
         };
         if (verbCorrections[verb]) {
-          console.log(`Распознавание речи возможно ошиблось, исправлено с "${verb}" на "${verbCorrections[verb]}"`);
+          console.log(`Распознавание речи исправлено с "${verb}" на "${verbCorrections[verb]}"`);
           words[wordIndex] = verbCorrections[verb];
           verb = verbCorrections[verb];
         }
 
-        // Проверяем регулярные глаголы (заканчивающиеся на -ed или -d)
+        // Проверяем глагол
         if (verb.match(/^(canceled|cancelled)$/)) {
-          console.log('Регулярный глагол исправлен:', verb);
+          console.log('Регулярный глагол принят:', verb);
           wordIndex++;
         } else if (verb.endsWith('ed') || verb.endsWith('d')) {
           const baseVerb = verb.endsWith('ed') ? verb.slice(0, -2) : verb.slice(0, -1);
@@ -272,11 +273,12 @@
           console.log('Регулярный глагол принят:', verb);
           wordIndex++;
         } else {
-          // Проверяем нерегулярные глаголы
           let isIrregular = false;
           for (const [base, forms] of Object.entries(irregularVerbs)) {
             if (forms.v2 === verb || (typeof forms.v2 === 'string' && forms.v2.includes('/') && forms.v2.split('/').includes(verb))) {
               isIrregular = true;
+              console.log('Нерегулярный глагол принят:', verb);
+              wordIndex++;
               break;
             }
           }
@@ -284,8 +286,6 @@
             console.log('Глагол не является валидным во второй форме:', verb);
             return false;
           }
-          console.log('Нерегулярный глагол принят:', verb);
-          wordIndex++;
         }
 
         // Проверяем опциональное дополнение
