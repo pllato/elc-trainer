@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 5 Upper-Intermediate v1');
+  console.log('Загружен Урок 5 Upper-Intermediate v2');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -8,7 +8,7 @@
     structures: [
       {
         structure: "__________ is/are __________ (by ________).",
-        pattern: [],
+        pattern: ["is", "are"],
         translations: ["______ делается ______ (кем-то)."],
         examples: [
           "The room is cleaned daily. (Комната убирается ежедневно.)",
@@ -21,7 +21,7 @@
       },
       {
         structure: "__________ was/were __________ (by ________).",
-        pattern: [],
+        pattern: ["was", "were"],
         translations: ["______ был/были ______ (кем-то)."],
         examples: [
           "The book was written by J.K. Rowling. (Книга была написана Дж. К. Роулинг.)",
@@ -129,14 +129,23 @@
           return false;
         }
 
-        const subject = words[wordIndex];
-        // Разрешаем имена, местоимения или существительные, не входящие в excludedWords
-        if (excludedWords.includes(subject)) {
-          console.log('Исключённое подлежащее:', subject);
-          return false;
+        const subjectWords = [];
+        // Собираем подлежащее (может быть составным, например, "the car")
+        while (wordIndex < words.length && !['is', 'are', 'was', 'were', 'will'].includes(words[wordIndex])) {
+          const word = words[wordIndex];
+          if (excludedWords.includes(word) && !['the', 'a', 'an'].includes(word)) {
+            console.log('Исключённое слово в подлежащем:', word);
+            return false;
+          }
+          subjectWords.push(word);
+          wordIndex++;
         }
 
-        wordIndex++;
+        if (subjectWords.length === 0) {
+          console.log('Подлежащее отсутствует');
+          return false;
+        }
+        console.log('Подлежащее:', subjectWords.join(' '));
         return true;
       };
 
@@ -179,27 +188,22 @@
           return false;
         }
 
-        // Проверяем агента (имя, местоимение или существительное)
-        const agent = words[wordIndex];
-        if (excludedWords.includes(agent)) {
-          console.log('Исключённый агент:', agent);
-          return false;
-        }
-
-        wordIndex++;
-        // Проверяем опциональные слова в дополнении
-        let agentWords = [];
+        // Проверяем агента (может быть составным, например, "the team")
+        const agentWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word)) {
-            console.log('Исключённое слово в дополнении:', word);
+          if (excludedWords.includes(word) && !['the', 'a', 'an'].includes(word)) {
+            console.log('Исключённое слово в агенте:', word);
             return false;
           }
           agentWords.push(word);
           wordIndex++;
         }
-        console.log('Дополнение агента:', agentWords);
-
+        if (agentWords.length === 0) {
+          console.log('Агент отсутствует');
+          return false;
+        }
+        console.log('Агент:', agentWords.join(' '));
         return true;
       };
 
@@ -217,11 +221,6 @@
 
         if (!validateByClause()) return false;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
-
         console.log('Валидация пройдена для:', cleanedText);
         return true;
       } else if (structure.id === "past-simple-passive") {
@@ -237,11 +236,6 @@
         if (!validatePastParticiple()) return false;
 
         if (!validateByClause()) return false;
-
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
 
         console.log('Валидация пройдена для:', cleanedText);
         return true;
@@ -264,11 +258,6 @@
         if (!validatePastParticiple()) return false;
 
         if (!validateByClause()) return false;
-
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
 
         console.log('Валидация пройдена для:', cleanedText);
         return true;
