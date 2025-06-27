@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 17 Intermediate v4');
+  console.log('Загружен Урок 17 Intermediate v5');
   addLesson({
     level: "intermediate",
     lesson: "lesson17_intermediate",
@@ -19,39 +19,78 @@
         hasName: false
       },
       {
-        structure: "Well, quite honestly I don’t think I’ve ever thought about that. I guess _______",
-        pattern: ["well", "quite", "honestly", "i", "do", "not", "think", "i", "have", "ever", "thought", "about", "that", "i", "guess"],
-        translations: ["Честно говоря, я не думаю, что когда-либо об этом задумывался, но, полагаю, ______"],
+        structure: "I guess _______",
+        pattern: ["i", "guess"],
+        translations: ["Я полагаю, ______"],
         examples: [
-          "Well, quite honestly I don’t think I’ve ever thought about that. I guess it would be fun. (Честно говоря, я не думаю, что когда-либо об этом задумывался, но, полагаю, это было бы весело.)",
-          "Well, quite honestly I don’t think I’ve ever thought about that. I guess it’s a good idea. (Честно говоря, я не думаю, что когда-либо об этом задумывался, но, полагаю, это хорошая идея.)",
-          "Well, quite honestly I don’t think I’ve ever thought about that. I guess I’d enjoy it. (Честно говоря, я не думаю, что когда-либо об этом задумывался, но, полагаю, мне бы это понравилось.)"
+          "I guess it would be fun. (Я полагаю, это было бы весело.)",
+          "I guess it’s a good idea. (Я полагаю, это хорошая идея.)",
+          "I guess I’d enjoy it. (Я полагаю, мне бы это понравилось.)"
+        ],
+        id: "i-guess",
+        hasVerb: false,
+        hasName: false
+      },
+      {
+        structure: "In short _______",
+        pattern: ["in", "short"],
+        translations: ["Вкратце, ______"],
+        examples: [
+          "In short it sounds exciting. (Вкратце, это звучит захватывающе.)",
+          "In short it’s worth trying. (Вкратце, это стоит попробовать.)",
+          "In short I’d give it a shot. (Вкратце, я бы попробовал.)"
+        ],
+        id: "in-short",
+        hasVerb: false,
+        hasName: false
+      },
+      {
+        structure: "I suppose generally speaking ________",
+        pattern: ["i", "suppose", "generally", "speaking"],
+        translations: ["В общем, полагаю, ______"],
+        examples: [
+          "I suppose generally speaking it would be great. (В общем, полагаю, это было бы здорово.)",
+          "I suppose generally speaking it’s interesting. (В общем, полагаю, это интересно.)",
+          "I suppose generally speaking I’d try it. (В общем, полагаю, я бы попробовал.)"
+        ],
+        id: "i-suppose-generally-speaking",
+        hasVerb: false,
+        hasName: false
+      },
+      {
+        structure: "Well, quite honestly I don’t think I’ve ever thought about that.",
+        pattern: ["well", "quite", "honestly", "i", "do", "not", "think", "i", "have", "ever", "thought", "about", "that"],
+        translations: ["Честно говоря, я не думаю, что когда-либо об этом задумывался."],
+        examples: [
+          "Well, quite honestly I don’t think I’ve ever thought about that. (Честно говоря, я не думаю, что когда-либо об этом задумывался.)",
+          "Well, quite honestly I don’t think I’ve ever thought about that. (Честно говоря, я не думаю, что когда-либо об этом задумывался.)",
+          "Well, quite honestly I don’t think I’ve ever thought about that. (Честно говоря, я не думаю, что когда-либо об этом задумывался.)"
         ],
         id: "well-quite-honestly-i-dont-think",
         hasVerb: false,
         hasName: false
       },
       {
-        structure: "Actually, this isn’t something that I’ve ever considered. In short ________",
-        pattern: ["actually", "this", "is", "not", "something", "that", "i", "have", "ever", "considered", "in", "short"],
-        translations: ["На самом деле, это не то, о чём я когда-либо думал, но, вкратце, ______"],
+        structure: "Actually, this isn’t something that I’ve ever considered.",
+        pattern: ["actually", "this", "is", "not", "something", "that", "i", "have", "ever", "considered"],
+        translations: ["На самом деле, это не то, о чём я когда-либо думал."],
         examples: [
-          "Actually, this isn’t something that I’ve ever considered. In short it sounds exciting. (На самом деле, это не то, о чём я когда-либо думал, но, вкратце, это звучит захватывающе.)",
-          "Actually, this isn’t something that I’ve ever Considered. In short it’s worth trying. (На самом деле, это не то, о чём я когда-либо думал, но, вкратце, это стоит попробовать.)",
-          "Actually, this isn’t something that I’ve ever Considered. In short I’d give it a shot. (На самом деле, это не то, о чём я когда-либо думал, но, вкратце, я бы попробовал.)"
+          "Actually, this isn’t something that I’ve ever considered. (На самом деле, это не то, о чём я когда-либо думал.)",
+          "Actually, this isn’t something that I’ve ever Considered. (На самом деле, это не то, о чём я когда-либо думал.)",
+          "Actually, this isn’t something that I’ve ever Considered. (На самом деле, это не то, о чём я когда-либо думал.)"
         ],
         id: "actually-this-isnt-something",
         hasVerb: false,
         hasName: false
       },
       {
-        structure: "I am not really sure how to put this. I suppose generally speaking ________",
-        pattern: ["i", "am", "not", "really", "sure", "how", "to", "put", "this", "i", "suppose", "generally", "speaking"],
-        translations: ["Я не совсем уверен, как это выразить, но, в общем, полагаю, ______"],
+        structure: "I am not really sure how to put this.",
+        pattern: ["i", "am", "not", "really", "sure", "how", "to", "put", "this"],
+        translations: ["Я не совсем уверен, как это выразить."],
         examples: [
-          "I am not really sure how to put this. I suppose generally speaking it would be great. (Я не совсем уверен, как это выразить, но, в общем, полагаю, это было бы здорово.)",
-          "I am not really sure how to put this. I suppose generally speaking it’s interesting. (Я не совсем уверен, как это выразить, но, в общем, полагаю, это интересно.)",
-          "I am not really sure how to put this. I suppose generally speaking I’d try it. (Я не совсем уверен, как это выразить, но, в общем, полагаю, я бы попробовал.)"
+          "I am not really sure how to put this. (Я не совсем уверен, как это выразить.)",
+          "I am not really sure how to put this. (Я не совсем уверен, как это выразить.)",
+          "I am not really sure how to put this. (Я не совсем уверен, как это выразить.)"
         ],
         id: "i-am-not-really-sure",
         hasVerb: false,
@@ -81,26 +120,39 @@
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
       console.log('Разделённые слова:', words);
 
-      // Минимальное количество слов
-      let minWords;
+      // Минимальное и точное количество слов
+      let expectedWords;
       switch (structure.id) {
         case "would-you-like-to-infinitive":
-          minWords = 5; // would you like to try
+          expectedWords = 5; // would you like to try (минимум)
+          break;
+        case "i-guess":
+          expectedWords = 3; // i guess reason (минимум)
+          break;
+        case "in-short":
+          expectedWords = 3; // in short reason (минимум)
+          break;
+        case "i-suppose-generally-speaking":
+          expectedWords = 5; // i suppose generally speaking reason (минимум)
           break;
         case "well-quite-honestly-i-dont-think":
-          minWords = 16; // well quite honestly i do not think i have ever thought about that i guess reason
+          expectedWords = 13; // well quite honestly i do not think i have ever thought about that
           break;
         case "actually-this-isnt-something":
-          minWords = 13; // actually this is not something that i have ever considered in short reason
+          expectedWords = 10; // actually this is not something that i have ever considered
           break;
         case "i-am-not-really-sure":
-          minWords = 14; // i am not really sure how to put this i suppose generally speaking reason
+          expectedWords = 9; // i am not really sure how to put this
           break;
         default:
-          minWords = 5;
+          expectedWords = 5;
       }
-      if (words.length < minWords) {
-        console.log(`Недостаточно слов (минимум ${minWords}):`, words.length);
+      if (["well-quite-honestly-i-dont-think", "actually-this-isnt-something", "i-am-not-really-sure"].includes(structure.id) && words.length !== expectedWords) {
+        console.log(`Ожидалось ${expectedWords} слов, получено:`, words.length);
+        return false;
+      }
+      if (!["well-quite-honestly-i-dont-think", "actually-this-isnt-something", "i-am-not-really-sure"].includes(structure.id) && words.length < expectedWords) {
+        console.log(`Недостаточно слов (минимум ${expectedWords}):`, words.length);
         return false;
       }
 
@@ -170,6 +222,20 @@
         return true;
       };
 
+      // Проверяем точное совпадение фиксированной фразы
+      const validateFixedPhrase = (expectedStart) => {
+        console.log('Валидация фиксированной фразы на позиции', wordIndex);
+        for (let i = 0; i < expectedStart.length; i++) {
+          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
+            console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+        }
+        console.log('Фиксированная фраза принята');
+        return true;
+      };
+
       if (structure.id === "would-you-like-to-infinitive") {
         console.log('Начало проверки структуры Would you like to infinitive');
         const expectedStart = ['would', 'you', 'like', 'to'];
@@ -184,48 +250,60 @@
         if (!validateInfinitive()) return false;
 
         return true;
+      } else if (structure.id === "i-guess") {
+        console.log('Начало проверки структуры I guess');
+        const expectedStart = ['i', 'guess'];
+        for (let i = 0; i < expectedStart.length; i++) {
+          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
+            console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+        }
+
+        if (!validateReason()) return false;
+
+        return true;
+      } else if (structure.id === "in-short") {
+        console.log('Начало проверки структуры In short');
+        const expectedStart = ['in', 'short'];
+        for (let i = 0; i < expectedStart.length; i++) {
+          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
+            console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+        }
+
+        if (!validateReason()) return false;
+
+        return true;
+      } else if (structure.id === "i-suppose-generally-speaking") {
+        console.log('Начало проверки структуры I suppose generally speaking');
+        const expectedStart = ['i', 'suppose', 'generally', 'speaking'];
+        for (let i = 0; i < expectedStart.length; i++) {
+          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
+            console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+        }
+
+        if (!validateReason()) return false;
+
+        return true;
       } else if (structure.id === "well-quite-honestly-i-dont-think") {
         console.log('Начало проверки структуры Well quite honestly I dont think');
-        const expectedStart = ['well', 'quite', 'honestly', 'i', 'do', 'not', 'think', 'i', 'have', 'ever', 'thought', 'about', 'that', 'i', 'guess'];
-        for (let i = 0; i < expectedStart.length; i++) {
-          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
-            console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
-            return false;
-          }
-          wordIndex++;
-        }
-
-        if (!validateReason()) return false;
-
-        return true;
+        const expectedStart = ['well', 'quite', 'honestly', 'i', 'do', 'not', 'think', 'i', 'have', 'ever', 'thought', 'about', 'that'];
+        return validateFixedPhrase(expectedStart);
       } else if (structure.id === "actually-this-isnt-something") {
         console.log('Начало проверки структуры Actually this isnt something');
-        const expectedStart = ['actually', 'this', 'is', 'not', 'something', 'that', 'i', 'have', 'ever', 'considered', 'in', 'short'];
-        for (let i = 0; i < expectedStart.length; i++) {
-          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
-            console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
-            return false;
-          }
-          wordIndex++;
-        }
-
-        if (!validateReason()) return false;
-
-        return true;
+        const expectedStart = ['actually', 'this', 'is', 'not', 'something', 'that', 'i', 'have', 'ever', 'considered'];
+        return validateFixedPhrase(expectedStart);
       } else if (structure.id === "i-am-not-really-sure") {
         console.log('Начало проверки структуры I am not really sure');
-        const expectedStart = ['i', 'am', 'not', 'really', 'sure', 'how', 'to', 'put', 'this', 'i', 'suppose', 'generally', 'speaking'];
-        for (let i = 0; i < expectedStart.length; i++) {
-          if (wordIndex >= words.length || words[wordIndex] !== expectedStart[i]) {
-            console.log(`Ожидалось "${expectedStart[i]}" на позиции ${wordIndex}, получено`, words[wordIndex] || 'ничего');
-            return false;
-          }
-          wordIndex++;
-        }
-
-        if (!validateReason()) return false;
-
-        return true;
+        const expectedStart = ['i', 'am', 'not', 'really', 'sure', 'how', 'to', 'put', 'this'];
+        return validateFixedPhrase(expectedStart);
       }
 
       console.log('Структура не соответствует:', structure.id);
