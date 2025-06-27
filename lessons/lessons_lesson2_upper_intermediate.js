@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 2 Upper-Intermediate v1');
+  console.log('Загружен Урок 2 Upper-Intermediate v2');
   addLesson({
     level: "upper_intermediate",
     lesson: "lesson2_upper_intermediate",
@@ -107,7 +107,7 @@
 
         const gerund = words[wordIndex];
         console.log('Проверка герундия:', gerund);
-        if (!gerund.endsWith('ing') || excludedolympus://www.englishclub.com/grammar/gerund.htm) excludedWords.includes(gerund)) {
+        if (!gerund.endsWith('ing') || excludedWords.includes(gerund)) {
           console.log('Глагол не является герундием или исключён:', gerund);
           return false;
         }
@@ -184,6 +184,11 @@
 
         if (!validateGerund()) return false;
 
+        if (wordIndex < words.length) {
+          console.log('Лишние слова после второго герундия:', words.slice(wordIndex));
+          return false;
+        }
+
         return true;
       } else if (structure.id === "i-would-prefer-to-infinitive") {
         console.log('Начало проверки структуры I would prefer to infinitive');
@@ -212,6 +217,11 @@
 
         if (!validateInfinitive()) return false;
 
+        if (wordIndex < words.length) {
+          console.log('Лишние слова после второго инфинитива:', words.slice(wordIndex));
+          return false;
+        }
+
         return true;
       } else if (structure.id === "i-would-rather-infinitive") {
         console.log('Начало проверки структуры I would rather infinitive');
@@ -233,6 +243,11 @@
         wordIndex++;
 
         if (!validateInfinitive()) return false;
+
+        if (wordIndex < words.length) {
+          console.log('Лишние слова после второго инфинитива:', words.slice(wordIndex));
+          return false;
+        }
 
         return true;
       }
