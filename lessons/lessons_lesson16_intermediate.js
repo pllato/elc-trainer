@@ -109,7 +109,7 @@
       ];
 
       // Допустимые наречия и предлоги для дополнений
-      const validAdverbs = ['early', 'well', 'better', 'fast', 'slowly', 'quickly', 'carefully', 'a lot', 'much'];
+      const validAdverbs = ['early', 'well', 'better', 'fast', 'slowly', 'quickly', 'carefully', 'a lot', 'much', 'earlier', 'later'];
 
       // Полный список неправильных глаголов (базовая форма → {V2, V3})
       const irregularVerbs = {
@@ -237,15 +237,34 @@
           return false;
         }
 
-        const verb = words[wordIndex];
+        let verb = words[wordIndex];
         console.log('Проверка глагола V2:', verb);
-        // Проверяем регулярные глаголы (заканчивающиеся на -ed)
-        if (verb.endsWith('ed')) {
-          const baseVerb = verb.slice(0, -2);
+        
+        // Нормализуем возможные ошибки распознавания речи
+        const verbCorrections = {
+          'come': 'came',
+          'go': 'went',
+          'forget': 'forgot',
+          'cancel': 'canceled', // или 'cancelled'
+          'leave': 'left'
+        };
+        if (verbCorrections[verb]) {
+          console.log(`Распознавание речи возможно ошиблось, исправлено с "${verb}" на "${verbCorrections[verb]}"`);
+          words[wordIndex] = verbCorrections[verb]; // Обновляем слово в массиве
+          verb = verbCorrections[verb];
+        }
+
+        // Проверяем регулярные глаголы (заканчивающиеся на -ed или -d)
+        if (verb.match(/^(canceled|cancelled)$/)) {
+          console.log('Регулярный глагол исправлен:', verb);
+          wordIndex++;
+        } else if (verb.endsWith('ed') || verb.endsWith('d')) {
+          const baseVerb = verb.endsWith('ed') ? verb.slice(0, -2) : verb.slice(0, -1);
           if (excludedWords.includes(baseVerb)) {
             console.log('Исключённый глагол:', baseVerb);
             return false;
           }
+          wordIndex++;
         } else {
           // Проверяем нерегулярные глаголы
           let isIrregular = false;
@@ -259,15 +278,14 @@
             console.log('Глагол не является валидным во второй форме:', verb);
             return false;
           }
+          wordIndex++;
         }
-
-        wordIndex++;
 
         // Проверяем опциональное дополнение
         let actionWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) && !validAdverbs.includes(word)) {
+          if (excludedWords.includes(word) && !validAdverbs.includes(word) && !['the', 'a', 'an'].includes(word)) {
             console.log('Исключённое слово в дополнении:', word);
             return false;
           }
