@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 2 Upper-Intermediate v3');
+  console.log('Загружен Урок 2 Upper-Intermediate v4');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -66,6 +66,20 @@
 
       const words = cleanedText.split(/\s+/).filter(word => word.length > 0);
       console.log('Разделённые слова:', words);
+
+      // Нормализуем созвучные слова для "than"
+      const thanCorrections = {
+        'then': 'than',
+        'them': 'than',
+        'zen': 'than'
+      };
+      for (let i = 0; i < words.length; i++) {
+        if (thanCorrections[words[i]]) {
+          console.log(`Распознавание речи исправило "${words[i]}" на "than"`);
+          words[i] = thanCorrections[words[i]];
+        }
+      }
+      console.log('Слова после коррекции:', words);
 
       // Минимальное количество слов
       let minWords;
