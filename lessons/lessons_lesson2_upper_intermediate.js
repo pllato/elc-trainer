@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 2 Upper-Intermediate v4');
+  console.log('Загружен Урок 2 Upper-Intermediate v5');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -20,7 +20,7 @@
         hasName: false
       },
       {
-        structure: "I would prefer to ______ than ______",
+        structure: "I would prefer to ______ rather than ______",
         pattern: ["i", "would", "prefer", "to"],
         translations: ["Я бы предпочёл ______ вместо ______"],
         examples: [
@@ -56,9 +56,10 @@
         .replace(/don't/gi, 'do not')
         .replace(/dont/gi, 'do not')
         .replace(/i'm/gi, 'i am')
+        .replace(/preferred/gi, 'prefer')
         .replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
-        console.log('Обработаны сокращения и everyday:', processedText);
+        console.log('Обработаны сокращения, preferred и everyday:', processedText);
       }
       // Удаляем пунктуацию, нормализуем пробелы и приводим к нижнему регистру
       const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
@@ -88,7 +89,7 @@
           minWords = 5; // i prefer watching to going
           break;
         case "i-would-prefer-to-infinitive":
-          minWords = 7; // i would prefer to eat rather than go
+          minWords = 6; // i would prefer to eat than go
           break;
         case "i-would-rather-infinitive":
           minWords = 6; // i would rather look than stay
@@ -164,7 +165,7 @@
 
         // Проверяем опциональное дополнение
         let actionWords = [];
-        while (wordIndex < words.length && (structure.id === "i-would-prefer-to-infinitive" ? words[wordIndex] !== 'rather' : words[wordIndex] !== 'than')) {
+        while (wordIndex < words.length && words[wordIndex] !== 'than') {
           const word = words[wordIndex];
           if (excludedWords.includes(word) && !validAdverbs.includes(word)) {
             console.log('Исключённое слово в дополнении:', word);
@@ -219,15 +220,17 @@
 
         if (!validateInfinitive()) return false;
 
-        if (!words[wordIndex] || words[wordIndex] !== 'rather') {
-          console.log('Ожидалось "rather" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+        // Проверяем "rather than" или просто "than"
+        if (!words[wordIndex] || (words[wordIndex] !== 'than' && words[wordIndex] !== 'rather')) {
+          console.log('Ожидалось "rather" или "than" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
         }
-        wordIndex++;
-
-        if (!words[wordIndex] || words[wordIndex] !== 'than') {
-          console.log('Ожидалось "than" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
-          return false;
+        if (words[wordIndex] === 'rather') {
+          wordIndex++;
+          if (!words[wordIndex] || words[wordIndex] !== 'than') {
+            console.log('Ожидалось "than" после "rather" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+            return false;
+          }
         }
         wordIndex++;
 
