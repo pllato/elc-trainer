@@ -1,7 +1,8 @@
 (function() {
-  console.log('Загружен Урок 2 Upper-Intermediate v2');
+  console.log('Загружен Урок 2 Upper-Intermediate v3');
+  console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
-    level: "upper_intermediate",
+    level: "upperintermediate",
     lesson: "lesson2_upper_intermediate",
     name: "Урок 2: Expressing Preferences",
     structures: [
@@ -189,6 +190,7 @@
           return false;
         }
 
+        console.log('Валидация пройдена для:', cleanedText);
         return true;
       } else if (structure.id === "i-would-prefer-to-infinitive") {
         console.log('Начало проверки структуры I would prefer to infinitive');
@@ -222,6 +224,7 @@
           return false;
         }
 
+        console.log('Валидация пройдена для:', cleanedText);
         return true;
       } else if (structure.id === "i-would-rather-infinitive") {
         console.log('Начало проверки структуры I would rather infinitive');
@@ -249,6 +252,7 @@
           return false;
         }
 
+        console.log('Валидация пройдена для:', cleanedText);
         return true;
       }
 
