@@ -1,4 +1,5 @@
 (function() {
+  console.log('Загружен Урок 16 Intermediate v4');
   addLesson({
     level: "intermediate",
     lesson: "lesson16",
@@ -18,7 +19,7 @@
         hasName: false
       },
       {
-        structure: "I guess this was probably because _________",
+        structure: mammals guess this was probably because _________",
         pattern: ["i", "guess", "this", "was", "probably", "because"],
         translations: ["Я предполагаю, это, вероятно, потому что ______"],
         examples: [
@@ -246,11 +247,15 @@
           'go': 'went',
           'forget': 'forgot',
           'cancel': 'canceled', // или 'cancelled'
-          'leave': 'left'
+          'leave': 'left',
+          'miss': 'missed',
+          'arrive': 'arrived',
+          'take': 'took',
+          'write': 'wrote'
         };
         if (verbCorrections[verb]) {
           console.log(`Распознавание речи возможно ошиблось, исправлено с "${verb}" на "${verbCorrections[verb]}"`);
-          words[wordIndex] = verbCorrections[verb]; // Обновляем слово в массиве
+          words[wordIndex] = verbCorrections[verb];
           verb = verbCorrections[verb];
         }
 
@@ -264,6 +269,7 @@
             console.log('Исключённый глагол:', baseVerb);
             return false;
           }
+          console.log('Регулярный глагол принят:', verb);
           wordIndex++;
         } else {
           // Проверяем нерегулярные глаголы
@@ -278,6 +284,7 @@
             console.log('Глагол не является валидным во второй форме:', verb);
             return false;
           }
+          console.log('Нерегулярный глагол принят:', verb);
           wordIndex++;
         }
 
@@ -339,12 +346,6 @@
 
         if (!validatePastSimple()) return false;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
-
-        console.log('Валидация пройдена для:', text);
         return true;
       } else if (structure.id === "i-guess-this-was-probably-because") {
         console.log('Начало проверки структуры I guess this was probably because');
@@ -359,12 +360,6 @@
 
         if (!validateReason()) return false;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
-
-        console.log('Валидация пройдена для:', text);
         return true;
       } else if (structure.id === "this-could-be-because") {
         console.log('Начало проверки структуры This could be because');
@@ -379,12 +374,6 @@
 
         if (!validateReason()) return false;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
-
-        console.log('Валидация пройдена для:', text);
         return true;
       } else if (structure.id === "this-might-be-because") {
         console.log('Начало проверки структуры This might be because');
@@ -399,12 +388,6 @@
 
         if (!validateReason()) return false;
 
-        if (wordIndex < words.length) {
-          console.log('Лишние слова:', words.slice(wordIndex));
-          return false;
-        }
-
-        console.log('Валидация пройдена для:', text);
         return true;
       }
 
