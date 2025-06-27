@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 17 Intermediate v1');
+  console.log('Загружен Урок 17 Intermediate v2');
   addLesson({
     level: "intermediate",
     lesson: "lesson17_intermediate",
@@ -112,8 +112,8 @@
         'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did'
       ];
 
-      // Допустимые наречия и предлоги для дополнений
-      const validAdverbs = ['well', 'better', 'fast', 'slowly', 'quickly', 'carefully', 'a lot', 'much'];
+      // Допустимые наречия и слова для дополнений
+      const validAdverbs = ['well', 'better', 'fast', 'slowly', 'quickly', 'carefully', 'a lot', 'much', 'new', 'paris', 'coding', 'abroad', 'a', 'the', 'an'];
 
       // Проверяем глагол в инфинитиве (V1)
       const validateInfinitive = () => {
@@ -136,7 +136,7 @@
         let actionWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) && !validAdverbs.includes(word) && !['new', 'a', 'the', 'paris', 'coding'].includes(word)) {
+          if (excludedWords.includes(word) && !validAdverbs.includes(word)) {
             console.log('Исключённое слово в дополнении:', word);
             return false;
           }
