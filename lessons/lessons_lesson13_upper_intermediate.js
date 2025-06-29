@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 13 Upper-Intermediate v1');
+  console.log('Загружен Урок 13 Upper-Intermediate v2');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -7,7 +7,7 @@
     name: "Урок 13: Mixed Conditionals",
     structures: [
       {
-        structure: "If __________ had __________, __________ would __________.",
+        structure: "If __________ had __________, __________ would __________ (now/today).",
         pattern: ["if", "had", "would"],
         translations: ["Если бы ______ (прошлое), ______ был бы ______ сейчас."],
         examples: [
@@ -33,13 +33,13 @@
         hasName: false
       },
       {
-        structure: "If __________ had __________, __________ would __________.",
+        structure: "If __________ had __________, __________ would __________ (next/tomorrow).",
         pattern: ["if", "had", "would"],
         translations: ["Если бы ______ (прошлое), ______ сделал бы ______ в будущем."],
         examples: [
           "If I had saved money, I would travel next year. (Если бы я сэкономил деньги, я поехал бы в путешествие в следующем году.)",
           "If she had learned Spanish, she would work abroad next month. (Если бы она выучила испанский, она работала бы за границей в следующем месяце.)",
-          "If we had prepared better, we would succeed in the competition. (Если бы мы лучше подготовились, мы преуспели бы в соревновании.)"
+          "If we had prepared better, we would succeed in the competition tomorrow. (Если бы мы лучше подготовились, мы преуспели бы в соревновании завтра.)"
         ],
         id: "past-condition-future-result",
         hasVerb: true,
@@ -55,9 +55,10 @@
         .replace(/i'm/gi, 'i am')
         .replace(/don't/gi, 'do not')
         .replace(/didn't/gi, 'did not')
+        .replace(/had to/gi, 'had')
         .replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
-        console.log('Обработаны сокращения и everyday:', processedText);
+        console.log('Обработаны сокращения, had to и everyday:', processedText);
       }
       // Удаляем пунктуацию, нормализуем пробелы и приводим к нижнему регистру
       const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
@@ -208,7 +209,9 @@
         'wake': { past: 'woke', pastParticiple: 'woken' },
         'wear': { past: 'wore', pastParticiple: 'worn' },
         'win': { past: 'won', pastParticiple: 'won' },
-        'write': { past: 'wrote', pastParticiple: 'written' }
+        'write': { past: 'wrote', pastParticiple: 'written' },
+        'avoid': { past: 'avoided', pastParticiple: 'avoided' },
+        'succeed': { past: 'succeeded', pastParticiple: 'succeeded' }
       };
 
       // Проверяем подлежащее
@@ -264,7 +267,7 @@
         return true;
       };
 
-      // Проверяем глагол в Past Simple (V2 или were)
+      // Проверяем глагол в Past Simple (V2 или were + прилагательное)
       const validatePastSimple = () => {
         console.log('Валидация Past Simple на позиции', wordIndex);
         if (!words[wordIndex] || words[wordIndex] !== 'were') {
@@ -338,8 +341,8 @@
           console.log('Глагол в прошедшем времени или V3, ожидается базовая форма:', verb);
           return false;
         }
-        if (excludedWords.includes(verb)) {
-          console.log('Исключённый глагол:', verb);
+        if (excludedWords.includes(verb) || ['success'].includes(verb)) {
+          console.log('Исключённый глагол или не глагол:', verb);
           return false;
         }
 
@@ -349,7 +352,8 @@
         let actionWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['the', 'a', 'an', 'now', 'today', 'better', 'next', 'year', 'month', 'abroad', 'in'].includes(word)) {
+          const isTimeIndicator = structure.id === "past-condition-present-result" ? ['now', 'today'].includes(word) : ['next', 'tomorrow', 'year', 'month', 'in'].includes(word);
+          if (excludedWords.includes(word) && !['the', 'a', 'an', 'better', 'abroad', 'in'].includes(word) && !isTimeIndicator) {
             console.log('Исключённое слово в дополнении:', word);
             return false;
           }
@@ -357,6 +361,16 @@
           wordIndex++;
         }
         console.log('Дополнение:', actionWords.join(' '));
+
+        // Проверяем наличие временного индикатора
+        if (structure.id === "past-condition-present-result" && !actionWords.some(word => ['now', 'today'].includes(word))) {
+          console.log('Отсутствует временной индикатор настоящего времени (now/today)');
+          return false;
+        }
+        if (structure.id === "past-condition-future-result" && !actionWords.some(word => ['next', 'tomorrow', 'year', 'month', 'in'].includes(word))) {
+          console.log('Отсутствует временной индикатор будущего времени (next/tomorrow/year/month/in)');
+          return false;
+        }
 
         return true;
       };
