@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 8 Upper-Intermediate v5');
+  console.log('Загружен Урок 8 Upper-Intermediate v6');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -53,6 +53,7 @@
       // Нормализуем сокращения и "used" для структуры used-to-negative-question
       let processedText = text
         .replace(/didn't/gi, 'did not')
+        .replace(/didnt/gi, 'did not') // Дополнительная нормализация для ошибок распознавания
         .replace(/don't/gi, 'do not')
         .replace(/i'm/gi, 'i am');
       if (structure.id === "used-to-negative-question") {
@@ -76,7 +77,7 @@
           minWords = 3; // subject used to V1
           break;
         case "used-to-negative-question":
-          minWords = 4; // did not subject use to V1
+          minWords = 4; // did not subject use to V1 or subject did not use to V1
           break;
         case "would-affirmative":
           minWords = 3; // subject would V1
@@ -144,7 +145,7 @@
             wordIndex++;
           }
         } else if (structure.id === "used-to-negative-question") {
-          while (wordIndex < words.length && !['use'].includes(words[wordIndex])) {
+          while (wordIndex < words.length && !['use', 'did'].includes(words[wordIndex])) {
             const word = words[wordIndex];
             if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
               console.log('Исключённое слово в подлежащем:', word);
