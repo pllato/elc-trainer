@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 8 Upper-Intermediate v2');
+  console.log('Загружен Урок 8 Upper-Intermediate v3');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -54,11 +54,11 @@
       let processedText = text
         .replace(/didn't/gi, 'did not')
         .replace(/don't/gi, 'do not')
-        .replace(/i'm/gi, 'i am');
+        .replace(/i'm/gi, 'i am')
+        .replace(/\beveryday\b/gi, 'every day');
       if (structure.id === "used-to-negative-question") {
         processedText = processedText.replace(/\bused\b/gi, 'use');
       }
-      processedText = processedText.replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
         console.log('Обработаны сокращения, used и everyday:', processedText);
       }
@@ -134,7 +134,7 @@
         }
 
         const subjectWords = [];
-        while (wordIndex < words.length && !['did', 'used', 'would'].includes(words[wordIndex])) {
+        while (wordIndex < words.length && !['did', 'use', 'would'].includes(words[wordIndex])) {
           const word = words[wordIndex];
           if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
             console.log('Исключённое слово в подлежащем:', word);
@@ -216,17 +216,37 @@
         return true;
       } else if (structure.id === "used-to-negative-question") {
         console.log('Начало проверки структуры Used to Negative/Question');
-        if (words[wordIndex] === 'did' && words[wordIndex + 1] === 'not') {
-          wordIndex += 2;
-        } else if (words[wordIndex] !== 'did') {
-          console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
-          return false;
-        } else {
-          console.log('Ожидалось "not" на позиции', wordIndex + 1, ', получено', words[wordIndex + 1] || 'ничего');
-          return false;
-        }
+        let isQuestion = words[0] === 'did';
 
-        if (!validateSubject()) return false;
+        if (isQuestion) {
+          if (!words[wordIndex] || words[wordIndex] !== 'did') {
+            console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+
+          if (!words[wordIndex] || words[wordIndex] !== 'not') {
+            console.log('Ожидалось "not" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+
+          if (!validateSubject()) return false;
+        } else {
+          if (!validateSubject()) return false;
+
+          if (!words[wordIndex] || words[wordIndex] !== 'did') {
+            console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+
+          if (!words[wordIndex] || words[wordIndex] !== 'not') {
+            console.log('Ожидалось "not" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+            return false;
+          }
+          wordIndex++;
+        }
 
         if (!words[wordIndex] || words[wordIndex] !== 'use') {
           console.log('Ожидалось "use" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
