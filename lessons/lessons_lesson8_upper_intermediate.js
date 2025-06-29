@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 8 Upper-Intermediate v3');
+  console.log('Загружен Урок 8 Upper-Intermediate v4');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -54,11 +54,11 @@
       let processedText = text
         .replace(/didn't/gi, 'did not')
         .replace(/don't/gi, 'do not')
-        .replace(/i'm/gi, 'i am')
-        .replace(/\beveryday\b/gi, 'every day');
+        .replace(/i'm/gi, 'i am');
       if (structure.id === "used-to-negative-question") {
         processedText = processedText.replace(/\bused\b/gi, 'use');
       }
+      processedText = processedText.replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
         console.log('Обработаны сокращения, used и everyday:', processedText);
       }
@@ -94,8 +94,7 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did',
-        'use', 'used', 'to'
+        'am', 'is', 'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did'
       ];
 
       // Полный список неправильных глаголов (базовая форма → V2)
@@ -134,14 +133,36 @@
         }
 
         const subjectWords = [];
-        while (wordIndex < words.length && !['did', 'use', 'would'].includes(words[wordIndex])) {
-          const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
-            console.log('Исключённое слово в подлежащем:', word);
-            return false;
+        if (structure.id === "used-to-affirmative") {
+          while (wordIndex < words.length && !['used'].includes(words[wordIndex])) {
+            const word = words[wordIndex];
+            if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
+              console.log('Исключённое слово в подлежащем:', word);
+              return false;
+            }
+            subjectWords.push(word);
+            wordIndex++;
           }
-          subjectWords.push(word);
-          wordIndex++;
+        } else if (structure.id === "used-to-negative-question") {
+          while (wordIndex < words.length && !['use'].includes(words[wordIndex])) {
+            const word = words[wordIndex];
+            if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
+              console.log('Исключённое слово в подлежащем:', word);
+              return false;
+            }
+            subjectWords.push(word);
+            wordIndex++;
+          }
+        } else {
+          while (wordIndex < words.length && !['would'].includes(words[wordIndex])) {
+            const word = words[wordIndex];
+            if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
+              console.log('Исключённое слово в подлежащем:', word);
+              return false;
+            }
+            subjectWords.push(word);
+            wordIndex++;
+          }
         }
 
         if (subjectWords.length === 0) {
@@ -171,7 +192,7 @@
           console.log('Глагол в прошедшем времени, ожидается базовая форма:', verb);
           return false;
         }
-        if (excludedWords.includes(verb)) {
+        if (excludedWords.includes(verb) && !['use'].includes(verb)) {
           console.log('Исключённый глагол:', verb);
           return false;
         }
@@ -182,7 +203,7 @@
         let actionWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['the', 'a', 'an', 'every', 'in', 'on', 'at'].includes(word)) {
+          if (excludedWords.includes(word) && !['the', 'a', 'an', 'every', 'in', 'on', 'at', 'day'].includes(word)) {
             console.log('Исключённое слово в дополнении:', word);
             return false;
           }
