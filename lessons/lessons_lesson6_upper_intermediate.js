@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 6 Upper-Intermediate v2');
+  console.log('Загружен Урок 6 Upper-Intermediate v3');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -105,14 +105,27 @@
         }
 
         const subjectWords = [];
-        while (wordIndex < words.length && !['have', 'has', 'not'].includes(words[wordIndex])) {
-          const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
-            console.log('Исключённое слово в подлежащем:', word);
-            return false;
+        // Для вопросительной формы подлежащее следует после have/has
+        if (structure.id === "present-perfect-continuous-question") {
+          while (wordIndex < words.length && !['been'].includes(words[wordIndex])) {
+            const word = words[wordIndex];
+            if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
+              console.log('Исключённое слово в подлежащем:', word);
+              return false;
+            }
+            subjectWords.push(word);
+            wordIndex++;
           }
-          subjectWords.push(word);
-          wordIndex++;
+        } else {
+          while (wordIndex < words.length && !['have', 'has'].includes(words[wordIndex])) {
+            const word = words[wordIndex];
+            if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
+              console.log('Исключённое слово в подлежащем:', word);
+              return false;
+            }
+            subjectWords.push(word);
+            wordIndex++;
+          }
         }
 
         if (subjectWords.length === 0) {
@@ -149,8 +162,28 @@
           return true;
         }
 
+        // Проверяем, есть ли наречия или модификаторы перед for/since
+        const modifierWords = [];
+        while (wordIndex < words.length && !['for', 'since'].includes(words[wordIndex])) {
+          const word = words[wordIndex];
+          if (excludedWords.includes(word) && !['well', 'very', 'quite', 'the', 'a', 'an'].includes(word)) {
+            console.log('Исключённое слово в модификаторе:', word);
+            return false;
+          }
+          modifierWords.push(word);
+          wordIndex++;
+        }
+        if (modifierWords.length > 0) {
+          console.log('Модификаторы:', modifierWords.join(' '));
+        }
+
+        if (wordIndex >= words.length) {
+          console.log('Нет for/since-дополнения после модификаторов, валидация успешна');
+          return true;
+        }
+
         if (!['for', 'since'].includes(words[wordIndex])) {
-          console.log('Ожидалось "for" или "since" или конец фразы на позиции', wordIndex, ', получено', words[wordIndex]);
+          console.log('Ожидалось "for" или "since" на позиции', wordIndex, ', получено', words[wordIndex]);
           return false;
         }
         wordIndex++;
@@ -160,11 +193,11 @@
           return false;
         }
 
-        // Проверяем указание времени (может быть составным, например, "well for a week")
+        // Проверяем указание времени (может быть составным)
         const timeWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['the', 'a', 'an', 'well'].includes(word)) {
+          if (excludedWords.includes(word) && !['the', 'a', 'an', 'last', 'this', 'next'].includes(word)) {
             console.log('Исключённое слово в указании времени:', word);
             return false;
           }
