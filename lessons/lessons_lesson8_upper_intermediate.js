@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 8 Upper-Intermediate v4');
+  console.log('Загружен Урок 8 Upper-Intermediate v5');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
