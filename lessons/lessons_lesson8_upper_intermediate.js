@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 8 Upper-Intermediate v1');
+  console.log('Загружен Урок 8 Upper-Intermediate v2');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -50,14 +50,17 @@
     validateStructure: function(text, structure) {
       console.log('Валидация структуры:', structure.id);
       console.log('Входной текст:', text);
-      // Нормализуем сокращения и "everyday"
+      // Нормализуем сокращения и "used" для структуры used-to-negative-question
       let processedText = text
         .replace(/didn't/gi, 'did not')
         .replace(/don't/gi, 'do not')
-        .replace(/i'm/gi, 'i am')
-        .replace(/\beveryday\b/gi, 'every day');
+        .replace(/i'm/gi, 'i am');
+      if (structure.id === "used-to-negative-question") {
+        processedText = processedText.replace(/\bused\b/gi, 'use');
+      }
+      processedText = processedText.replace(/\beveryday\b/gi, 'every day');
       if (processedText !== text) {
-        console.log('Обработаны сокращения и everyday:', processedText);
+        console.log('Обработаны сокращения, used и everyday:', processedText);
       }
       // Удаляем пунктуацию, нормализуем пробелы и приводим к нижнему регистру
       const cleanedText = processedText.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').toLowerCase().trim();
@@ -73,7 +76,7 @@
           minWords = 3; // subject used to V1
           break;
         case "used-to-negative-question":
-          minWords = 4; // didn’t subject use to V1 / did not use to V1
+          minWords = 4; // did not subject use to V1
           break;
         case "would-affirmative":
           minWords = 3; // subject would V1
@@ -131,7 +134,7 @@
         }
 
         const subjectWords = [];
-        while (wordIndex < words.length && !['used', 'did', 'would'].includes(words[wordIndex])) {
+        while (wordIndex < words.length && !['did', 'used', 'would'].includes(words[wordIndex])) {
           const word = words[wordIndex];
           if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
             console.log('Исключённое слово в подлежащем:', word);
@@ -213,17 +216,15 @@
         return true;
       } else if (structure.id === "used-to-negative-question") {
         console.log('Начало проверки структуры Used to Negative/Question');
-        if (!words[wordIndex] || words[wordIndex] !== 'did') {
+        if (words[wordIndex] === 'did' && words[wordIndex + 1] === 'not') {
+          wordIndex += 2;
+        } else if (words[wordIndex] !== 'did') {
           console.log('Ожидалось "did" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
           return false;
-        }
-        wordIndex++;
-
-        if (!words[wordIndex] || words[wordIndex] !== 'not') {
-          console.log('Ожидалось "not" на позиции', wordIndex, ', получено', words[wordIndex] || 'ничего');
+        } else {
+          console.log('Ожидалось "not" на позиции', wordIndex + 1, ', получено', words[wordIndex + 1] || 'ничего');
           return false;
         }
-        wordIndex++;
 
         if (!validateSubject()) return false;
 
