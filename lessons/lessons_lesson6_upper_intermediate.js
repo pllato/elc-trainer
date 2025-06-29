@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 6 Upper-Intermediate v1');
+  console.log('Загружен Урок 6 Upper-Intermediate v2');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -105,7 +105,7 @@
         }
 
         const subjectWords = [];
-        while (wordIndex < words.length && !['have', 'has'].includes(words[wordIndex])) {
+        while (wordIndex < words.length && !['have', 'has', 'not'].includes(words[wordIndex])) {
           const word = words[wordIndex];
           if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
             console.log('Исключённое слово в подлежащем:', word);
@@ -160,11 +160,11 @@
           return false;
         }
 
-        // Проверяем указание времени (может быть составным, например, "three hours")
+        // Проверяем указание времени (может быть составным, например, "well for a week")
         const timeWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['the', 'a', 'an'].includes(word)) {
+          if (excludedWords.includes(word) && !['the', 'a', 'an', 'well'].includes(word)) {
             console.log('Исключённое слово в указании времени:', word);
             return false;
           }
