@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 15 Upper-Intermediate v1');
+  console.log('Загружен Урок 15 Upper-Intermediate v2');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -92,7 +92,7 @@
       // Исключённые слова (модальные, стативные глаголы и неподходящие)
       const excludedWords = [
         'will', 'should', 'can', 'could', 'would', 'must', 'may', 'might', 'shall', 'ought',
-        'am', 'is', 'are', 'has', 'had', 'does', 'did'
+        'does', 'did'
       ];
 
       // Полный список неправильных глаголов (базовая форма → V2 → V3)
@@ -266,7 +266,7 @@
         return true;
       };
 
-      // Проверяем глагол в Past Simple (V2) или Past Perfect (V3)
+      // Проверяем глагол в Past Simple (V2) или Past Perfect (had + V3)
       const validatePastVerb = () => {
         console.log('Валидация глагола V2/V3 на позиции', wordIndex);
         if (!words[wordIndex]) {
@@ -274,13 +274,30 @@
           return false;
         }
 
-        const verb = words[wordIndex];
+        let verb = words[wordIndex];
+        let isPastPerfect = false;
+
+        if (verb === 'had') {
+          console.log('Обнаружено "had", проверка Past Perfect');
+          isPastPerfect = true;
+          wordIndex++;
+          if (!words[wordIndex]) {
+            console.log('Нет глагола V3 после "had"');
+            return false;
+          }
+          verb = words[wordIndex];
+        }
+
         const isIrregularV2 = Object.values(irregularVerbs).some(v => v.past === verb);
         const isIrregularV3 = Object.values(irregularVerbs).some(v => v.pastParticiple === verb);
         const isRegularV2orV3 = verb.endsWith('ed') && !excludedWords.includes(verb);
         const isAdjective = ['tired', 'coming'].includes(verb);
         if (!isIrregularV2 && !isIrregularV3 && !isRegularV2orV3 && !isAdjective) {
           console.log('Глагол не является V2 или V3:', verb);
+          return false;
+        }
+        if (isPastPerfect && !isIrregularV3 && !isRegularV2orV3) {
+          console.log('Глагол после "had" не является V3:', verb);
           return false;
         }
 
