@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 15 Upper-Intermediate v3');
+  console.log('Загружен Урок 15 Upper-Intermediate v4');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -291,7 +291,7 @@
         const isIrregularV2 = Object.values(irregularVerbs).some(v => v.past === verb);
         const isIrregularV3 = Object.values(irregularVerbs).some(v => v.pastParticiple === verb);
         const isRegularV2orV3 = verb.endsWith('ed') && !excludedWords.includes(verb);
-        const isAdjective = ['tired', 'coming', 'ready'].includes(verb); // Добавлен 'ready'
+        const isAdjective = ['tired', 'coming', 'ready', 'finished', 'gone'].includes(verb);
         if (!isIrregularV2 && !isIrregularV3 && !isRegularV2orV3 && !isAdjective) {
           console.log('Глагол не является V2, V3 или допустимым прилагательным:', verb);
           return false;
@@ -307,7 +307,7 @@
         let actionWords = [];
         while (wordIndex < words.length) {
           const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['the', 'a', 'an', 'yesterday', 'to', 'her', 'his'].includes(word)) {
+          if (excludedWords.includes(word) && !['the', 'a', 'an', 'yesterday', 'to', 'her', 'his', 'their'].includes(word)) {
             console.log('Исключённое слово в дополнении:', word);
             return false;
           }
