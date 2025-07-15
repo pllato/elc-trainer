@@ -1,5 +1,5 @@
 (function() {
-  console.log('Загружен Урок 15 Upper-Intermediate v4');
+  console.log('Загружен Урок 15 Upper-Intermediate v5');
   console.log('Регистрация урока с уровнем: upperintermediate');
   addLesson({
     level: "upperintermediate",
@@ -100,7 +100,9 @@
         'arise': { past: 'arose', pastParticiple: 'arisen' },
         'awake': { past: 'awoke', pastParticiple: 'awoken' },
         'be': { past: 'was', pastParticiple: 'been' },
-        'bear': { past: 'bore', pastParticiple: 'borne' },
+        'bear': { past: 'bore', pastPartvjuly 15, 2025 10:54 +05
+
+System: iciple: 'borne' },
         'beat': { past: 'beat', pastParticiple: 'beaten' },
         'become': { past: 'became', pastParticiple: 'become' },
         'begin': { past: 'began', pastParticiple: 'begun' },
@@ -222,12 +224,7 @@
 
         const subjectWords = [];
         while (wordIndex < words.length && !['said', 'asked', 'told'].includes(words[wordIndex])) {
-          const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'they', 'the', 'a', 'an'].includes(word)) {
-            console.log('Исключённое слово в подлежащем:', word);
-            return false;
-          }
-          subjectWords.push(word);
+          subjectWords.push(words[wordIndex]);
           wordIndex++;
         }
 
@@ -249,12 +246,7 @@
 
         const objectWords = [];
         while (wordIndex < words.length && !['to'].includes(words[wordIndex])) {
-          const word = words[wordIndex];
-          if (excludedWords.includes(word) && !['i', 'you', 'he', 'she', 'it', 'we', 'them', 'him', 'her', 'us', 'me', 'the', 'a', 'an'].includes(word)) {
-            console.log('Исключённое слово в объекте:', word);
-            return false;
-          }
-          objectWords.push(word);
+          objectWords.push(words[wordIndex]);
           wordIndex++;
         }
 
@@ -291,7 +283,7 @@
         const isIrregularV2 = Object.values(irregularVerbs).some(v => v.past === verb);
         const isIrregularV3 = Object.values(irregularVerbs).some(v => v.pastParticiple === verb);
         const isRegularV2orV3 = verb.endsWith('ed') && !excludedWords.includes(verb);
-        const isAdjective = ['tired', 'coming', 'ready', 'finished', 'gone'].includes(verb);
+        const isAdjective = ['tired', 'coming', 'ready', 'finished', 'gone', 'seen'].includes(verb);
         if (!isIrregularV2 && !isIrregularV3 && !isRegularV2orV3 && !isAdjective) {
           console.log('Глагол не является V2, V3 или допустимым прилагательным:', verb);
           return false;
